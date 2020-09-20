@@ -1,30 +1,39 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"[powershell]": {
-			"editor.formatOnSave": true,
-			"editor.formatOnPaste": true,
-			"editor.autoIndent": "advanced",
-			"files.encoding": "utf8bom",
-			"files.autoGuessEncoding": true,
-		},
-		"powershell.codeFormatting.autoCorrectAliases": true,
-		"powershell.codeFormatting.useCorrectCasing": true,
-		"files.defaultLanguage": "${activeEditorLanguage}",
-		// to fix current formatting bug
-		"powershell.codeFormatting.whitespaceBetweenParameters": false,
-		"files.exclude": {
-			"*.zip": true,
-			"*.lnk": true,
-			"*.exe": true,
-			"LICENSE": true,
-		},
-		"files.associations": {
-			"*.ps1xml": "xml"
-		}
-	},
+  "folders": [
+    {
+      "path": ".",
+      "name": "Ninmonkey.Console | powershell"
+    }
+  ],
+  "settings": {
+    "terminal.integrated.fontSize": 12,
+    "editor.fontSize": 16,
+    "debug.console.fontSize": 14,
+    "editor.suggestFontSize": 12,
+    "markdown.preview.fontSize": 12,
+    // "screencastMode.fontSize": 56,
+    // "window.zoomLevel": 0,
+    "[powershell]": {
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.autoIndent": "advanced",
+      "files.encoding": "utf8bom",
+      "files.autoGuessEncoding": true
+    },
+    "powershell.codeFormatting.autoCorrectAliases": true,
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "files.defaultLanguage": "${activeEditorLanguage}",
+    // to fix current formatting bug
+    "powershell.codeFormatting.whitespaceBetweenParameters": false,
+    "files.exclude": {
+      "*.zip": true,
+      "*.lnk": true,
+      "*.exe": true,
+      "LICENSE": true
+    },
+    "files.associations": {
+      "*.ps1xml": "xml"
+    },
+    "terminal.integrated.copyOnSelection": true
+  }
 }
