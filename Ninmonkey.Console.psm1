@@ -14,13 +14,13 @@ foreach ($file in $public) {
     . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
 }
 
-# $completer = @(
-#     'Completer-dotnet'
-# )
+$completer = @(
+    'Completer-dotnet'
+)
 
-# foreach ($file in $completer) {
-#     . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $completer)
-# }
+foreach ($file in $completer) {
+    . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)
+}
 
 $functionsToExport = @(
     'Format-Hashtable'

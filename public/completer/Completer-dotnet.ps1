@@ -76,6 +76,9 @@ Register-ArgumentCompleter -Native -CommandName 'dotnet' -ScriptBlock {
                 New-CompletionResult '--info' 'info' ParameterName 'Display Runtime Environment, Host, SDKs installed and runtimes installed'
                 New-CompletionResult '--list-sdks' 'list-sdks' ParameterName 'List installed SDKs'
                 New-CompletionResult '--list-runtimes' 'list-runtimes' ParameterName 'List installed runtimes'
+                New-CompletionResult '--diagnostics' 'diagnostics' ParameterName 'Enable diagnostic output.'
+
+
 
                 # [CompletionResult]::new('--list-sdks', 'zebra', [CompletionResultType]::ParameterName, 'Prints help information. Use --help for more details.')
                 # [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Prints help information. Use --help for more details.')

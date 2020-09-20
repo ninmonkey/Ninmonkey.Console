@@ -12,9 +12,15 @@ $true | Label 'Foo'
 $null -eq $runeList | Label 'IsNull?'
 ```
 
-## misc
+## auto completers
 
--   [ ] move `vscode*` commandlets to external module
+### Support nested commands, like `git` and `dotnet`
+
+```ps1
+  dotnet [add | build | test | ... ]
+```
+
+## misc
 
 -   [ ] `rg` wrapper (default `env vars` are set in my profile)
     -   [ ] add `Env Vars` for `rg`, `less`, `gitbash`, etc
