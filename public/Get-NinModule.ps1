@@ -8,6 +8,7 @@ Get-Module pester -ListAvailable
 
 #>
 
+Write-Warning 'these actually module wide scoped at run time: Ex: Get-NinModule.ps1'
 $SortBy = @{}
 
 $SortBy.ModuleName_CommandName = @(
@@ -56,11 +57,17 @@ function Get-NinModule {
         )]
         # later it might make sense to maek this [string[]]
         # if they are not exclusive
-        [ValidateSet('Commands')]
+        [ValidateSet('Commands', 'Summary')]
         [string]$OutputMode,
 
         [Parameter()][switch]$PassThru
     )
+
+    begin {
+        $Prop = @{}
+        $Prop.SummaryList = 'Name', 'Description', 'Version', 'ModuleType', 'Author', 'Path', 'ImplementingAssembly', 'HelpInfoUri', 'ModuleBase', 'Tags', 'ProjectUri'
+        $Prop.SummaryTable = 'Name', 'Description', 'Version', 'Author', 'Tags', 'ProjectUri'
+    }
 
     process {
         $ModuleInfo = Get-Module $Name -ListAvailable
@@ -72,6 +79,19 @@ function Get-NinModule {
                 | Format-Table Command -GroupBy Module
                 break
             }
+            'Summary' {
+
+                # 'LicenseUri'
+
+                $result = $ModuleInfo | Select-Object -Property $Prop.SummaryTable
+                if ($PassThru) {
+                    $result
+                } else {
+                    $result | Format-Table -Wrap -AutoSize
+                }
+                break
+
+            }
             default {
                 $ModuleInfo
                 break
@@ -80,24 +100,3 @@ function Get-NinModule {
     }
 
 }
-if ($false) {
-
-    $editmodules = Get-Module *EditorServices* -ListAvailable
-
-    $editmodules | ForEach-Object {
-        $ModuleName = $_
-        foreach ($command in $ModuleName.ExportedCommands.Keys) {
-            [pscustomobject]@{ Module = $ModuleName; Command = $command }
-        }
-    }
-
-    if ($PassThru) {
-        $editmodules
-    }
-
-    Format-Table Command -GroupBy Module
-
-    $editmodules
-}
-
-Get-NinModule '*EditorServices*' | Format-Table Command -GroupBy Module
