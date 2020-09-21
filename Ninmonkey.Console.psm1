@@ -7,7 +7,10 @@ foreach ($file in $private) {
 }
 
 $public = @(
+    'Get-NinModule'
     'Format-Hashtable'
+    'Format-TestConnection'
+    'Test-Net'
 )
 
 foreach ($file in $public) {
@@ -23,6 +26,9 @@ foreach ($file in $completer) {
 }
 
 $functionsToExport = @(
+    'Get-NinModule'
     'Format-Hashtable'
+    'Format-TestConnection'
+    'Test-Net'
 )
 Export-ModuleMember -Function $functionsToExport
