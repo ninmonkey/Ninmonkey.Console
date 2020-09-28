@@ -8,14 +8,30 @@ Get-Module pester -ListAvailable
 
 #>
 
-Write-Warning 'these actually module wide scoped at run time: Ex: Get-NinModule.ps1'
-$SortBy = @{}
+# Write-Warning 'these actually module wide scoped at run time: Ex: Get-NinModule.ps1'
+# $SortBy = @{}
 
-$SortBy.ModuleName_CommandName = @(
-    @{ e = 'Module'; Descending = $False }
-    @{ e = 'Command'; Descending = $False }
-)
-$SortBy_Module_Command = $SortBy.ModuleName_CommandName
+# $SortBy.ModuleName_CommandName = @(
+#     @{ e = 'Module'; Descending = $False }
+#     @{ e = 'Command'; Descending = $False }
+# )
+# $SortBy_Module_Command = $SortBy.ModuleName_CommandName
+
+function ipython {
+    <#
+    .synopsis
+        wrapper to auto import my profile on default
+    .notes
+        make position 0 = value from remaining args, profile is by name only.
+        pass the rest to ipython.
+    future:
+        [ ] json configures default profile
+
+    #>
+    param([string]$ProfileName = 'ninmonkey')
+    ipython.exe --profile=${ProfileName}
+}
+
 
 function _FilterExportedCommands {
     param(

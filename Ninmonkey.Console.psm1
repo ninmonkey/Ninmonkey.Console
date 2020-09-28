@@ -11,6 +11,9 @@ $public = @(
     'Format-Hashtable'
     'Format-TestConnection'
     'Test-Net'
+    'Format-MeasureCommand'
+    'Get-Docs'
+    'Edit-GitConfig'
 )
 
 foreach ($file in $public) {
@@ -26,9 +29,22 @@ foreach ($file in $completer) {
 }
 
 $functionsToExport = @(
+    'Edit-GitConfig'
+    'Format-MeasureCommand'
+    'Get-Docs'
     'Get-NinModule'
     'Format-Hashtable'
     'Format-TestConnection'
+    'ipython'
     'Test-Net'
 )
 Export-ModuleMember -Function $functionsToExport
+
+
+New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language' -PassThru
+$aliasesToExport = @(
+    'Docs'
+)
+
+
+Export-ModuleMember -Alias $aliasesToExport
