@@ -13,7 +13,10 @@ $public = @(
     'Test-Net'
     'Format-MeasureCommand'
     'Get-Docs'
+    'Format-History'
     'Edit-GitConfig'
+    'Export-PlatformFolderPath'
+    'Get-RipGrepChildItem'
 )
 
 foreach ($file in $public) {
@@ -29,9 +32,12 @@ foreach ($file in $completer) {
 }
 
 $functionsToExport = @(
+    'Export-PlatformFolderPath'
+    'Get-RipGrepChildItem'
     'Edit-GitConfig'
     'Format-MeasureCommand'
     'Get-Docs'
+    'Format-History'
     'Get-NinModule'
     'Format-Hashtable'
     'Format-TestConnection'
