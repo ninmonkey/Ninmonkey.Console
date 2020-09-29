@@ -17,6 +17,8 @@ $public = @(
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
     'Get-RipGrepChildItem'
+    'Set-ConsoleEncoding'
+    'Get-ConsoleEncoding'
 )
 
 foreach ($file in $public) {
@@ -33,6 +35,8 @@ foreach ($file in $completer) {
 
 $functionsToExport = @(
     'Export-PlatformFolderPath'
+    'Set-ConsoleEncoding'
+    'Get-ConsoleEncoding'
     'Get-RipGrepChildItem'
     'Edit-GitConfig'
     'Format-MeasureCommand'

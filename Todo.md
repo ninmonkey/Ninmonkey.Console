@@ -1,5 +1,8 @@
 # Todo
 
+- [ ] convert formatting functions from <- `C:\Users\cppmo_000\Documents\2020\dotfiles_git\powershell\NinCore-CLI-formatting.ps1`
+- [ ] convert formatting functions  <- from `C:\Users\cppmo_000\Documents\2020\powershell\NinLibs\Nin-Style\StyleNin_module.ps1`
+
 ## quick
 
 Label
