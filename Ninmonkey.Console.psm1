@@ -3,27 +3,48 @@
 )
 
 foreach ($file in $private) {
+    if (Test-Path ("{0}\private\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: private: $File"
+    }
     . ("{0}\private\{1}.ps1" -f $psscriptroot, $file)
 }
 
+$public_NativeWrapper = @(
+    'Invoke-IPython'
+    # 'Invoke-RipGrepChildItem'
+)
+foreach ($file in $public_NativeWrapper) {
+    if (Test-Path ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: public\native_wrapper: $File"
+    }
+    . ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)
+
+}
+
+Export-ModuleMember -Function $public_NativeWrapper
+
 $public = @(
-    'Get-NinModule'
-    'Format-Hashtable'
-    'Format-TestConnection'
-    'Test-Net'
-    'Format-MeasureCommand'
-    'Get-Docs'
-    'Format-History'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
-    'Get-RipGrepChildItem'
-    'Set-ConsoleEncoding'
+    'Format-Hashtable'
+    'Format-History'
+    'Format-MeasureCommand'
+    'Format-TestConnection'
     'Get-ConsoleEncoding'
-    'Invoke-IPython'
+    'Get-Docs'
+    'Get-NinModule'
+    'Set-ConsoleEncoding'
     'Start-LogTestNet'
+    'Test-Net'
 )
 
 foreach ($file in $public) {
+    if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: public: $File"
+    }
     . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
 }
 
@@ -32,23 +53,29 @@ $completer = @(
 )
 
 foreach ($file in $completer) {
+    if (Test-Path ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: completer: $File"
+    }
     . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)
 }
 
+Export-ModuleMember -Function $completer
+
 $functionsToExport = @(
-    'Export-PlatformFolderPath'
-    'Set-ConsoleEncoding'
-    'Invoke-IPython'
-    'Start-LogTestNet'
-    'Get-ConsoleEncoding'
-    'Get-RipGrepChildItem'
     'Edit-GitConfig'
-    'Format-MeasureCommand'
-    'Get-Docs'
-    'Format-History'
-    'Get-NinModule'
+    'Export-PlatformFolderPath'
     'Format-Hashtable'
+    'Format-History'
+    'Format-MeasureCommand'
     'Format-TestConnection'
+    'Get-ConsoleEncoding'
+    'Get-Docs'
+    'Get-NinModule'
+    'Invoke-IPython'
+    'Invoke-RipGrepChildItem'
+    'Set-ConsoleEncoding'
+    'Start-LogTestNet'
     'Test-Net'
 )
 Export-ModuleMember -Function $functionsToExport
