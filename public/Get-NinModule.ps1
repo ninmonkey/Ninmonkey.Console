@@ -17,20 +17,6 @@ Get-Module pester -ListAvailable
 # )
 # $SortBy_Module_Command = $SortBy.ModuleName_CommandName
 
-function ipython {
-    <#
-    .synopsis
-        wrapper to auto import my profile on default
-    .notes
-        make position 0 = value from remaining args, profile is by name only.
-        pass the rest to ipython.
-    future:
-        [ ] json configures default profile
-
-    #>
-    param([string]$ProfileName = 'ninmonkey')
-    ipython.exe --profile=${ProfileName}
-}
 
 
 function _FilterExportedCommands {

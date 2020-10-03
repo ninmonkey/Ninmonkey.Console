@@ -17,21 +17,30 @@
             Path = [Environment]::GetFolderPath( $_ )
         }
     }
+    $computerInfo = try {
+        Get-ComputerInfo | Select-Object 'OsName', 'OSType', 'OSVersion', 'OsArchitecture'
+    } catch {
+        ''
+    }
 
     $metaData = @{
-        'Environment'    = $PSVersionTable | Select-Object OS, Platform, @{
+        'PSVersion'      = $PSVersionTable | Select-Object  'PSEdition', 'OS', 'Platform', @{
             n = 'PSVersion'; e = { $_.PSVersion.tostring() }
         }
         'SpecialFolders' = $folderList
+        'ComputerInfo'   = $computerInfo
     }
 
     $Result = [pscustomobject]$metaData
+
+    'suggested name: ' | Write-Verbose
     if ($PassThru) {
         return $Result
     }
 
     $splat = @{
-        Compress = $CompressJson ? $true : $false
+        # = $CompressJson ? $true : $false # ps5 breaks
+        # Compress = (if ($CompressJson) { $true } else { $false } )
     }
     $Result | ConvertTo-Json @splat
 }

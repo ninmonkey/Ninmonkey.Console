@@ -5,6 +5,10 @@ function Test-Net {
         custom defaults which wrap test-connection pings and traceroutes
     .example
         PS> Test-Net
+    .notes
+        todo:
+            [ ] color dump per-line instead
+            [ ] formatter for high ping values on default formatter
     #>
     param(
         [Parameter(
@@ -13,9 +17,25 @@ function Test-Net {
             HelpMessage = '-TargetName param of Test-Connection')]
         [string[]]$TargetName,
 
+        [Parameter(
+            HelpMessage = 'minimum value before turning yellow')]
+        [int]$YellowThreshold = 40,
+
+        [Parameter(
+            HelpMessage = 'minimum value before turning yellow')]
+        [int]$RedThreshold = 60,
+
+        [Parameter(HelpMessage = 'Output results below YellowThreshold')][switch]$IncludeNormal,
         [Parameter(HelpMessage = 'Unmodified results')][switch]$PassThru,
+
         [Parameter(HelpMessage = 'nested info')][switch]$Detailed
     )
+
+    $Config = @{
+        ShowGood   = ( $IncludeNormal)
+        ShowYellow = $true
+        ShowRed    = $true
+    }
 
     if ( [string]::IsNullOrEmpty( $TargetName ) ) {
 
@@ -51,5 +71,28 @@ function Test-Net {
 
     }
 
-    $Results | Format-TestConnection -Detailed:$Detailed
+    if ($Config.ShowGood) {
+        $Results
+        | Format-TestConnection -Detailed:$Detailed
+    }
+
+    # $Results | Format-TestConnection -Detailed:$Detailed
+
+
+    if ($Config.ShowYellow) {
+        $Results
+        | Where-Object { $_.Latency -gt $YellowThreshold }
+        | Format-TestConnection -Detailed:$Detailed
+        | Format-Table | Out-String | Write-Host -ForegroundColor Yellow
+    }
+    if ($Config.ShowRed) {
+        $Results
+        | Where-Object { $_.Latency -gt $RedThreshold }
+        | Format-TestConnection -Detailed:$Detailed
+        | Format-Table | Out-String | Write-Host -ForegroundColor Red
+    }
+
+    # "`e[0m"
+
+
 }

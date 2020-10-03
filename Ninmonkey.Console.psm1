@@ -19,6 +19,7 @@ $public = @(
     'Get-RipGrepChildItem'
     'Set-ConsoleEncoding'
     'Get-ConsoleEncoding'
+    'Start-LogTestNet'
 )
 
 foreach ($file in $public) {
@@ -36,6 +37,7 @@ foreach ($file in $completer) {
 $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Set-ConsoleEncoding'
+    'Start-LogTestNet'
     'Get-ConsoleEncoding'
     'Get-RipGrepChildItem'
     'Edit-GitConfig'
@@ -50,11 +52,15 @@ $functionsToExport = @(
 )
 Export-ModuleMember -Function $functionsToExport
 
+if ($true) {
+    # toggle auto importing of aliases', otherwise only use new-alias
+    New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'# -PassThru
+    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
-New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language' -PassThru
-$aliasesToExport = @(
-    'Docs'
-)
+    $aliasesToExport = @(
+        'Docs'
+        'IPython'
+    )
 
-
-Export-ModuleMember -Alias $aliasesToExport
+    Export-ModuleMember -Alias $aliasesToExport
+}
