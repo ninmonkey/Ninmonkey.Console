@@ -19,6 +19,7 @@ $public = @(
     'Get-RipGrepChildItem'
     'Set-ConsoleEncoding'
     'Get-ConsoleEncoding'
+    'Invoke-IPython'
     'Start-LogTestNet'
 )
 
@@ -37,6 +38,7 @@ foreach ($file in $completer) {
 $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Set-ConsoleEncoding'
+    'Invoke-IPython'
     'Start-LogTestNet'
     'Get-ConsoleEncoding'
     'Get-RipGrepChildItem'
@@ -47,7 +49,6 @@ $functionsToExport = @(
     'Get-NinModule'
     'Format-Hashtable'
     'Format-TestConnection'
-    'ipython'
     'Test-Net'
 )
 Export-ModuleMember -Function $functionsToExport
@@ -55,7 +56,7 @@ Export-ModuleMember -Function $functionsToExport
 if ($true) {
     # toggle auto importing of aliases', otherwise only use new-alias
     New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'# -PassThru
-    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
+    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile' -PassThru
 
     $aliasesToExport = @(
         'Docs'
