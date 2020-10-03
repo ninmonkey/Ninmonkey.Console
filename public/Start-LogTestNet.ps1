@@ -4,40 +4,78 @@ function Start-LogTestNet {
         [Parameter(HelpMessage = 'time to sleep between requests')]
         [double]$DelaySeconds = 15.,
 
+        [Parameter(
+            Mandatory = $false,
+            Position = 0,
+            HelpMessage = '-TargetName param of Test-Connection')]
+        [string[]]$TargetName,
+
         [parameter(
             HelpMessage = 'output filepath to current log'
         )][switch]$GetLogPath,
 
         [parameter(
             HelpMessage = 'Do not print to console, no Write-Progress'
-        )][switch]$Silent
+        )][switch]$Silent,
+
+        [parameter(
+            HelpMessage = 'enable write-progress status'
+        )][switch]$WriteProgress
     )
     $FilenameSafeDate = (Get-Date).ToString("yyyy_mm_dd")
     $FileName = "PingLog_${FilenameSafeDate}.log"
     $BasePath = "$Env:UserProfile\Documents\2020\powershell\dump\log"
     $LogPath = Join-Path $BasePath -ChildPath $FileName
     [int]$NumLoops = 0
+    if ( [string]::IsNullOrEmpty( $TargetName ) ) {
+        [string[]]$TargetName = 'google.com', '8.8.8.8', '1.1.1.1'
+    }
+
     if ($GetLogPath) {
         Get-Item $LogPath
         return
     }
     if (! $Silent) {
         Write-Host "Logging to: '$LogPath'" -ForegroundColor Green
+        $TargetName | Join-String -OutputPrefix 'Targets: ' -Separator ', ' -SingleQuote
+        | Write-Host -ForegroundColor Green
     }
 
     while ($true) {
-        $Status = "Loops = $NumLoops, Min = 1, Max = 20, Average = 44"
-        Write-Progress -Activity 'Logging: Test-Net' -Id 1 -Status $Status
-        $result = Test-Net -YellowThreshold 20 -PassThru
+        $NumLoops++;
+
+        $splat = @{
+            # YellowThreshold = 20
+            PassThru   = $true
+            TargetName = $TargetName
+        }
+        $result = Test-Net @splat
         | Format-TestConnection
 
+        $Min = $result.latency | Measure-Object -Minimum | ForEach-Object Minimum
+        $Max = $result.latency | Measure-Object -Maximum | ForEach-Object Maximum
+        $Average = $result.latency | Measure-Object -Average | ForEach-Object Average
+
+        $Status = 'Loop #{0}, Min = {1:n2}ms, Max = {2:n2}ms, Average = {3:n2}ms' -f (
+            $NumLoops,
+            $Min,
+            $Max,
+            $Average
+        )
+        if ($WriteProgress) {
+            Write-Progress -Activity 'Logging: Test-Net' -Id 1 -Status $Status
+        } else {
+            Write-Host -ForegroundColor Green $Status
+        }
+
         $result | Export-Csv -Encoding utf8 -Path $LogPath -Append
+
 
         if (! $Silent) {
             $result | Format-Table
         }
 
-        $NumLoops++;
+
         Start-Sleep $DelaySeconds
     }
 }
@@ -45,4 +83,4 @@ function Start-LogTestNet {
 # Test-Net -YellowThreshold 28
 # | Format-Table
 
-# Start-LogTestNet -DelaySeconds 0.3
+Start-LogTestNet -DelaySeconds 3

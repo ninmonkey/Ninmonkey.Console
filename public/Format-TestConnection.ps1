@@ -74,7 +74,8 @@ function private_Format-TestConnectionPingCommand {
     #>
     param(
         [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'records')]
-        [Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus[]]
+        # [Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus[]]
+        [object[]]
         $InputObject,
 
         [Parameter(HelpMessage = 'include extra nested information')]
@@ -84,10 +85,16 @@ function private_Format-TestConnectionPingCommand {
     process {
 
         $InputObject | ForEach-Object {
+
+            $addr = $_.DisplayAddress
+            if ($null -eq $addr) {
+                $addr = $_.Address
+            }
+
             $hash = [ordered]@{
                 Source      = $_.Source
                 Destination = $_.Destination
-                Address     = $_.DisplayAddress
+                Address     = $addr # $_.DisplayAddress
                 Latency     = $_.Latency
                 Status      = $_.Status
 
