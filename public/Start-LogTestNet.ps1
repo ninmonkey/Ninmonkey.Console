@@ -22,7 +22,7 @@ function Start-LogTestNet {
             HelpMessage = 'enable write-progress status'
         )][switch]$WriteProgress
     )
-    $FilenameSafeDate = (Get-Date).ToString("yyyy_mm_dd")
+    $FilenameSafeDate = (Get-Date).ToString("yyyy_M_dd")
     $FileName = "PingLog_${FilenameSafeDate}.log"
     $BasePath = "$Env:UserProfile\Documents\2020\powershell\dump\log"
     $LogPath = Join-Path $BasePath -ChildPath $FileName
@@ -32,8 +32,7 @@ function Start-LogTestNet {
     }
 
     if ($GetLogPath) {
-        Get-Item $LogPath
-        return
+        return $LogPath
     }
     if (! $Silent) {
         Write-Host "Logging to: '$LogPath'" -ForegroundColor Green
@@ -79,8 +78,3 @@ function Start-LogTestNet {
         Start-Sleep $DelaySeconds
     }
 }
-
-# Test-Net -YellowThreshold 28
-# | Format-Table
-
-Start-LogTestNet -DelaySeconds 3
