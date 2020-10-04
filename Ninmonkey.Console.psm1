@@ -51,6 +51,8 @@ foreach ($file in $public) {
 
 $completer = @(
     'Completer-dotnet'
+    'Completer-RipGrep'
+    'Completer-gh'
 )
 
 foreach ($file in $completer) {

@@ -90,4 +90,5 @@ Register-ArgumentCompleter -Native -CommandName 'dotnet' -ScriptBlock {
 
     $completions.Where{ $_.CompletionText -like "$wordToComplete*" } |
     Sort-Object -Property ListItemText
+    Write-Debug 'loaded completer: dotnet.exe'
 }
