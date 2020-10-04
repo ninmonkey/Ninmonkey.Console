@@ -55,7 +55,7 @@ function Start-LogTestNet {
         $Max = $result.latency | Measure-Object -Maximum | ForEach-Object Maximum
         $Average = $result.latency | Measure-Object -Average | ForEach-Object Average
 
-        $Status = 'Loop #{0}, Min = {1:n2}ms, Max = {2:n2}ms, Average = {3:n2}ms' -f (
+        $Status = 'Loop stats: #{0}, Min = {1:n2}ms, Max = {2:n2}ms, Average = {3:n2}ms' -f (
             $NumLoops,
             $Min,
             $Max,

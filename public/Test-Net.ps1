@@ -5,6 +5,9 @@ function Test-Net {
         custom defaults which wrap test-connection pings and traceroutes
     .example
         PS> Test-Net
+        PS> Test-Net -PassThru
+        PS> Test-Net 'wikipedia.com' -YellowThreshold  30
+        PS> Test-Net 'wikipedia.com' -YellowThreshold 45 -HideNormal
     .notes
         todo:
             [ ] color dump per-line instead
@@ -28,6 +31,8 @@ function Test-Net {
         [Parameter(HelpMessage = 'Output results below YellowThreshold')][switch]$HideNormal,
         [Parameter(HelpMessage = 'Unmodified results')][switch]$PassThru,
 
+        [Parameter(HelpMessage = 'TestConnection -Count')][int]$Count = 2,
+
         [Parameter(HelpMessage = 'nested info')][switch]$Detailed
     )
 
@@ -40,12 +45,12 @@ function Test-Net {
     if ( [string]::IsNullOrEmpty( $TargetName ) ) {
         [string[]]$TargetName = 'google.com', '8.8.8.8', '1.1.1.1'
     }
-    $kwargs_trace = @{
+    $splat_testNet = @{
         # TargetName         = 'youtube.com', '1.1.1.1' # def: none, FromPipeline
         TargetName         = $TargetName
         ResolveDestination = $true
         MaxHops            = 128  # def: 128
-        Count              = 2 # def 4
+        Count              = 1 # def 4
         # IPv4               = $true  #def: false
         # IPv6               = $true  #def: false
         # Repeat = $true
@@ -56,40 +61,42 @@ function Test-Net {
         #TraceRoute = $false
         # returns obj: TestConnectionCommand+TraceStatus
     }
-
-    if ($PassThru) {
-        Test-Connection @kwargs_trace
-        | Add-Member -NotePropertyName 'Time' -NotePropertyValue (Get-Date) -PassThru
-        return
+    $splat_formatTest = @{
+        Detailed = $Detailed
     }
 
-    $kwargs_trace.Remove('TargetName')
-    $Results = $TargetName | ForEach-Object {
-        $Target = $_
-        Test-Connection $Target @kwargs_trace
+    $Results = 1..$count | ForEach-Object {
+        $curIter = $_
+        $curResult = Test-Connection @splat_testNet
         | Add-Member -NotePropertyName 'Time' -NotePropertyValue (Get-Date) -PassThru
 
+        $curResult
+    }
+
+    if ($PassThru) {
+        return $Results
     }
 
     if ($Config.ShowGood) {
         $Results
-        | Format-TestConnection -Detailed:$Detailed
+        | Where-Object { $_.Latency -lt $YellowThreshold }
+        | Format-TestConnection @splat_formatTest
     }
-
-    # $Results | Format-TestConnection -Detailed:$Detailed
-
 
     if ($Config.ShowYellow) {
         $Results
         | Where-Object { $_.Latency -gt $YellowThreshold }
-        | Format-TestConnection -Detailed:$Detailed
+        | Format-TestConnection @splat_formatTest
         | Format-Table | Out-String | Write-Host -ForegroundColor Yellow
+        # todo: # cleanup by using custom formatter
+        # Then convert these to filters, not 3 outputs per color
     }
     if ($Config.ShowRed) {
         $Results
         | Where-Object { $_.Latency -gt $RedThreshold }
-        | Format-TestConnection -Detailed:$Detailed
+        | Format-TestConnection @splat_formatTest
         | Format-Table | Out-String | Write-Host -ForegroundColor Red
+
     }
 
     # "`e[0m"
