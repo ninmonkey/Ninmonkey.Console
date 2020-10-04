@@ -103,6 +103,9 @@ function private_Format-TestConnectionPingCommand {
             if (!($null -eq $_.Time)) {
                 $hash.Time = $_.Time
             }
+            if (!($null -eq $_.TimeString)) {
+                $hash.TimeString = $_.TimeString
+            }
 
             if ($Detailed) {
                 $hash.NestedInfo = [ordered]@{

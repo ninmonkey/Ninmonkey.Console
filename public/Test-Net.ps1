@@ -50,7 +50,7 @@ function Test-Net {
         TargetName         = $TargetName
         ResolveDestination = $true
         MaxHops            = 128  # def: 128
-        Count              = 1 # def 4
+        Count              = 1 # Because actual iteration below uses $Count
         # IPv4               = $true  #def: false
         # IPv6               = $true  #def: false
         # Repeat = $true
@@ -69,6 +69,7 @@ function Test-Net {
         $curIter = $_
         $curResult = Test-Connection @splat_testNet
         | Add-Member -NotePropertyName 'Time' -NotePropertyValue (Get-Date) -PassThru
+        | Add-Member -NotePropertyName 'TimeString' -NotePropertyValue ( (Get-Date).tostring('o') ) -PassThru
 
         $curResult
     }
@@ -77,10 +78,14 @@ function Test-Net {
         return $Results
     }
 
+
+    $Results = $Results | Select-Object -ExcludeProperty 'TimeString' # to be replaced when format types is set
+
     if ($Config.ShowGood) {
         $Results
         | Where-Object { $_.Latency -lt $YellowThreshold }
         | Format-TestConnection @splat_formatTest
+
     }
 
     if ($Config.ShowYellow) {

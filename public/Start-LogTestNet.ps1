@@ -67,11 +67,17 @@ function Start-LogTestNet {
             Write-Host -ForegroundColor Green $Status
         }
 
-        $result | Export-Csv -Encoding utf8 -Path $LogPath -Append
+        # $result | Export-Csv -Encoding utf8 -Path $LogPath -Append
+        $result
+        | Select-Object -ExcludeProperty 'Time'
+        | ConvertTo-Csv
+        | Add-Content -Path $LogPath -Encoding utf8
 
 
         if (! $Silent) {
-            $result | Format-Table
+            $result
+            | Select-Object -ExcludeProperty 'TimeString' # to be replaced when format types is set
+            | Format-Table
         }
 
 
