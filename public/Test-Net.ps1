@@ -96,5 +96,3 @@ function Test-Net {
 
 
 }
-
-Test-Net -TargetName 1.1.1.1 | Tee-Object -var psyes
