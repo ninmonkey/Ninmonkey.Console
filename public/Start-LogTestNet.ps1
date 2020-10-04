@@ -23,7 +23,7 @@ function Start-LogTestNet {
         )][switch]$WriteProgress
     )
     $FilenameSafeDate = (Get-Date).ToString("yyyy_M_dd")
-    $FileName = "PingLog_${FilenameSafeDate}.log"
+    $FileName = "PingLog_${FilenameSafeDate}.csv"
     $BasePath = "$Env:UserProfile\Documents\2020\powershell\dump\log"
     $LogPath = Join-Path $BasePath -ChildPath $FileName
     [int]$NumLoops = 0
