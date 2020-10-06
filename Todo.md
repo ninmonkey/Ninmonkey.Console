@@ -15,11 +15,13 @@ $true | Label 'Foo'
 $null -eq $runeList | Label 'IsNull?'
 ```
 
-## auto completers
+## auto completer
 
 ### Support nested commands, like `git` and `dotnet`
 
 ```ps1
+
+
   dotnet [add | build | test | ... ]
 ```
 
