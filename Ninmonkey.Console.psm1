@@ -25,31 +25,6 @@ foreach ($file in $public_NativeWrapper) {
 
 Export-ModuleMember -Function $public_NativeWrapper
 
-$public = @(
-    'Edit-GitConfig'
-    'Export-PlatformFolderPath'
-    'Format-Hashtable'
-    'Format-History'
-    'Format-MeasureCommand'
-    'Format-TestConnection'
-    'Get-ConsoleEncoding'
-    'Get-Docs'
-    'Test-UserIsAdmin'
-    'Write-AnsiHyperlink'
-    'Get-NinModule'
-    'Set-ConsoleEncoding'
-    'Start-LogTestNet'
-    'Test-Net'
-)
-
-foreach ($file in $public) {
-    if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
-        Write-Error "Import: failed: public: $File"
-    }
-    . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
-}
-
 $completer = @(
     'Completer-dotnet'
     'Completer-RipGrep'
@@ -66,12 +41,41 @@ foreach ($file in $completer) {
 
 Export-ModuleMember -Function $completer
 
+$public = @(
+    'Edit-GitConfig'
+    'Export-PlatformFolderPath'
+    'Format-Hashtable'
+    'Format-History'
+    'Format-MeasureCommand'
+    'Format-TestConnection'
+    'Get-ConsoleEncoding'
+    'Get-Docs'
+    'Test-UserIsAdmin'
+    'Write-AnsiHyperlink'
+    'Get-NinModule'
+    'Set-ConsoleEncoding'
+    'Start-LogTestNet'
+    'Test-Net'
+    'Get-TerminalName'
+)
+
+foreach ($file in $public) {
+    if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: public: $File"
+    }
+    . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
+}
+
+
+
 $functionsToExport = @(
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
     'Format-History'
+    'Get-TerminalName'
     'Write-AnsiHyperlink'
     'Format-MeasureCommand'
     'Format-TestConnection'
