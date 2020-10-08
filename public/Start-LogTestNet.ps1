@@ -40,6 +40,8 @@ function Start-LogTestNet {
         | Write-Host -ForegroundColor Green
     }
 
+    $host.UI.RawUI.WindowTitle = '[TestNet]'
+
     while ($true) {
         $NumLoops++;
 
