@@ -56,6 +56,7 @@ $public = @(
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
     'Test-Net'
+    'Get-EnumInfo'
     'Get-TerminalName'
 )
 
@@ -81,6 +82,7 @@ $functionsToExport = @(
     'Format-TestConnection'
     'Get-ConsoleEncoding'
     'Get-Docs'
+    'Get-EnumInfo'
     'Get-NinModule'
     'Invoke-IPython'
     'Invoke-RipGrepChildItem'
