@@ -45,6 +45,8 @@ function Format-ControlChar {
     begin {
         $uni_range = 0..0x1f
         $uni_increment = 0x2400
+        $controlMin = 0x0
+        $controlMax = 0x1f
         $finalString = ""
         $runeReplace = [Rune]::ReplacementChar
         $runeNull = [char]::ConvertFromUtf32( 0 ) # or "`u{0}" [null]
@@ -57,14 +59,15 @@ function Format-ControlChar {
             $CurrentLine.EnumerateRunes() | ForEach-Object {
                 $RuneInfo = $_ # is a [Text.Rune]
                 $Codepoint = $RuneInfo.Value
-                if ($Codepoint -ge 0 -and $Codepoint -le 0x1f ) {
+                if ($Codepoint -ge $controlMin -and $Codepoint -le $controlMax ) {
                     $Codepoint += 0x2400
                 }
-                [char]::ConvertFromUtf32( $Codepoint )
+                $finalString += [char]::ConvertFromUtf32( $Codepoint )
             }
-
-
         }
+    }
+    end {
+        $finalString
     }
 }
 
