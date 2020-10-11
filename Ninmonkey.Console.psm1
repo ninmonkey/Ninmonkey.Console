@@ -53,6 +53,7 @@ $public = @(
     'Test-UserIsAdmin'
     'Write-AnsiHyperlink'
     'Get-NinModule'
+    'Set-NinLocation'
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
     'Test-Net'
@@ -75,6 +76,7 @@ $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
+    'Set-NinLocation'
     'Format-History'
     'Get-TerminalName'
     'Write-AnsiHyperlink'
@@ -94,10 +96,12 @@ Export-ModuleMember -Function $functionsToExport
 
 if ($true) {
     # toggle auto importing of aliases', otherwise only use new-alias
-    New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'# -PassThru
-    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile' -PassThru
+    New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
+    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
+    New-Alias 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
 
     $aliasesToExport = @(
+        'Goto'
         'Docs'
         'IPython'
     )
