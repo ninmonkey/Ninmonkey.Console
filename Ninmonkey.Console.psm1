@@ -58,6 +58,7 @@ $public = @(
     'Start-LogTestNet'
     'Test-Net'
     'Get-EnumInfo'
+    'Test-IsDirectory'
     'Get-TerminalName'
 )
 
@@ -69,13 +70,12 @@ foreach ($file in $public) {
     . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
 }
 
-
-
 $functionsToExport = @(
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
+    'Test-IsDirectory'
     'Set-NinLocation'
     'Format-History'
     'Get-TerminalName'
