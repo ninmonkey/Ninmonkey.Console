@@ -58,6 +58,7 @@ $public = @(
     'Start-LogTestNet'
     'Test-Net'
     'Get-EnumInfo'
+    'Format-FileSize'
     'Test-IsDirectory'
     'Get-TerminalName'
 )
@@ -75,6 +76,7 @@ $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
+    'Format-FileSize'
     'Test-IsDirectory'
     'Set-NinLocation'
     'Format-History'

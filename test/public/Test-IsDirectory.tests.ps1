@@ -22,9 +22,5 @@ Describe "Test-IsDirectory" {
         $fileObj = Get-ChildItem . -File | Select-Object -First 1
         ($fileObj, '.', 'c:\') | Test-IsDirectory
         | Should -Be ($False, $True, $True)
-
-
     }
-
-
 }
