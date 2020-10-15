@@ -53,6 +53,8 @@ $public = @(
     'Test-UserIsAdmin'
     'Write-AnsiHyperlink'
     'Get-NinModule'
+    'Get-NinTypeData'
+    # 'Get-NinFormatData'
     'Set-NinLocation'
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
@@ -60,6 +62,7 @@ $public = @(
     'Get-EnumInfo'
     'Format-FileSize'
     'Test-IsDirectory'
+    'Invoke-Explorer'
     'Get-TerminalName'
 )
 
@@ -76,9 +79,12 @@ $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
+    'Invoke-Explorer'
     'Format-FileSize'
     'Test-IsDirectory'
     'Set-NinLocation'
+    'Get-NinTypeData'
+    # 'Get-NinFormatData'
     'Format-History'
     'Get-TerminalName'
     'Write-AnsiHyperlink'
@@ -101,11 +107,13 @@ if ($true) {
     New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
     New-Alias 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+    New-Alias 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer' -ea Ignore
 
     $aliasesToExport = @(
         'Goto'
         'Docs'
         'IPython'
+        'Here'
     )
 
     Export-ModuleMember -Alias $aliasesToExport
