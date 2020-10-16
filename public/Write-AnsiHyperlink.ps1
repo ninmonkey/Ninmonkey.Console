@@ -10,6 +10,7 @@
         for details for using ANSI hyperlink escape sequences, see:
             [egmontkob/Hyperlinks_in_Terminal_Emulators.md ](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda)
     .notes
+        this function is a WIP
         behaviours:
             - vscode: Does not work well when spaces are in the path
 
@@ -110,8 +111,8 @@
     #     return
     # }
 }
-
-. 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\tests\public\test_Write-AnsiHyperlink.ps1'
+# seee:  C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Ansi\consolidate\Write-AnsiHyperlink - edge cases.ps1
+# . 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\tests\public\test_Write-AnsiHyperlink.ps1'
 # if ($AsMarkdown) {
 
 # } else {
