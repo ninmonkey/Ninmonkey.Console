@@ -29,7 +29,7 @@
 
         [Parameter(
             HelpMessage = "Minimum number of folders that trigger confirmation")]
-        [int]$MinWarning = 2
+        [int]$MinWarning = 3
     )
     begin {
         $ValidFolders = [list[string]]::new()
@@ -37,25 +37,16 @@
 
     process {
         $Path | ForEach-Object {
-            $curPath = $_
-            $curItem = Get-Item $curPath
+            $curItem = Get-Item $_
 
             if (!( Test-Path $curItem) ) {
-                "Bad:"
+                Write-Error "Invalid path: '$curItem'"
                 continue
             }
             if (!(Test-IsDirectory -Path $curItem)) {
-                if ($true) {
-                    Write-Error "Not a directory: '$curItem'"
-                    # break
-                    return
-                } else {
-                    throw "Not a Directory"
-                }
-                # Label "Not a directory: '$curItem'"
-
+                Write-Error "Not a directory: '$curItem'"
+                continue
             }
-
 
             $ValidFolders.Add( $curItem )
         }

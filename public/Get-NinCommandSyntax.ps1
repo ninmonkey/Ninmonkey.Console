@@ -9,7 +9,8 @@
 
     .example
         PS> Get-NinCommandSyntax Select-String
-
+    .example
+        PS> Get-NinCommandSyntax 'ls'
     #>
     param (
         [Parameter(
@@ -17,6 +18,10 @@
             HelpMessage = "Name of Command")]
         [string]$Name
     )
-    $cmd = Get-Command -Syntax $Name
-    $cmd -split ' (?=\[*-)' -replace '^[\[-]', '   $0'
+    $cmd = (Get-Command $Name)
+    if ( $cmd.CommandType -eq 'Alias' ) {
+        $Name = $cmd.ResolvedCommandName
+    }
+    $acutalCmd = Get-Command -Syntax $Name
+    $acutalCmd -split ' (?=\[*-)' -replace '^[\[-]', '   $0'
 }
