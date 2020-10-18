@@ -10,6 +10,13 @@
             "request": "launch",
             "script": "${file}",
             "cwd": "${file}"
+        },
+        {
+            "name": "FormatData - test .ps1xml",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "C:\\Users\\cppmo_000\\Documents\\2020\\powershell\\MyModules_Github\\Ninmonkey.Console\\test\\FormatData-manual.ps1",
+            "cwd": "${file}"
         }
     ]
 }

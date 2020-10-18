@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+docs:
+    https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7#the-xml-in-formatps1xml-files
+ -->
 <Configuration>
     <ViewDefinitions>
         <View>

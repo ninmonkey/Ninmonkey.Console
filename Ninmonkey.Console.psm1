@@ -1,18 +1,14 @@
-﻿
-Update-FormatData -PrependPath (Get-Item -ea Continue 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public\FormatData\nin-System.RuntimeType.ps1xml' )
+﻿$formatData = @(
+    'System.RuntimeType'
+)
 
-# format data: Wasn't working
-if ($false) {
-    $formatData = @(
-        'System.RuntimeType'
-    )
-    foreach ($file in $formatData) {
-        $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $file)
-        if (Test-Path $FileName ) {
-            Update-FormatData -AppendPath $FileName
-        } else {
-            Write-Error "Import: failed: FormatData: $File"
-        }
+foreach ($typeName in $formatData) {
+    $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $typeName)
+    if (Test-Path $FileName ) {
+        Update-FormatData -PrependPath $FileName
+        Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
+    } else {
+        Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
 
