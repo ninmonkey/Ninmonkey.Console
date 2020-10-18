@@ -1,5 +1,4 @@
 ﻿& {
-
     # optionally add autocomplete for 'gh' (git hub cli)
     try {
         $commandGH = Get-Command -ErrorAction Stop 'gh.exe' -CommandType Application
@@ -18,6 +17,5 @@
 
     Write-Debug "Saved completer: gh.exe: to: '$PathExport'"
     . $PathExport
-
     Write-Debug 'loaded completer: gh.exe'
 }
