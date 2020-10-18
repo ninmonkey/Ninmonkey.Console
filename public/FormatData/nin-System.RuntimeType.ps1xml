@@ -13,36 +13,29 @@ docs:
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Label>IsPublic</Label>
+                        <Label>Name</Label>
                         <Width>8</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>FullName</Label>
                         <Width>20</Width>
+                        <Alignment>Left</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>IsSerial</Label>
-                        <Width>8</Width>
+                        <Label>Base</Label>
+                        <Alignment>Right</Alignment>
+                        <!-- <Width>8</Width> -->
                     </TableColumnHeader>
-                    <TableColumnHeader>
-                        <Width>40</Width>
-                    </TableColumnHeader>
-                    <TableColumnHeader />
+
                 </TableHeaders>
                 <TableRowEntries>
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <PropertyName>IsPublic</PropertyName>
+                                <PropertyName>Name</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>FullName</PropertyName>
-                            </TableColumnItem>
-                            <TableColumnItem>
-                                <PropertyName>IsSerializable</PropertyName>
-                            </TableColumnItem>
-                            <TableColumnItem>
-                                <PropertyName>Name</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>BaseType</PropertyName>
