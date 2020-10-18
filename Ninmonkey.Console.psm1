@@ -1,5 +1,6 @@
 ﻿$formatData = @(
     'System.RuntimeType'
+    'Microsoft.PowerShell.Commands.TestConnectionCommand'
 )
 
 foreach ($typeName in $formatData) {

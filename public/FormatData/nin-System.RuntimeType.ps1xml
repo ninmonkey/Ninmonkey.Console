@@ -14,16 +14,16 @@ docs:
                 <TableHeaders>
                     <TableColumnHeader>
                         <Label>Name</Label>
-                        <Width>8</Width>
+                        <!-- <Width>8</Width> -->
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>FullName</Label>
-                        <Width>20</Width>
+                        <!-- <Width>20</Width> -->
                         <Alignment>Left</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>Base</Label>
-                        <Alignment>Right</Alignment>
+                        <Alignment>Left</Alignment>
                         <!-- <Width>8</Width> -->
                     </TableColumnHeader>
 

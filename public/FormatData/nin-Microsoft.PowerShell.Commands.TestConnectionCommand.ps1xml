@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus</Name>
+            <ViewSelectedBy>
+                <TypeName>Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <PropertyName>Destination</PropertyName>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Ping</Label>
+                        <Width>4</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Source</Label>
+                        <Width>16</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Address</Label>
+                        <Width>25</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Latency(ms)</Label>
+                        <Width>7</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>BufferSize(B)</Label>
+                        <Width>10</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Status</Label>
+                        <Width>16</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Ping</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Source</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>DisplayAddress</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                            if ($_.Status -eq 'TimedOut') {
+                                '*'
+                            }
+                            else {
+                                $_.Latency
+                            }
+</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                            if ($_.Status -eq 'TimedOut') {
+                                '*'
+                            }
+                            else {
+                                $_.BufferSize
+                            }
+</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Status</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>Microsoft.PowerShell.Commands.TestConnectionCommand+PingMtuStatus</Name>
+            <ViewSelectedBy>
+                <TypeName>Microsoft.PowerShell.Commands.TestConnectionCommand+PingMtuStatus</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <PropertyName>Destination</PropertyName>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Source</Label>
+                        <Width>16</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Address</Label>
+                        <Width>25</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Latency(ms)</Label>
+                        <Width>7</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Status</Label>
+                        <Width>16</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>MtuSize(B)</Label>
+                        <Width>7</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Source</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>DisplayAddress</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                            if ($_.Status -eq 'TimedOut') {
+                                '*'
+                            }
+                            else {
+                                $_.Latency
+                            }
+</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Status</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>MtuSize</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>Microsoft.PowerShell.Commands.TestConnectionCommand+TraceStatus</Name>
+            <ViewSelectedBy>
+                <TypeName>Microsoft.PowerShell.Commands.TestConnectionCommand+TraceStatus</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <PropertyName>Target</PropertyName>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Hop</Label>
+                        <Width>3</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Id</Label>
+                        <Width>2</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Hostname</Label>
+                        <!-- <Width>25</Width> -->
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Latency(ms)</Label>
+                        <Width>7</Width>
+                        <Alignment>Right</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Status</Label>
+                        <Width>16</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Source</Label>
+                        <Width>12</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader>
+                    <!-- <TableColumnHeader>
+                        <Label>TargetAddress</Label>
+                        <Width>15</Width>
+                        <Alignment>Left</Alignment>
+                    </TableColumnHeader> -->
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Ping</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Hop</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                            if ($_.Hostname) {
+                                $_.HostName
+                            }
+                            else {
+                                '*'
+                            }
+</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                            if ($_.Status -eq 'TimedOut') {
+                                '*'
+                            }
+                            else {
+                                $_.Latency
+                            }
+</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Status</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Source</PropertyName>
+                            </TableColumnItem>
+                            <!-- <TableColumnItem>
+                                <PropertyName>TargetAddress</PropertyName>
+                            </TableColumnItem> -->
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>
