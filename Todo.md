@@ -3,6 +3,16 @@
 ## first 
 
 - [ ] Format-TypeName
+- [ ] Find what properties are required to make `ft` with properties set to still display color
+
+```ps1
+Import-Module Ninmonkey.Console -Force
+$cache.Ping | ft 
+$cache.Ping | ft Ping, Latency, Status
+hr
+$cache.Trace | ft
+```
+
 
 ## then
 
