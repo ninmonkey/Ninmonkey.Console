@@ -174,7 +174,7 @@
                         <Alignment>Left</Alignment>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>Latency(ms)</Label>
+                        <Label>(ms)</Label>
                         <Width>7</Width>
                         <Alignment>Right</Alignment>
                     </TableColumnHeader>
@@ -215,16 +215,69 @@
                             </TableColumnItem>
                             <TableColumnItem>
                                 <ScriptBlock>
-                            if ($_.Status -eq 'TimedOut') {
-                                '*'
-                            }
-                            else {
-                                $_.Latency
-                            }
+if ($_.Status -eq 'TimedOut') {
+    '*'
+} else {
+    $MinValue = @{
+        'Red' = 60
+        'Yellow' = 40
+    }
+    $ColorMap = @{
+        Red = "`e[31m"
+        Green = "`e[32m"
+        Yellow = "`e[33m"
+        Reset = "`e[0m"
+    }
+    switch($_.Latency) {
+        { $_ -gt $MinValue.Red } {
+            $Color = $ColorMap.Red
+            break
+        }
+        { $_ -gt $MinValue.Yellow } {
+            $Color = $ColorMap.Yellow
+            break
+        }
+        default {
+            $Color = $ColorMap.Green # or $null
+        }
+    }
+    if($null -eq $Color) {
+        $_.Latency
+    } else {
+        ($color, $_.Latency, $ColorMap.Reset) -join ''
+    }
+    # '{0}' -f $_.Latency
+}
 </ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Status</PropertyName>
+                                <ScriptBlock>
+$ColorMap = @{
+    Red    = "`e[31m"
+    Green  = "`e[32m"
+    Yellow = "`e[33m"
+    Reset  = "`e[0m"
+}
+
+switch($_.Status) {
+    'TimedOut' {
+        $Color = $ColorMap.Red
+        break
+    }
+    'Success' {
+        $Color = $ColorMap.Green
+        break
+    }
+    default {
+        $Color = $ColorMap.Yellow # $null
+    }
+}
+if($null -eq $Color) {
+    $_.Latency
+} else {
+    ($color, $_.Status, $ColorMap.Reset) -join ''
+}
+</ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Source</PropertyName>
