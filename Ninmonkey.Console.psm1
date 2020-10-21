@@ -80,6 +80,8 @@ $public = @(
     'Format-FileSize'
     'Test-IsDirectory'
     'Get-NinCommandSyntax'
+    'Format-TypeName'
+    'Get-ObjectProperty'
     'Invoke-Explorer'
     'Get-TerminalName'
 )
@@ -98,6 +100,8 @@ $functionsToExport = @(
     'Format-Hashtable'
     'Test-UserIsAdmin'
     'Invoke-Explorer'
+    'Format-TypeName'
+    'Get-ObjectProperty'
     'Format-FileSize'
     'Format-ControlChar'
     'Test-IsDirectory'

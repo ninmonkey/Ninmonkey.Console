@@ -6,6 +6,7 @@
         }
     ],
     "settings": {
+        // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
         "terminal.integrated.fontSize": 12,
         "editor.fontSize": 16,
         "debug.console.fontSize": 14,
