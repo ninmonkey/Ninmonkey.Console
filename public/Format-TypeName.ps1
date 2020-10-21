@@ -34,7 +34,7 @@ function Format-TypeName {
 
         [Parameter(
             HelpMessage = "A List of Namespaces or prefixes to ignore")]
-        [string[]]$IgnorePrefix = ('System', 'System.Text'),
+        [string[]]$IgnorePrefix = @('System.Text'),
 
         [Parameter(HelpMessage = "Output surrounded with '[]'")]
         [switch]$WithBrackets
@@ -48,7 +48,9 @@ function Format-TypeName {
 
 
     )
-    begin {}
+    begin {
+        $IgnorePrefix += 'System'
+    }
 
     Process {
         # 'arg: {0}' -f ($TypeName ?? $TypeInstance) | Write-Debug
@@ -68,16 +70,21 @@ function Format-TypeName {
             default { throw "not implemented parameter set: $switch" }
         }
 
-        $result = $TypeAsString -replace '^System\.', ''
+        $filteredName = $TypeAsString
+        foreach ($prefix in $IgnorePrefix) {
+            $Pattern = '^{0}\.' -f [regex]::Escape( $prefix )
+            $filteredName = $filteredName -replace $Pattern, ''
+        }
         if (!$WithBrackets) {
-            $result
+            $filteredName
         } else {
-            '[', $result, ']' -join ''
+            '[', $filteredName, ']' -join ''
         }
     }
 
 }
-
+'System.IO.FileInfo' | Format-TypeName -IgnorePrefix 'System.IO'
+# exit
 $DebugPreference = 'Continue'
 
 $file = (Get-ChildItem . | Select-Object -First 1)
@@ -87,3 +94,47 @@ $file.GetType() | Format-TypeName
 $file.GetType() | Format-TypeName -WithBrackets
 
 $DebugPreference = 'SilentlyContinue'
+
+h1 'old tests'
+exit
+
+
+hr 4
+$testList = 'b.system.bar', (23).GetType(), 'System.foo', 'System.Object[]', 'foo[]'
+
+& {
+    New-Alias AbbrTypeName -Value Format-TypeName -ea Ignore
+
+    foreach ($UseDebug in ($true, $false)) {
+        IntToAnsi 0
+        h1 "UsingDebug: $UseDebug"
+
+        Label 'default (no args)'
+        $testList | Format-TypeName -Debug:$UseDebug
+        # (IntToAnsi 0), 'sdfsd' -join ''
+
+        Label '-WithBrackets'
+        $testList | AbbrTypeName -WithBrackets -Debug:$UseDebug
+        # (IntToAnsi 0), 'sdfsd' -join ''
+
+        hr
+        # (IntToAnsi 0), 'sdfsd' -join ''
+
+        Label '-NoBrackets'
+        $testList | AbbrTypeName -WithBrackets:$false -Debug:$UseDebug
+        # (IntToAnsi 0), 'sdfsd' -join ''
+        'bar'
+        # hr
+        # Label '-IncludeChild'
+        # $testList | Format-TypeName -IncludeChild  -Debug:$UseDebug
+
+    }
+
+}
+
+hr 3
+Label 'Should Be' 'String'
+'dsfds'.GetType().Name | Format-TypeName
+
+Label 'Should Be' '[String]'
+'dsfds'.GetType().Name | Format-TypeName -WithBrackets
