@@ -81,7 +81,8 @@ $public = @(
     'Test-IsDirectory'
     'Get-NinCommandSyntax'
     'Format-TypeName'
-    'Get-ObjectProperty'
+    'Get-NinObjectProperty'
+    'Get-ObjectType'
     'Invoke-Explorer'
     'Get-TerminalName'
 )
@@ -101,7 +102,8 @@ $functionsToExport = @(
     'Test-UserIsAdmin'
     'Invoke-Explorer'
     'Format-TypeName'
-    'Get-ObjectProperty'
+    'Get-NinObjectProperty'
+    'Get-ObjectType'
     'Format-FileSize'
     'Format-ControlChar'
     'Test-IsDirectory'
@@ -132,12 +134,17 @@ if ($true) {
     New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
     New-Alias 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
     New-Alias 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer' -ea Ignore
+    New-Alias 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties' -ea Ignore
+    New-Alias 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties' -ea Ignore
+    New-Alias 'Type' -Value Get-ObjectType -Description 'Get type info' -ea SilentlyContinue
 
     $aliasesToExport = @(
         'Goto'
         'Docs'
         'IPython'
         'Here'
+        'Get-ObjectProperty'
+        'Prop'
     )
 
     Export-ModuleMember -Alias $aliasesToExport
