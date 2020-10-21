@@ -1,5 +1,7 @@
 ﻿function Get-ObjectType {
     <#
+    .synopsis
+        simplify getting type name of an object and child types
     .example
     .notes
     future:

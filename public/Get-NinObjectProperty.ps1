@@ -1,5 +1,7 @@
 ﻿function Get-NinObjectProperty {
     <#
+    .synopsis
+        Nicer output to inspect objects than ($obj.psobject.properties | format-table)
     .example
     PS> [pscustomobject]@{ 'species'='cat'; 'lives'=9;} | Get-ObjectProperty | Format-Table
 
