@@ -24,20 +24,26 @@ function Format-TypeName {
     param(
         [Parameter(
             ParameterSetName = "paramTypeAsString",
-            Mandatory, ValueFromPipeline, HelpMessage = 'list of types as strings')]
+            Mandatory, ValueFromPipeline,
+            HelpMessage = 'list of types as strings')]
         [string]$TypeName,
 
         [Parameter(
             ParameterSetName = "paramTypeAsInstance",
-            ValueFromPipeline, HelpMessage = 'list of types')]
+            ValueFromPipeline,
+            HelpMessage = 'list of types')]
         [System.Reflection.TypeInfo]$TypeInstance,
 
         [Parameter(
             HelpMessage = "A List of Namespaces or prefixes to ignore")]
-        [string[]]$IgnorePrefix = @('System.Text'),
+        [string[]]$IgnorePrefix = @('System.Text', 'System.Management.Automation'),
 
         [Parameter(HelpMessage = "Output surrounded with '[]'")]
-        [switch]$WithBrackets
+        [switch]$WithBrackets,
+
+        [Parameter(
+            HelpMessage = "hash of renaming options")]
+        [hashtable[]]$NameMapping
 
         <#
         todo: need to think at what level I want to intraspect child type
@@ -70,7 +76,10 @@ function Format-TypeName {
             default { throw "not implemented parameter set: $switch" }
         }
 
-        $filteredName = $TypeAsString
+        # todo: add paramter to it
+        $remappedName = $TypeAsString -replace [regex]::Escape( 'System.Management.Automation.SwitchParameter' ), 'Switch'
+
+        $filteredName = $remappedName
         foreach ($prefix in $IgnorePrefix) {
             $Pattern = '^{0}\.' -f [regex]::Escape( $prefix )
             $filteredName = $filteredName -replace $Pattern, ''
