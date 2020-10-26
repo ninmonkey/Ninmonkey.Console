@@ -36,7 +36,10 @@
         [XmlNode] [␀]            NextSibling
 
     #>
+    [cmdletbinding()]
+    [Alias('Prop')]
     param(
+
         [Parameter(
             Mandatory, Position = 0, ValueFromPipeline,
             HelpMessage = "any object with properties to inspect")]
@@ -79,3 +82,13 @@
     }
 
 }
+
+
+$catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
+$catObj = [pscustomobject]$catHash
+
+Label 'hash'
+$catHash | Get-ObjectProperty
+
+Label 'Obj'
+$catObj | Get-ObjectProperty
