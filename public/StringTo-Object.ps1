@@ -47,7 +47,9 @@ function Format-StringWide {
         [Parameter(
             Mandatory, Position = 0, ValueFromPipeline,
             HelpMessage = "List of strings to display")]
-        [string[]]$String
+        [string[]]$String,
+
+        [Parameter(HelpMessage = "format-wide's -AutoSize")][switch]$AutoSize
     )
 
     begin {
