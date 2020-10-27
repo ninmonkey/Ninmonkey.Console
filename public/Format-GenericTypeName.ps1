@@ -1,9 +1,11 @@
-﻿
-
+﻿# Format-GenericTypeName
+Format-GenericTypeName -
 function Format-GenericTypeName {
     <#
     .synopsis
-        Formats type names that are generics
+        Formats type names🐌 that are generics 🐌
+    .description
+        foo 🐌
     .example
 
     .notes
@@ -22,13 +24,13 @@ function Format-GenericTypeName {
         [Parameter(
             ParameterSetName = "paramTypeAsString",
             Mandatory, ValueFromPipeline,
-            HelpMessage = 'list of types as strings')]
+            HelpMessage = 'Type name as a string:')]
         [string]$TypeName,
 
         [Parameter(
             ParameterSetName = "paramTypeAsInstance",
             ValueFromPipeline,
-            HelpMessage = '(warning: replaces defaults atm) list of types')]
+            HelpMessage = 'a TypeInfo instance like: $Obj.GetType()')]
         [System.Reflection.TypeInfo]$TypeInstance,
 
         # [Parameter(
@@ -44,8 +46,8 @@ function Format-GenericTypeName {
 
         # ),
 
-        [Parameter(HelpMessage = "Output surrounded with '[]'")]
-        [switch]$WithBrackets
+        [Parameter(HelpMessage = "Do not surround with '[]'")]
+        [switch]$NoBrackets
 
         # [Parameter(
         #     HelpMessage = "hash of renaming options")]
@@ -61,12 +63,12 @@ function Format-GenericTypeName {
 
 
     begin {
-        $debugInfo = @{}
+
     }
     process {
         switch ( $PSCmdlet.ParameterSetName ) {
             'paramTypeAsString' {
-                $TypeAsString | Format-TypeName -WithBrackets
+                $TypeAsString | Format-TypeName -NoBrackets
                 throw "nyi: regex parsing of Generic types from a string"
                 # $TypeAsString = $TypeName
                 break
@@ -77,7 +79,7 @@ function Format-GenericTypeName {
                     $TypeInstance.Name
                 ) -join ''
 
-                $FormattedTypeName = $FormattedTypeName | Format-TypeName -WithBrackets:$false
+                $FormattedTypeName = $FormattedTypeName | Format-TypeName -NoBrackets:$NoBrackets
 
                 break
             }
@@ -91,11 +93,10 @@ function Format-GenericTypeName {
         $FormattedGenericTypeArgs = (
             $TypeInstance.GenericTypeArguments
             | ForEach-Object {
-                $_ | Format-TypeName -WithBrackets
+                $_ | Format-TypeName -NoBrackets:$NoBrackets
             }
         ) -join ','
 
-        $FinalTemplate = '{0}'
         $FinalTemplate = '[{0}]'
 
         $FinalTemplate -f (

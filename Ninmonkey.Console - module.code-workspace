@@ -36,5 +36,59 @@
             "*.ps1xml": "xml"
         },
         "terminal.integrated.copyOnSelection": true
+    },
+    "launch": {
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "🐒 cur.ps1 — ",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${file}",
+                "cwd": "${file}"
+            },
+            {
+                "name": "🐛 : [Details] — ", // [nin.PowerShell]",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "args": [
+                    "-Output",
+                    "Detailed"
+                ],
+                "cwd": "${workspaceFolder}",
+            },
+            {
+                "name": "🐛 : | default | — ", // [nin.PowerShell]",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                // "args": [],
+                "cwd": "${workspaceFolder}",
+            },
+            {
+                "name": "🐛 | 🏃 | #WIP |",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "cwd": "${workspaceFolder}",
+                "args": [
+                    "-Output",
+                    "Detailed",
+                    "-TagFilter",
+                    "wip"
+                ],
+            },
+            /* pester example snippets
+        1.
+            Invoke-Pester -Output Detailed
+        1.
+            -Path './Ninmonkey.Console/test/*'",
+        1.
+            "cwd": "${workspaceFolder}/Ninmonkey.Console",
+
+        */
+        ]
     }
 }

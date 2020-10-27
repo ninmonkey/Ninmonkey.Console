@@ -1,4 +1,4 @@
-﻿# $PSDefaultParameterValues["Format-TypeName:WithBrackets"] = $true
+﻿# $PSDefaultParameterValues["Format-TypeName:NoBrackets"] = $true
 
 
 function Format-TypeName {
@@ -54,7 +54,7 @@ function Format-TypeName {
         ),
 
         [Parameter(HelpMessage = "Output surrounded with '[]'")]
-        [switch]$WithBrackets,
+        [switch]$NoBrackets,
 
         [Parameter(
             HelpMessage = "hash of renaming options")]
@@ -70,8 +70,15 @@ function Format-TypeName {
 
     )
     begin {
-        $IgnorePrefix += 'System'
+        $DefaultIgnorePrefix = @(
+            'System.Collections'
+            'System.Collections.Generic'
+            'System.Text'
+            'System.Management.Automation'
+            'System'
+        )
         # Sorting by longest simplifies namespace removal
+        $IgnorePrefix += $DefaultIgnorePrefix
         $IgnorePrefix = $IgnorePrefix | Sort-Object -Property Length -Descending
     }
 
@@ -83,6 +90,8 @@ function Format-TypeName {
                 # next: color to summarize ones that still have points
                 Write-Debug "String: $TypeName"
                 $TypeAsString = $TypeName
+                Write-Warning 'Nyi: Regex (Format-TypeName)'
+                # throw "NYI: get regex: NYI"
                 break
             }
             'paramTypeAsInstance' {
@@ -93,71 +102,17 @@ function Format-TypeName {
             default { throw "not implemented parameter set: $switch" }
         }
 
-        # todo: add paramter to it
-        $remappedName = $TypeAsString -replace [regex]::Escape( 'System.Management.Automation.SwitchParameter' ), 'Switch'
-
-        $filteredName = $remappedName
+        $filteredName = $TypeAsString
         foreach ($prefix in $IgnorePrefix) {
             $Pattern = '^{0}\.' -f [regex]::Escape( $prefix )
             $filteredName = $filteredName -replace $Pattern, ''
+            continue
         }
-        if (!$WithBrackets) {
+        if (!$NoBrackets) {
             $filteredName
         } else {
             '[', $filteredName, ']' -join ''
         }
     }
-
-}
-
-
-if ($false -and 'debug sketch to remove') {
-    # _FormatCommandInfo-GenericParameterTypeName -Debug -Verbose
-    hr 10
-    $gcmLs = Get-Command Get-ChildItem
-    $inst_paramLs = $gcmLs.Parameters
-    $type_paramLs = $gcmLs.Parameters.GetType()
-
-    h1 'Format-TypeName'
-
-    $type_paramLs | Format-TypeName -WithBrackets
-    hr
-
-    h1 '.GetType()'
-    $inst_paramLs.GetType().FullName
-    $type_paramLs
-    | Select-Object Name, FullName, Namespace, GenericParameterAttributes, GenericParameterPosition, GenericTypeArguments
-
-
-    # $gcmLs.Parameters.GetType()
-
-    h1 'FullName | Format-TypeName'
-    'cat' | Format-TypeName -WithBrackets
-    $type_paramLs | Format-TypeName -WithBrackets
-
-    h1 'type | Format-GenericTypeName'
-    $type_paramLs | Format-GenericTypeName -WithBrackets
-    hr
-    h2 'generic using Format-TypeName'
-    $type_paramLs | Format-TypeName -WithBrackets
-    Label 'Using Format-GenericTypeName'
-
-    $type_paramLs | Format-GenericTypeName
-    hr
-    h2 'invoke-RestMethod'
-
-    try {
-        Invoke-RestMethod -Uri 'https://httpbin.org/status/500' #|  Out-Null
-    } catch {
-        $errorRest = $_
-        Label 'orig'
-        $errorRest, $errorRest.Exception | ForEach-Object { $_.GetType().FullName }
-        Label 'FormatTypeName'
-        $errorRest, $errorRest.Exception | ForEach-Object {
-            $_.GetType()
-        } | Format-TypeName -WithBrackets
-    }
-
-
 
 }

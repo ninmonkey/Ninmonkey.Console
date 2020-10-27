@@ -51,7 +51,7 @@
     begin {
         $splat_FormatType = @{
             IgnorePrefix = 'System.Xml'
-            WithBrackets = $true
+            # NoBrackets   = $false
         }
 
         $Config = @{
