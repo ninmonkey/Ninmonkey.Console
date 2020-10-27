@@ -81,11 +81,10 @@ $public = @(
     'Test-IsDirectory'
     'Get-NinCommandSyntax'
     'Format-TypeName'
-    'String-ToObject'
+    'Format-GenericTypeName'
     'Get-NinObjectProperty'
     'Get-ObjectType'
     'Invoke-Explorer'
-    'Set-FormattedClipboard'
     'Get-TerminalName'
 )
 
@@ -102,12 +101,11 @@ $functionsToExport = @(
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Test-UserIsAdmin'
-    'String-ToObject'
     'Invoke-Explorer'
     'Format-TypeName'
+    'Format-GenericTypeName'
     'Get-NinObjectProperty'
     'Get-ObjectType'
-    'Set-FormattedClipboard'
     'Format-FileSize'
     'Format-ControlChar'
     'Test-IsDirectory'
@@ -134,13 +132,13 @@ Export-ModuleMember -Function $functionsToExport
 
 if ($true) {
     # toggle auto importing of aliases', otherwise only use new-alias
-    New-Alias 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
-    New-Alias 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
-    New-Alias 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
-    New-Alias 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer' -ea Ignore
-    New-Alias 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties' -ea Ignore
-    New-Alias 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties' -ea Ignore
-    New-Alias 'Type' -Value Get-ObjectType -Description 'Get type info' -ea SilentlyContinue
+    New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
+    New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
+    New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
+    New-Alias -ea 'Ignore' 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties'
+    New-Alias -ea 'Ignore' 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties'
+    New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
 
     $aliasesToExport = @(
         'Goto'
