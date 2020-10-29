@@ -37,7 +37,7 @@
 
     #>
     [cmdletbinding()]
-    [Alias('Prop')]
+    [Alias('Prop', 'ObjectProperty')]
     param(
 
         [Parameter(
@@ -88,7 +88,7 @@ $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
 $catObj = [pscustomobject]$catHash
 
 Label 'hash'
-$catHash | Get-ObjectProperty
+$catHash | Get-NinObjectProperty
 
 Label 'Obj'
-$catObj | Get-ObjectProperty
+$catObj | Get-NinObjectProperty

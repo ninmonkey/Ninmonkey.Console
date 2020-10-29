@@ -1,18 +1,6 @@
 ﻿BeforeAll {
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 }
-
-<#
-add:
-
-if ($true) {
-    # need to test: should test
-    # 'System.System.System' | Format-TypeName -IgnorePrefix 'System' -ea Continue
-    'system.text'.GetType() | Format-TypeName
-
-}
-#>
-
 Describe "Format-NullText" -tags 'Console_Output', 'wip' {
     # Context 'Validate Piping' {
     BeforeAll {
@@ -38,13 +26,4 @@ Describe "Format-NullText" -tags 'Console_Output', 'wip' {
         $Values = 10, '', " ", $null, $Uni.Null
         $Values | Format-NullText | Should -be $Expected
     }
-    # }
 }
-
-
-
-# | Format-Table
-
-# $null | Format-NullText
-# , $null | Format-NullText
-# Format-NullText $null

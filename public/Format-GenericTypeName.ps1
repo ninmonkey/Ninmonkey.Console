@@ -1,5 +1,5 @@
 ﻿# Format-GenericTypeName
-Format-GenericTypeName -
+
 function Format-GenericTypeName {
     <#
     .synopsis

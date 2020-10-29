@@ -28,6 +28,7 @@ function Format-NullText {
     }
 
     process {
+        # Either symbol for null, if text then replace null values
         if ($null -eq $InputObject) {
             return $Uni.NullSymbol
         }
