@@ -14,32 +14,37 @@ if ($true) {
 #>
 
 Describe "Format-NullText" -tags 'Console_Output', 'wip' {
-    Context 'Single Values' {
-        BeforeAll {
-            $Uni = {
-                Null       = "`u{0}"
-                NullSymbol = '␀'
-            }
+    # Context 'Validate Piping' {
+    BeforeAll {
+        $Uni = @{
+            Null       = "`u{0}"
+            NullSymbol = '␀'
         }
-        It 'Return Int' {
-            10 | Format-NullText | Should -be 10
-        }
-
-        It 'Return Int' {
-            $Expected = 10, '', " ", $Uni.NullSymbol, $Uni.NullSymbol
-            $Values = 10, '', " ", $null, $Uni.Null
-            $Values | Format-NullText
-            | Should -be $Expected
-        }
-
-
-
-
-        # | Format-Table
-
-        # $null | Format-NullText
-        # , $null | Format-NullText
-        # Format-NullText $null
     }
-
+    It 'Actual Null' {
+        $null | Format-NullText | Should -Be $Uni.NullSymbol
+    }
+    It 'Actual Null: As list' {
+        , $null | Format-NullText | Should -Be $Uni.NullSymbol
+    }
+    It 'Null String' {
+        $Uni.Null | Format-NullText | Should -Be $Uni.NullSymbol
+    }
+    It 'Return Int' {
+        10 | Format-NullText | Should -be 10
+    }
+    It 'Pipe mixed types' {
+        $Expected = 10, '', " ", $Uni.NullSymbol, $Uni.NullSymbol
+        $Values = 10, '', " ", $null, $Uni.Null
+        $Values | Format-NullText | Should -be $Expected
+    }
+    # }
 }
+
+
+
+# | Format-Table
+
+# $null | Format-NullText
+# , $null | Format-NullText
+# Format-NullText $null
