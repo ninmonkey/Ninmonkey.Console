@@ -14,9 +14,15 @@
     param (
     )
 
+    $Config = @{
+        MinPingWarning = 80
+    }
     $TimeFormatString = 'h:m tt' # equal to 't'
-
     $logPath = Start-LogTestNet -GetLogPath | Get-Item -ea Stop
+
+    $Config | Format-Table | Out-String -Width 99999
+    | Write-Debug
+
 
     $log = Import-Csv -Path $logPath | Where-Object Latency -Match '\d+'
     $latest = $log | Select-Object -Last 10 # -Wait # is wait required? probably not
@@ -26,7 +32,12 @@
     # $lastTC = Test-Connection google.com
 
 
-    $measure = $latest | Measure-Object -Maximum -Minimum -Average -prop Latency
+    $measurePing = $latest | Measure-Object -Maximum -Minimum -Average -prop Latency
+    if (! ($measurePing.Maximum -gt $Config.MinPingWarning)) {
+        Write-Debug "didn't meet threshold: $($measurePing.Maximum)"
+        return
+    }
+
     # $TimeString = (
     #     $latest | Select-Object -First 1 TimeString
     # ).ToString( $TimeFormatString )
@@ -43,9 +54,9 @@ Avg: {3}
 
     $ToastText = $template -f (
         $TimeString,
-        $measure.Maximum,
-        $measure.Minimum,
-        $measure.Average
+        $measurePing.Maximum,
+        $measurePing.Minimum,
+        $measurePing.Average
     )
 
     $ToastText | Write-Debug
