@@ -5,13 +5,16 @@
         'BurntToast' popup the results of a ping
     .notes
         todo:
-        - [ ] do not show unless a minimumn ping threshold has been met
-            **or** if there are packet loss
-        - [ ] does it matter if th;e ping average is all sites?
+        - [ ] $shouldSkip = False if
+            csv | ? Status -ne 'Success'
+
+        - []  does it matter if the ping average is on all sites?
 
     #>
     [CmdletBinding()]
     param (
+        [Parameter(HelpMessage = "Force Popup for testing")]
+        [switch]$Force
     )
 
     $Config = @{
@@ -33,8 +36,25 @@
 
 
     $measurePing = $latest | Measure-Object -Maximum -Minimum -Average -prop Latency
-    if (! ($measurePing.Maximum -gt $Config.MinPingWarning)) {
-        Write-Debug "didn't meet threshold: $($measurePing.Maximum)"
+
+    $shouldIgnore = $true
+    $maxMs = $measurePing.Maximum
+    $minMs = $measurePing.Minimum
+    if ($maxMs -gt $Config.MinPingWarning) {
+        $shouldIgnore = $false
+    }
+    if ($minMs -eq 0 -or $Null -eq $minMs) {
+        $shouldIgnore = $false
+    }
+
+    if ($Force) {
+        $shouldIgnore = $false
+    }
+    if ($shouldIgnore) {
+        Write-Warning @"
+didn't meet threshold: $($measurePing.Maximum)
+        minMs: $MinMs  , maxMs = $MaxMs
+"@
         return
     }
 
