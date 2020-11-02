@@ -11,16 +11,18 @@ function Start-LogTestNet {
         [string[]]$TargetName,
 
         [parameter(
-            HelpMessage = 'output filepath to current log'
-        )][switch]$GetLogPath,
+            HelpMessage = 'output filepath to current log')]
+        [switch]$GetLogPath,
 
         [parameter(
-            HelpMessage = 'Do not print to console, no Write-Progress'
-        )][switch]$Silent,
+            HelpMessage = 'Do not print to console, no Write-Progress')]
+        [switch]$Silent,
+
+        [Parameter(HelpMessage = "Enable toast popups of results")][switch]$WithToast,
 
         [parameter(
-            HelpMessage = 'enable write-progress status'
-        )][switch]$WriteProgress
+            HelpMessage = 'enable write-progress status')]
+        [switch]$WriteProgress
     )
     $FilenameSafeDate = (Get-Date).ToString("yyyy_M_dd")
     $FileName = "PingLog_${FilenameSafeDate}.csv"
@@ -72,14 +74,15 @@ function Start-LogTestNet {
         # $result | Export-Csv -Encoding utf8 -Path $LogPath -Append
         $result
         | Select-Object -ExcludeProperty 'Time'
-        | ConvertTo-Csv
-        | Add-Content -Path $LogPath -Encoding utf8
+        | Export-Csv -Path $LogPath -Encoding utf8 -Append
 
 
         if (! $Silent) {
             $result
             | Select-Object -ExcludeProperty 'TimeString' # to be replaced when format types is set
             | Format-Table
+
+            Toast-LogTestNetResult
         }
 
 

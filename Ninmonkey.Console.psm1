@@ -14,7 +14,7 @@ foreach ($typeName in $formatData) {
 }
 
 $private = @(
-
+    'Toast-LogTestNetResult'
 )
 
 foreach ($file in $private) {
@@ -54,7 +54,6 @@ foreach ($file in $completer) {
     . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)
 }
 
-Export-ModuleMember -
 Export-ModuleMember -Function $completer
 
 $public = @(

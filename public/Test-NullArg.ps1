@@ -42,24 +42,7 @@ function Test-NullArg {
                 Write-Verbose "Value is a 'string' for $curKey"
             }
         }
-        # if ($meta['Value'] -is [string]) {
-        #     $meta['Value'] = $meta['Value'] -replace "`u{0}", "␀"
-        # }
-
-
 
         [pscustomobject]$Meta
     }
-}
-
-if ($false) {
-    # tests
-    10, '', " ", $null, "`u{0}" | Test-NullArg -ov 'lastRes'
-    | Format-Table
-    # | Out-String -Width 9999 | Set-Clipboard
-    $res = @()
-    $res += $null | Test-NullArg
-    $res += , $null | Test-NullArg
-    $res += Test-NullArg $null
-    $res | Format-Table
 }
