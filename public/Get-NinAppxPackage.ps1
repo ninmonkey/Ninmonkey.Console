@@ -5,7 +5,6 @@
     .description
         Some packages do not have a descriptive names.
 
-
         For example, A game named 'State of Decay 2' is named as 'Dayton'
 
             Name              : Microsoft.Dayton
@@ -51,6 +50,8 @@
     .notes
         future: opt-in to compare the *name* field
 
+        - note:
+
     #>
     param(
         [Parameter(
@@ -85,16 +86,29 @@
                     }
                 }
             }
+            $LinkTargetList = $matchingPackages | ForEach-Object InstallLocation | Get-Item -ea Continue | ForEach-Object Target
+
+            # $TargetList = $MatchingExeList.Target
+            # $MatchingExeList | Select-Object -ExpandProperty FullName | Get-Item -ea continue
 
             $returnHash = @{
-                'Regex'   = $curRegex
-                'App'     = $MatchingPackages
-                'ExeList' = $MatchingExeList
+                'Regex'      = $curRegex
+                'App'        = $MatchingPackages
+                'ExeList'    = $MatchingExeList
+                'TargetList' = $LinkTargetList
             }
             [pscustomobject]$returnHash
         }
 
+
         $finalResults = $rawResults | Where-Object { $null -ne $_.App }
+
+        $InstallList = $finalResults.App.InstallLocation | Get-Item -ea Continue
+        $LinkList = $installList
+        | Where-Object { $null -ne $_.Target }
+        | Select-Object -ExpandProperty Target
+        | Get-Item -ea continue
+
 
         if ($PassThru) {
             $finalResults
@@ -103,7 +117,22 @@
 
         # summarize data
         $finalResults | Select-Object -expand App | Format-List
-        $finalResults | Format-List Regex, App, ExeList
+        $finalResults | Format-List Regex, App, ExeList, TargetList
         $finalResults | Format-Table Regex, App
+
+        h1 'linked to'
+        $LinkList | ForEach-Object FullName
     }
+    end {
+        Write-Warning 'currently does not detect path
+    "C:\Program Files\WindowsApps\Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe\StateOfDecay2"
+        '
+    }
+}
+
+Get-NinAppXPackage 'state.*decay'
+| Tee-Object -var 'lastAppX'
+if ($isVscodeNin) {
+    Get-NinAppXPackage 'state.*decay'
+    | Tee-Object -var 'lastAppX'
 }
