@@ -18,6 +18,8 @@
 
         This simplifies searching in those cases.
     .example
+        Get-NinAppxPackage 'first.*name', 'another.*name', 'third.*name'
+    .example
 
     PS> Get-AppxPackage '*state*decay*'
         # no results
@@ -46,6 +48,8 @@
         Regex        App
         -----        ---
         state.*decay Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
+    .notes
+        future: opt-in to compare the *name* field
 
     #>
     param(
@@ -69,7 +73,7 @@
     }
 
     process {
-        $finalResults = foreach ($curRegex in $Regex) {
+        $rawResults = foreach ($curRegex in $Regex) {
             $MatchingExeList = $Cache.AllBinary | Where-Object FullName -Match $curRegex
 
             $MatchingPackages = $Cache.AllAppX
@@ -90,12 +94,16 @@
             [pscustomobject]$returnHash
         }
 
+        $finalResults = $rawResults | Where-Object { $null -ne $_.App }
+
         if ($PassThru) {
             $finalResults
             return
         }
 
+        # summarize data
         $finalResults | Select-Object -expand App | Format-List
         $finalResults | Format-List Regex, App, ExeList
+        $finalResults | Format-Table Regex, App
     }
 }

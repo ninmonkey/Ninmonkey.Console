@@ -30,11 +30,12 @@ This example has the package name `Dayton` even though the game is named `State 
 🐒> Get-AppXPackage *state*decay*
 # nothing found
 
-🐒> Get-NinAppXPackage 'state.*decay' -PassThru
+🐒> $results = Get-NinAppXPackage 'state.*decay' -PassThru 
+🐒> $results | Format-List
 ```
 ```
-App     : Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
 Regex   : state.*decay
+App     : Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
 ExeList : {C:\Program Files\WindowsApps\Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe\StateOfDecay2.exe, C:\Program Files\WindowsApps\Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe\StateOfDecay2\Binaries\Win64\StateOfDecay2-Win64-Shipping.exe}
 ```
 ```powershell
@@ -63,6 +64,10 @@ Status            : Ok
 Regex   : state.*decay
 App     : Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
 ExeList : {C:\Program Files\WindowsApps\Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe\StateOfDecay2.exe, C:\Program Files\WindowsApps\Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe\StateOfDecay2\Binaries\Win64\StateOfDecay2-Win64-Shipping.exe}
+
+Regex        App
+-----        ---
+state.*decay Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
 ```
 
 ## Types
