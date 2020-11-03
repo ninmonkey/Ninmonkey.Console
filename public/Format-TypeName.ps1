@@ -90,7 +90,7 @@ function Format-TypeName {
                 # next: color to summarize ones that still have points
                 Write-Debug "String: $TypeName"
                 $TypeAsString = $TypeName
-                Write-Warning 'Nyi: Regex (Format-TypeName)'
+                Write-Verbose 'Nyi: Regex (Format-TypeName)'
                 # throw "NYI: get regex: NYI"
                 break
             }

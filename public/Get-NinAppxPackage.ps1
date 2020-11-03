@@ -83,8 +83,9 @@
             }
 
             $returnHash = @{
-                'Regex' = $curRegex
-                'App'   = $MatchingPackages
+                'Regex'   = $curRegex
+                'App'     = $MatchingPackages
+                'ExeList' = $MatchingExeList
             }
             [pscustomobject]$returnHash
         }
@@ -95,6 +96,6 @@
         }
 
         $finalResults | Select-Object -expand App | Format-List
-        $finalResults | Format-Table Regex, App
+        $finalResults | Format-List Regex, App, ExeList
     }
 }

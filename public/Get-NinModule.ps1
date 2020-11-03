@@ -59,17 +59,24 @@ function Get-NinModule {
         )]
         # later it might make sense to maek this [string[]]
         # if they are not exclusive
-        [ValidateSet('Commands', 'Summary')]
-        [string]$OutputMode,
+        [ValidateSet('Commands', 'Summary', 'Uri', 'All')]
+        [string]$OutputMode = 'Summary',
 
         [Parameter()][switch]$PassThru
     )
 
     begin {
         $Prop = @{}
+        # Sorting here only guarantees order when not using wildcards
         $Prop.SummaryList = 'Name', 'Description', 'Version', 'ModuleType', 'Author', 'Path', 'ImplementingAssembly', 'HelpInfoUri', 'ModuleBase', 'Tags', 'ProjectUri'
+        | Sort-Object
         $Prop.SummaryTable = 'Name', 'Description', 'Version', 'Author', 'Tags', 'ProjectUri'
+        | Sort-Object
+        $Prop.UriList = '*Uri*'
+        | Sort-Object
     }
+
+
 
     process {
         $ModuleInfo = Get-Module $Name -ListAvailable
@@ -77,20 +84,25 @@ function Get-NinModule {
 
         Switch ($OutputMode) {
             'Commands' {
-                _FilterExportedCommands $ModuleInfo
-                | Format-Table Command -GroupBy Module
+                $result = _FilterExportedCommands $ModuleInfo
+                | Select-Object -Property Command
+                $result
+                break
+            }
+            'Uri' {
+                $result = $ModuleInfo | Select-Object -Property $Prop.UriList
+                $result
                 break
             }
             'Summary' {
-
                 # 'LicenseUri'
-
                 $result = $ModuleInfo | Select-Object -Property $Prop.SummaryTable
                 if ($PassThru) {
                     $result
-                } else {
-                    $result | Format-Table -Wrap -AutoSize
                 }
+
+                # removed -passthrough because: format-table does not fit some/all packages#
+                # $result | Format-Table -Wrap -AutoSize
                 break
 
             }
@@ -102,3 +114,16 @@ function Get-NinModule {
     }
 
 }
+<#
+visual tests:
+
+if ($false) {
+    # Import-Module Ninmonkey.Console -Force
+    Get-NinModule pansies Uri
+    | Format-List
+
+    $x = (Get-NinModule pansies Uri  -PassThru)
+    $x | Sort-Object
+    | Format-List *
+}
+#>
