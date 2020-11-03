@@ -85,6 +85,7 @@ $public = @(
     'Get-NinObjectProperty'
     'Test-NullArg'
     'Get-ObjectType'
+    'Get-NinAppxPackage'
     'Invoke-Explorer'
     'Get-TerminalName'
 )
@@ -103,6 +104,7 @@ $functionsToExport = @(
     'Format-Hashtable'
     'Test-UserIsAdmin'
     'Invoke-Explorer'
+    'Get-NinAppxPackage'
     'Format-TypeName'
     'Format-GenericTypeName'
     'Format-NullText'

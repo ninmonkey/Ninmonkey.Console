@@ -13,13 +13,16 @@
     #>
     [CmdletBinding()]
     param (
+        [Parameter(HelpMessage = "Minimum ping required before popping up (in ms)")]
+        [int]$MinPingWarning = 80,
+
         [Parameter(HelpMessage = "Force Popup for testing")]
-        [switch]$Force
+        [switch]$Force,
+
+        [Parameter(HelpMessage = "force sounds?")]
+        [switch]$NotSilent
     )
 
-    $Config = @{
-        MinPingWarning = 80
-    }
     $TimeFormatString = 'h:m tt' # equal to 't'
     $logPath = Start-LogTestNet -GetLogPath | Get-Item -ea Stop
 
@@ -40,7 +43,7 @@
     $shouldIgnore = $true
     $maxMs = $measurePing.Maximum
     $minMs = $measurePing.Minimum
-    if ($maxMs -gt $Config.MinPingWarning) {
+    if ($maxMs -gt $MinPingWarning) {
         $shouldIgnore = $false
     }
     if ($minMs -eq 0 -or $Null -eq $minMs) {
@@ -51,7 +54,7 @@
         $shouldIgnore = $false
     }
     if ($shouldIgnore) {
-        Write-Warning @"
+        Write-Debug @"
 didn't meet threshold: $($measurePing.Maximum)
         minMs: $MinMs  , maxMs = $MaxMs
 "@
@@ -80,5 +83,10 @@ Avg: {3}
     )
 
     $ToastText | Write-Debug
-    New-BurntToastNotification -Text $ToastText
+    $toastSplat = @{
+        Text   = $ToastText
+        Silent = ! $NotSilent
+    }
+
+    New-BurntToastNotification @toastSplat
 }
