@@ -3,14 +3,27 @@
 Tools for a better console experience
 
 - [Ninmonkey.Console](#ninmonkeyconsole)
+  - [Console Encoding](#console-encoding)
   - [AppxPackages : Windows Apps](#appxpackages--windows-apps)
   - [Types](#types)
     - [Test-NullArg](#test-nullarg)
 
 
+## Console Encoding
+
+```powershell
+🐒> Get-ConsoleEncoding      
+
+Name                      Encoding        CodePage isSingleByte
+----                      --------        -------- ------------
+OutputEncoding            Unicode (UTF-8)    65001        False
+[console]::InputEncoding  Unicode (UTF-8)    65001        False
+[console]::OutputEncoding Unicode (UTF-8)    65001        False
+```
+
 ## AppxPackages : Windows Apps
 
-Normal searching for packages by names does not work when the `Name`, `PackageName` or `FamilyName` are not descriptive.
+Package names are not always descriptive. Sometimes nothing in the fields `Name`, `PackageName` or `FamilyName` are useful.
 
 This example has the package name `Dayton` even though the game is named `State of Decay 2`
 ```powershell
