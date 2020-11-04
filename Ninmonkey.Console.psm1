@@ -84,6 +84,7 @@ $public = @(
     'Format-GenericTypeName'
     'Get-NinObjectProperty'
     'Test-NullArg'
+    'Get-NinChildItem'
     'Get-ObjectType'
     'Get-NinAppxPackage'
     'Invoke-Explorer'
@@ -121,6 +122,7 @@ $functionsToExport = @(
     'Format-History'
     'Get-TerminalName'
     'Write-AnsiHyperlink'
+    'Get-NinChildItem'
     'Format-MeasureCommand'
     'Format-TestConnection'
     'Get-ConsoleEncoding'
@@ -146,10 +148,16 @@ if ($true) {
     New-Alias -ea 'Ignore' 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties'
     New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
 
+
+    New-Alias 'Cd' -Value 'Set-NinLocation' #todo:  make this opt in
+
+
     $aliasesToExport = @(
         'Goto' # [Alias()] seems to still require export
+        'nLs' # Get-NinChildItem
         'Docs'
         'IPython'
+        'Cd'
         'Here'
         'Get-ObjectProperty'
         'Prop'

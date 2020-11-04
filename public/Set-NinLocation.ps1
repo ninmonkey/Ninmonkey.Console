@@ -35,7 +35,8 @@
         [Switch]$Back,
 
         [Parameter(HelpMessage = "Always run 'pwd' after changing directory?")]
-        [switch]$AlwaysPwdAfter
+        [Alias('AlwaysGci')]
+        [switch]$AlwaysLsAfter
     )
     Write-Debug "Path: '$Path'"
 
@@ -62,8 +63,8 @@
     Write-Debug "Moving to: $DestItem"
     Push-Location -Path $DestItem -StackName 'NinLocation'
 
-    if ($AlwaysPwdAfter) {
-        Get-NinLocation
+    if ($AlwaysLsAfter) {
+        Get-NinChildItem
     }
 }
 
