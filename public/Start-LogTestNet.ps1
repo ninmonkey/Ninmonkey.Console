@@ -65,10 +65,13 @@ function Start-LogTestNet {
             $Max,
             $Average
         )
-        if ($WriteProgress) {
-            Write-Progress -Activity 'Logging: Test-Net' -Id 1 -Status $Status
-        } else {
-            Write-Host -ForegroundColor Green $Status
+
+        if (! $Silent) {
+            if ($WriteProgress) {
+                Write-Progress -Activity 'Logging: Test-Net' -Id 1 -Status $Status
+            } else {
+                Write-Host -ForegroundColor Green $Status
+            }
         }
 
         # $result | Export-Csv -Encoding utf8 -Path $LogPath -Append

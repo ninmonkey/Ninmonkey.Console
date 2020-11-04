@@ -139,14 +139,15 @@ if ($true) {
     # toggle auto importing of aliases', otherwise only use new-alias
     New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
-    New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+
+    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
     New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
     New-Alias -ea 'Ignore' 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties'
     New-Alias -ea 'Ignore' 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties'
     New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
 
     $aliasesToExport = @(
-        'Goto'
+        'Goto' # [Alias()] seems to still require export
         'Docs'
         'IPython'
         'Here'

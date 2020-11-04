@@ -52,6 +52,10 @@
 
         - note:
 
+    see also:
+        - <https://docs.microsoft.com/en-us/powershell/module/appx/?view=win10-ps>
+        - <https://docs.microsoft.com/en-us/windows/win32/appxpkg/troubleshooting>
+
     #>
     param(
         [Parameter(
@@ -130,9 +134,9 @@
     }
 }
 
-Get-NinAppXPackage 'state.*decay'
-| Tee-Object -var 'lastAppX'
-if ($isVscodeNin) {
-    Get-NinAppXPackage 'state.*decay'
-    | Tee-Object -var 'lastAppX'
-}
+# Get-NinAppXPackage 'state.*decay'
+# | Tee-Object -var 'lastAppX'
+# if ($isVscodeNin) {
+#     Get-NinAppXPackage 'state.*decay'
+#     | Tee-Object -var 'lastAppX'
+# }

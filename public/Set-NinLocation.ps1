@@ -1,34 +1,43 @@
 ﻿function Set-NinLocation {
-
-
     <#
     .Synopsis
-        A nicer 'cd' command that doesn't error on files
+        A nicer 'cd' command that doesn't error when the target is a filename
     .example
-        PS> goto './folder'
+        PS> Goto './folder'
             # runs: cd './folder'
 
-        PS> goto '/folder/foo.txt'
+            # piping works
+            Start-LogTestNet -GetLogPath | Goto
+
+        PS> Goto '/folder/foo.txt'
             # runs: cd './folder'
 
-        PS> goto -Back
+        PS> Goto -Back
             # runs: pop-location -StackName 'NinLocation'
     #>
 
+    [Alias('Goto')]
     [CmdletBinding(DefaultParameterSetName = 'GoToPath')]
 
     param(
         [Parameter(
             ParameterSetName = 'GoToPath',
             Mandatory, Position = 0,
-            HelpMessage = 'Directory or Filename in the directory you want')]
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName,
+            HelpMessage = 'change directory to target Directory or (even a Filename)')]
+        [Alias('PSPath')]
         [String]$Path,
 
         [Parameter(
             ParameterSetName = 'GoBack',
             HelpMessage = 'Go back: Pop-Location')]
-        [Switch]$Back
+        [Switch]$Back,
+
+        [Parameter(HelpMessage = "Always run 'pwd' after changing directory?")]
+        [switch]$AlwaysPwdAfter
     )
+    Write-Debug "Path: '$Path'"
 
     if ($Back) {
         try {
@@ -52,6 +61,10 @@
 
     Write-Debug "Moving to: $DestItem"
     Push-Location -Path $DestItem -StackName 'NinLocation'
+
+    if ($AlwaysPwdAfter) {
+        Get-NinLocation
+    }
 }
 
 <#
