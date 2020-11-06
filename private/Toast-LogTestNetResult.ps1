@@ -13,8 +13,11 @@
     #>
     [CmdletBinding()]
     param (
-        [Parameter(HelpMessage = "Minimum ping required before popping up (in ms)")]
-        [int]$MinPingWarning = 80,
+        [Parameter(HelpMessage = "Minimum (max-ping) value required before popping up (in ms)")]
+        [int]$MaxPingWarning = 200,
+
+        [Parameter(HelpMessage = "Minimum (avg-ping) value required before popping up (in ms)")]
+        [int]$AvgPingWarning = 100,
 
         [Parameter(HelpMessage = "Force Popup for testing")]
         [switch]$Force,
@@ -41,9 +44,13 @@
     $measurePing = $latest | Measure-Object -Maximum -Minimum -Average -prop Latency
 
     $shouldIgnore = $true
+    $avgMs = $measurePing.Average
     $maxMs = $measurePing.Maximum
     $minMs = $measurePing.Minimum
-    if ($maxMs -gt $MinPingWarning) {
+    if ($maxMs -gt $MaxPingWarning) {
+        $shouldIgnore = $false
+    }
+    if ($avgMs -gt $AvgPingWarning) {
         $shouldIgnore = $false
     }
     if ($minMs -eq 0 -or $Null -eq $minMs) {
@@ -68,17 +75,22 @@ didn't meet threshold: $($measurePing.Maximum)
     $TimeString = @($latest)[0].TimeString -as 'datetime'
     $TimeString = $TimeString.ToString($TimeFormatString)
 
-    $template = @'
+    $templateMultiLine = @'
 From: {0}
 Max: {1}
 Min: {2}
 Avg: {3}
 '@
 
+    $template = @'
+From: {0}
+Min: {1}, Max: {2}, Avg: {3}
+'@
+
     $ToastText = $template -f (
         $TimeString,
-        $measurePing.Maximum,
         $measurePing.Minimum,
+        $measurePing.Maximum,
         $measurePing.Average
     )
 
