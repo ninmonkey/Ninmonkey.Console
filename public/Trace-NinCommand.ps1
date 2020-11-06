@@ -4,6 +4,14 @@
         still a WIP, need to crate better temp files
         - writes two logs, one without cleanup
         - auto opens both or none
+
+        first try these:
+            PS> Trace-NinCommand -Expression $sb -AutoOpen
+            PS> Trace-NinCommand -Expression $sb
+
+        # to compare log before and after filtering, run:
+
+            PS> Trace-NinCommand -Expression { ls . } -WithOriginal -AutoOpen
     .notes
 
         future todo:
@@ -21,6 +29,17 @@
         }
 
         Trace-NinCommand -Debug -Verbose -Expression $sb
+    .example
+        # when logs auto-open, include the original trace file as well
+        Trace-NinCommand -Expression $sb -WithOriginal -AutoOpen
+    .example
+        # only print to stdout, no opening log
+        Trace-NinCommand -Expression $sb
+    .example
+
+        # no stdout, opens filtered
+        PS> Trace-NinCommand -Expression $sb -Silent -AutoOpen
+
     #>
     [CmdletBinding()]
     param(
@@ -29,29 +48,19 @@
         [scriptblock]$Expression,
 
         [Parameter(HelpMessage = "do not print results to StdOut")][switch]$Silent,
+        [Parameter(HelpMessage = "do not open filtered log automatically")][switch]$AutoOpen,
 
-        [Parameter(HelpMessage = "returns non-filtered text")][switch]$PassThru,
-        # [Parameter(HelpMessage = "removes common namespaces")][switch]$Minimize,
-        [Parameter(HelpMessage = "do not open log automatically")][switch]$NoAutoOpen
-
-
-        # [Parameter(HelpMessage = "Formatting options")]
-        # [ValidateSet('Default', 'MiniType')]
-        # [string[]]$Mode = 'Default'
+        [Parameter(HelpMessage = "do not open original log automatically")][switch]$WithOriginal,
+        [Parameter(HelpMessage = "special color formatting, requires python package 'Pygments'")][switch]$Color
     )
 
 
     $Regex = @{
         StripPrefix  = [regex]::Escape( 'ParameterBinding Information: 0 : ' )
-        # MiniTypes    = '(?<=\[)(System\.Management\.?)'
-
         TypeNameList = @(
-            # '\bSystem\.Management\.Automation\.'
-            # '(?<=\[?)(System\.Management\.Automation\.?)'
-
-            '(?:\[?)(System\.Management\.Automation\.?)'
-
-        )
+            '(System\.Management\.Automation\.?)'
+            '(Microsoft\.Powershell\.Commands\.?)'
+        ) | Sort-Object -Descending
     }
 
 
@@ -81,14 +90,15 @@
         return
     }
 
+    $replaceWith = 'abbr.' # namespace adds nighlighting if at least 1 '.'
     Get-Content $Paths.ExportPath | ForEach-Object {
+
         $cur = $_
-        $cur = $cur -replace $Regex.StripPrefix
+        $cur = $cur -replace $Regex.StripPrefix, ''
 
         foreach ($tName in $Regex.TypeNameList ) {
-            $cur = $cur -replace $tName, ''
+            $cur = $cur -replace $tName, $replaceWith
         }
-
         $cur
 
 
@@ -108,10 +118,29 @@
         # }
     }  | Set-Content -Path $Paths.ExportFilter
 
-    if (! $NoAutoOpen) {
-        Invoke-Item $Paths.ExportPath
+    if (! $Silent ) {
+        if ($Color) {
+            $RegexQuote = "\b\'\b"
+
+            Get-Content $Paths.ExportFilter
+            | ForEach-Object { $_ -replace $RegexQuote, "''" }
+            | pygmentize.exe -l ps1
+
+        } else {
+            Get-Content $Paths.ExportFilter
+        }
+    }
+    if ( $AutoOpen) {
+        if ($WithOriginal) {
+            Invoke-Item $Paths.ExportPath
+        }
         Invoke-Item $Paths.ExportFilter
     }
+
+
+    Write-Information "Wrote to files: "
+    Write-Information $Paths.ExportPath.FullName
+    Write-Information $Paths.ExportFilter.FullName
 
     # code $ExportPath
     # } -Debug -Verbose -PSHost *>&1 | Set-Content -Path "temp:\codeout"
@@ -123,13 +152,16 @@
 #     wipNew-CompletionResult '/showclassid6', '/ShowClassId6', [CompletionResultType]::ParameterName, 'display'
 # }
 # Trace-NinCommand -Expression $sb
-$sb = {
-    Join-String -InputObject ('a', 'b') -Separator '-'
-}
-
-Trace-NinCommand -Expression $sb
-# examples:
 if ($false) {
+    $sb = {
+        Join-String -InputObject ('a', 'b') -Separator '-'
+    }
+
+    $sb = {
+        '.' | Get-ChildItem -File
+    }
+    Trace-NinCommand -Expression $sb
+    # examples:
     Trace-NinCommand -Debug -Verbose -Expression $sb
     Trace-NinCommand -Debug -Verbose -Expression $sb -PassThru
 
