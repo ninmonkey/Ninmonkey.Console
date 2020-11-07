@@ -44,7 +44,7 @@ System.Collections.Generic.Dictionary`2[System.String,System.Management.Automati
         }
     }
 
-    Context 'Generic Type from NameSpace, Name' {
+    Context 'Generic Type from (NameSpace, Name -join)' {
         BeforeAll {
             $l = [list[string]]::new()
             $TypeInfo = $l.GetType()
@@ -60,6 +60,27 @@ System.Collections.Generic.Dictionary`2[System.String,System.Management.Automati
             | Should -be '[GenericList`1]'
         }
         # It ''6
+    }
+
+    Context 'Get-Command Results' {
+        BeforeAll {
+            $objParam = (Get-Command -Name 'Get-ChildItem').Parameters
+            $TInfo = $objParam.GetType()
+        }
+
+        It 'Test Generic Type instance: NoBrackets' {
+            $Expected = '[Dictionary`2[String], [ParameterMetadata]]'
+            $TInfo | Format-GenericTypeName
+            | Should -be $Expected
+        }
+
+        It 'Test Generic Type instance' {
+            $Expected = 'Dictionary`2[String], [ParameterMetadata]'
+            $TInfo | Format-GenericTypeName -NoBrackets
+            | Should -be $Expected
+        }
+
+
     }
 
     # ($typeParam.Namespace, $typeParam.Name) -join '' | Format-TypeName
