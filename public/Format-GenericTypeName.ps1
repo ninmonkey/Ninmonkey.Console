@@ -74,17 +74,23 @@ function Format-GenericTypeName {
                 break
             }
             'paramTypeAsInstance' {
-                $FormattedTypeName = @(
-                    $TypeInstance.Namespace
-                    $TypeInstance.Name
-                ) -join ''
+                # $FormattedTypeName = @(
+                #     $TypeInstance.Namespace
+                #     $TypeInstance.Name
+                # ) -join ''
 
-                $FormattedTypeName = $FormattedTypeName | Format-TypeName -NoBrackets:$NoBrackets
+                # $FormattedTypeName = $FormattedTypeName | Format-TypeName -NoBrackets:$true
+                $FormattedTypeName = $TypeInstance.Namespace, $TypeInstance.Name -join '.'
+                | Format-TypeName -WithoutBrackets
 
                 break
             }
             default { throw "not implemented parameter set: $switch" }
         }
+        "Original: $($TypeInstance.FullName)"
+        | Write-Debug
+        'Original: {0}' -f ( $TypeInstance.Namespace, $TypeInstance.Name -join '.')
+        | Write-Debug
 
         $PropList = $TypeInstance | Select-Object Name, Namespace, MemberType, *gener*
         | Format-List | Out-String -Width 400
@@ -93,16 +99,51 @@ function Format-GenericTypeName {
         $FormattedGenericTypeArgs = (
             $TypeInstance.GenericTypeArguments
             | ForEach-Object {
-                $_ | Format-TypeName -NoBrackets:$NoBrackets
+                $genericArg = $_
+                # maybe this is it
+                # $_ | Format-TypeName -NoBrackets:$NoBrackets
+                $FormattedTypeName = ($genericArg.Namespace, $genericArg.Name -join '.')
+                | Format-TypeName -WithoutBrackets
             }
         ) -join ','
 
-        $FinalTemplate = '[{0}]'
+        $InnerList = $TypeInstance.GenericTypeArguments | ForEach-Object {
+            $n = $_.Namespace, $_.Name -join '.'
+            $n | Format-TypeName
+        }
+        $InnerList | Write-Debug
+
+        $FormattedGenericTypeArgs = $InnerList -join ', '
+
+        # $FinalTemplate = '[{0}]'
+        $FinalTemplate = '{0}'
 
         $FinalTemplate -f (
-            $FormattedTypeName, $FormattedGenericTypeArgs -join ''
+            $FormattedTypeName, $FormattedGenericTypeArgs -join '.'
         )
 
     }
     end {}
+}
+
+
+
+$useDebug = $false
+$objParam = (Get-Command -Name 'Get-ChildItem').Parameters
+$TInfo = $objParam.GetType()
+
+$TInfo | Format-GenericTypeName -Debug:$useDebug -NoBrackets
+
+
+if ($false) {
+
+    h1 'format type-name wip'
+    ($TInfo.Namespace, $TInfo.Name) -join '' | Format-TypeName -Debug
+
+
+    $useDebug = $false
+    h1 'format generic name wip wip'
+    $TInfo | Format-GenericTypeName -Debug:$useDebug
+    hr
+    $TInfo | Format-GenericTypeName -Debug:$useDebug -NoBrackets
 }

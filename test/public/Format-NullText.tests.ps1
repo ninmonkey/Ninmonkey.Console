@@ -1,7 +1,7 @@
 ﻿BeforeAll {
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 }
-Describe "Format-NullText" -tags 'Console_Output', 'wip' {
+Describe "Format-NullText" -tags 'ConsoleOutput' {
     # Context 'Validate Piping' {
     BeforeAll {
         $Uni = @{

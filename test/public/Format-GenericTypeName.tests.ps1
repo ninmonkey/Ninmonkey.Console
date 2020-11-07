@@ -12,7 +12,7 @@ system returns
     System.Collections.Generic.Dictionary[string,System.Management.Automation.ParameterMetadata]
 
 #>
-Describe "Format-GenericTypeName" {
+Describe "Format-GenericTypeName" -Tag 'wip' {
 
     Context 'Testing Powershell itself, to make later assumptions easier.' -Tag 'Optional', 'Pwsh.exe' {
         BeforeAll {
@@ -22,6 +22,7 @@ Describe "Format-GenericTypeName" {
         }
 
         It 'TypeName using ToString()' {
+
             $expected = 'System.Collections.Generic.Dictionary[string,System.Management.Automation.ParameterMetadata]'
             # $expected = 'System.Collections.Generic.Dictionary`2[System.String,System.Management.Automation.ParameterMetadata]'
             $expected = 'System.Collections.Generic.Dictionary`2[System.String,System.Management.Automation.ParameterMetadata]'
@@ -37,14 +38,31 @@ System.Collections.Generic.Dictionary`2[System.String,System.Management.Automati
         }
     }
 
-    Context 'Regular Type' {
+    Context 'Non-Generic Type' {
         It 'adfs' {
+            # ensure non-generics on generics fails ?
         }
     }
 
-    Context 'Generic Type' {
+    Context 'Generic Type from NameSpace, Name' {
+        BeforeAll {
+            $l = [list[string]]::new()
+            $TypeInfo = $l.GetType()
+            $strNameNamespace = $TypeInfo.Namespace, $TypeInfo.Name -Join ''
+        }
 
+        It 'Validate Expected Sample Join' {
+            $Expected = 'System.Collections.GenericList`1'
+            $strNameNamespace | Should -be $Expected
+        }
+        It 'Format raw string' {
+            $strNameNamespace | Format-TypeName
+            | Should -be '[GenericList`1]'
+        }
+        # It ''6
     }
+
+    # ($typeParam.Namespace, $typeParam.Name) -join '' | Format-TypeName
 
     # hashtable type would it fit in any ?
 

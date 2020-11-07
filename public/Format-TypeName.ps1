@@ -54,6 +54,7 @@ function Format-TypeName {
         ),
 
         [Parameter(HelpMessage = "Output surrounded with '[]'")]
+        [Alias('WithoutBrackets')]
         [switch]$NoBrackets,
 
         [Parameter(
@@ -88,7 +89,7 @@ function Format-TypeName {
             'paramTypeAsString' {
 
                 # next: color to summarize ones that still have points
-                Write-Debug "String: $TypeName"
+                Write-Debug "Original: $TypeName"
                 $TypeAsString = $TypeName
                 Write-Verbose 'Nyi: Regex (Format-TypeName)'
                 # throw "NYI: get regex: NYI"
@@ -108,7 +109,7 @@ function Format-TypeName {
             $filteredName = $filteredName -replace $Pattern, ''
             continue
         }
-        if (!$NoBrackets) {
+        if ($NoBrackets) {
             $filteredName
         } else {
             '[', $filteredName, ']' -join ''
