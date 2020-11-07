@@ -96,30 +96,34 @@ function Format-GenericTypeName {
         | Format-List | Out-String -Width 400
         | Write-Debug
 
-        $FormattedGenericTypeArgs = (
-            $TypeInstance.GenericTypeArguments
-            | ForEach-Object {
-                $genericArg = $_
-                # maybe this is it
-                # $_ | Format-TypeName -NoBrackets:$NoBrackets
-                $FormattedTypeName = ($genericArg.Namespace, $genericArg.Name -join '.')
-                | Format-TypeName -WithoutBrackets
-            }
-        ) -join ','
+        # $FormattedGenericTypeArgs = (
+        #     $TypeInstance.GenericTypeArguments
+        #     | ForEach-Object {
+        #         $genericArg = $_
+        #         # maybe this is it
+        #         # $_ | Format-TypeName -NoBrackets:$NoBrackets
+        #         $FormattedTypeName = ($genericArg.Namespace, $genericArg.Name -join '.')
+        #         | Format-TypeName -WithoutBrackets
+        #     }
+        # ) -join ','
 
         $InnerList = $TypeInstance.GenericTypeArguments | ForEach-Object {
             $n = $_.Namespace, $_.Name -join '.'
-            $n | Format-TypeName
+            $n | Format-TypeName -NoBrackets:$false
         }
         $InnerList | Write-Debug
 
         $FormattedGenericTypeArgs = $InnerList -join ', '
 
         # $FinalTemplate = '[{0}]'
-        $FinalTemplate = '{0}'
+        if ($NoBrackets) {
+            $FinalTemplate = '{0}'
+        } else {
+            $FinalTemplate = '[{0}]'
+        }
 
         $FinalTemplate -f (
-            $FormattedTypeName, $FormattedGenericTypeArgs -join '.'
+            $FormattedTypeName, $FormattedGenericTypeArgs -join ''
         )
 
     }
@@ -127,15 +131,21 @@ function Format-GenericTypeName {
 }
 
 
-
-$useDebug = $false
 $objParam = (Get-Command -Name 'Get-ChildItem').Parameters
 $TInfo = $objParam.GetType()
 
-$TInfo | Format-GenericTypeName -Debug:$useDebug -NoBrackets
+$TInfo | Format-GenericTypeName -Debug -NoBrackets
+hr
+$TInfo | Format-GenericTypeName -NoBrackets:$true
+$TInfo | Format-GenericTypeName -NoBrackets:$false
+Label 'default'
+$TInfo | Format-GenericTypeName
+Label 'orignal'
+$TInfo.FullName
 
 
 if ($false) {
+    $useDebug = $false
 
     h1 'format type-name wip'
     ($TInfo.Namespace, $TInfo.Name) -join '' | Format-TypeName -Debug
