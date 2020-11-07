@@ -13,15 +13,15 @@ if ($true) {
 }
 #>
 
-Describe "Format-TypeName" {
-    It 'String: FileInfo' {
-        'System.IO.FileInfo' | Format-TypeName
-        | Should -Be 'IO.FileInfo'
-    }
-
+Describe "Format-TypeName" -Tag 'wip' {
     It 'String: FileInfo' {
         'System.IO.FileInfo' | Format-TypeName
         | Should -Be '[IO.FileInfo]'
+    }
+
+    It 'String: FileInfo' {
+        'System.IO.FileInfo' | Format-TypeName -NoBrackets
+        | Should -Be 'IO.FileInfo'
     }
 
     It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {
@@ -32,7 +32,7 @@ Describe "Format-TypeName" {
     It 'TypeInfo instance: FileInfo' {
         $file = (Get-ChildItem . -Directory | Select-Object -First 1)
         $file.GetType() | Format-TypeName
-        | Should -be 'IO.DirectoryInfo'
+        | Should -be '[IO.DirectoryInfo]'
     }
 
     It 'TypeInfo instance: FileInfo' {
