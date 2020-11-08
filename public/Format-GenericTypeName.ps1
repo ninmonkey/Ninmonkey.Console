@@ -7,6 +7,9 @@ function Format-GenericTypeName {
     .description
         foo 🐌
     .example
+        PS>
+        PS> $items.GetType().FullName
+        System.Collections.Generic.List`1[[System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
 
     .notes
     docs: main reference:
@@ -15,6 +18,7 @@ function Format-GenericTypeName {
 
 
     see also:
+
         [remarks: Reflection.TypeInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#remarks)
         [props: Reflection.TypeInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties)
         [System.Type](https://docs.microsoft.com/en-us/dotnet/api/system.type?view=netcore-3.1#properties)

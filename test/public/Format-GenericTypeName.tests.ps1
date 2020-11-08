@@ -83,29 +83,4 @@ System.Collections.Generic.Dictionary`2[System.String,System.Management.Automati
 
     }
 
-    # ($typeParam.Namespace, $typeParam.Name) -join '' | Format-TypeName
-
-    # hashtable type would it fit in any ?
-
 }
-
-
-# if ($false -and 'genericTypeName only') {
-#     $gcmLs = Get-Command Get-ChildItem
-#     $inst_paramLs = $gcmLs.Parameters
-#     $type_paramLs = $gcmLs.Parameters.GetType()
-#     $type_paramLs | Format-GenericTypeName
-
-#     if ($false -and 'RunVerbose') {
-#         h1 '.NameSpace + .Name'
-#         $type_paramLs.Namespace, $type_paramLs.Name -join ''
-#         h1 '.FullName'
-#         $type_paramLs.FullName
-#         h1 '| Format-Table'
-#         $type_paramLs | Format-Table
-#         h1 '| Format-TypeName'
-#         $type_paramLs | Format-TypeName
-#         h1 '| Format-GenericTypeName'
-#         $type_paramLs | Format-GenericTypeName
-#     }
-# }

@@ -11,6 +11,10 @@ function Format-TypeName {
         PS> $list | %{ $_.GetType().FullName()} | AbbrFullName
     .notes
         todo:
+            - [ ] if generic call `Format-GenericTypeName`
+            - [ ] if not any type, call .GetType() autoatically
+
+
             - [ ] include full assembly name etc if wanted
             - [ ] a new param, prefixes to substitute
                 ex:
@@ -26,6 +30,8 @@ function Format-TypeName {
 
     see also:
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
+
+        [https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties]
     #>
     param(
         [Parameter(
@@ -43,7 +49,7 @@ function Format-TypeName {
         [Parameter(
             HelpMessage = "A List of Namespaces or prefixes to ignore")]
         [string[]]$IgnorePrefix = @(
-            # Todo: the easiest way to get past collisions is to sort this list by length before doing replacements
+            # the easiest way to get past regex collisions is to sort this list by length before doing replacements
             # that also removes the hard-coded 'system' removal
             'System.Collections'
             'System.Collections.Generic'
@@ -67,8 +73,6 @@ function Format-TypeName {
         [Parameter(HelpMessage="Print [object[]] verses [object[string]]Output surrounded with '[]'")]
         [switch]$IncludeChild
         #>
-
-
     )
     begin {
         $DefaultIgnorePrefix = @(
@@ -78,7 +82,7 @@ function Format-TypeName {
             'System.Management.Automation'
             'System'
         )
-        # Sorting by longest simplifies namespace removal
+        # Sorting by longest regex simplifies namespace collisions when handling  removal
         $IgnorePrefix += $DefaultIgnorePrefix
         $IgnorePrefix = $IgnorePrefix | Sort-Object -Property Length -Descending
     }
@@ -96,6 +100,12 @@ function Format-TypeName {
                 break
             }
             'paramTypeAsInstance' {
+                if ($TypeInstance.IsGenericType) {
+                    Write-Debug 'IsGenericType: True'
+                    $TypeInstance | Format-GenericTypeName -NoBrackets:$NoBrackets
+                    return # full exit
+                }
+
                 Write-Debug "Instance: $TypeInstance"
                 $TypeAsString = $TypeInstance.FullName
                 break

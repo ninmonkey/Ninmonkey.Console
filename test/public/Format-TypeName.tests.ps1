@@ -3,13 +3,11 @@
 }
 
 <#
-add:
 
 if ($true) {
     # need to test: should test
     # 'System.System.System' | Format-TypeName -IgnorePrefix 'System' -ea Continue
     'system.text'.GetType() | Format-TypeName
-
 }
 #>
 
@@ -63,56 +61,21 @@ Describe "Format-TypeName" -Tag 'wip' {
         | Should -Be $expected
     }
 
-    # future: mixed type info and strings
-}
+    Context 'Should Forward Generics' {
+        BeforeAll {
+            $items = [list[string]]::new()
+            $itemType = $items.GetType()
+            $expectedTypeFormat = '[List`1[String]]'
+        }
 
+        It 'Should Forward to Format-GenericTypeName' {
+            $itemType | Format-TypeName
+            | Should -Be $expectedTypeFormat
+        }
 
-
-if ($false -and 'debug sketch to remove') {
-    # _FormatCommandInfo-GenericParameterTypeName -Debug -Verbose
-    hr 10
-    $gcmLs = Get-Command Get-ChildItem
-    $inst_paramLs = $gcmLs.Parameters
-    $type_paramLs = $gcmLs.Parameters.GetType()
-
-    h1 'Format-TypeName'
-
-    $type_paramLs | Format-TypeName
-    hr
-
-    h1 '.GetType()'
-    $inst_paramLs.GetType().FullName
-    $type_paramLs
-    | Select-Object Name, FullName, Namespace, GenericParameterAttributes, GenericParameterPosition, GenericTypeArguments
-
-
-    # $gcmLs.Parameters.GetType()
-
-    h1 'FullName | Format-TypeName'
-    'cat' | Format-TypeName
-    $type_paramLs | Format-TypeName
-
-    h1 'type | Format-GenericTypeName'
-    hr
-    h2 'generic using Format-TypeName'
-    $type_paramLs | Format-TypeName
-    Label 'Using Format-GenericTypeName'
-
-    hr
-    h2 'invoke-RestMethod'
-
-    try {
-        Invoke-RestMethod -Uri 'https://httpbin.org/status/500' #|  Out-Null
-    } catch {
-        $errorRest = $_
-        Label 'orig'
-        $errorRest, $errorRest.Exception | ForEach-Object { $_.GetType().FullName }
-        Label 'FormatTypeName'
-        $errorRest, $errorRest.Exception | ForEach-Object {
-            $_.GetType()
-        } | Format-TypeName
+        It 'Should Not Forward' {
+            $itemType | Format-GenericTypeName
+            | Should -Be $expectedTypeFormat
+        }
     }
-
-
-
 }
