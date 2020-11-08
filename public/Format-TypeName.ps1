@@ -1,32 +1,8 @@
-﻿# $PSDefaultParameterValues["Format-TypeName:NoBrackets"] = $true
-
-
-function Format-TypeName {
+﻿function Format-TypeName {
     <#
     .synopsis
         Formats type names to be more readable, removes common prefixes
-    .example
-        PS> 'System.foo' | AbbrFullName
-
-        PS> $list | %{ $_.GetType().FullName()} | AbbrFullName
     .notes
-        todo:
-            - [ ] if generic call `Format-GenericTypeName`
-            - [ ] if not any type, call .GetType() autoatically
-
-
-            - [ ] include full assembly name etc if wanted
-            - [ ] a new param, prefixes to substitute
-                ex:
-                [System.Text.Json] => [t.Json]
-            - [ ] support full names that include assemblies. Maybe 'Fullname' itself is not the best option for that.
-
-        notes:
-
-        - colorize: set focus on most important values
-        - todo: support pasing of
-        - already allows mix of both?
-        - param short: uses type Name instead of Fullname (actually do the inverse)
 
     see also:
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
@@ -49,8 +25,6 @@ function Format-TypeName {
         [Parameter(
             HelpMessage = "A List of Namespaces or prefixes to ignore")]
         [string[]]$IgnorePrefix = @(
-            # the easiest way to get past regex collisions is to sort this list by length before doing replacements
-            # that also removes the hard-coded 'system' removal
             'System.Collections'
             'System.Collections.Generic'
             'System.Text'
@@ -66,13 +40,6 @@ function Format-TypeName {
         [Parameter(
             HelpMessage = "hash of renaming options")]
         [hashtable[]]$NameMapping
-
-        <#
-        todo: need to think at what level I want to intraspect child type
-            it should be the function that calls this? Or will typeinfo include that?
-        [Parameter(HelpMessage="Print [object[]] verses [object[string]]Output surrounded with '[]'")]
-        [switch]$IncludeChild
-        #>
     )
     begin {
         $DefaultIgnorePrefix = @(
@@ -88,11 +55,8 @@ function Format-TypeName {
     }
 
     Process {
-        # 'arg: {0}' -f ($TypeName ?? $TypeInstance) | Write-Debug
         switch ( $PSCmdlet.ParameterSetName ) {
             'paramTypeAsString' {
-
-                # next: color to summarize ones that still have points
                 Write-Debug "Original: $TypeName"
                 $TypeAsString = $TypeName
                 Write-Verbose 'Nyi: Regex (Format-TypeName)'

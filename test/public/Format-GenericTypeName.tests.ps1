@@ -69,14 +69,14 @@ System.Collections.Generic.Dictionary`2[System.String,System.Management.Automati
         }
 
         It 'Test Generic Type instance: NoBrackets' {
-            $Expected = '[Dictionary`2[String], [ParameterMetadata]]'
+            $Expected = 'Dictionary`2[[String], [ParameterMetadata]]'
             $TInfo | Format-GenericTypeName
             | Should -be $Expected
         }
 
         It 'Test Generic Type instance' {
-            $Expected = 'Dictionary`2[String], [ParameterMetadata]'
-            $TInfo | Format-GenericTypeName -NoBrackets
+            $Expected = 'Dictionary`2[[String], [ParameterMetadata]]'
+            $TInfo | Format-GenericTypeName -WithBrackets
             | Should -be $Expected
         }
 

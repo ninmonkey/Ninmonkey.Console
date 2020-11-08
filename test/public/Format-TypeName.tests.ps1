@@ -65,7 +65,7 @@ Describe "Format-TypeName" -Tag 'wip' {
         BeforeAll {
             $items = [list[string]]::new()
             $itemType = $items.GetType()
-            $expectedTypeFormat = '[List`1[String]]'
+            $expectedTypeFormat = 'List`1[[String]]'
         }
 
         It 'Should Forward to Format-GenericTypeName' {

@@ -4,19 +4,16 @@
 function Format-GenericTypeName {
     <#
     .synopsis
-        Formats type names🐌 that are generics 🐌
+        Formats type names that are generics
     .description
-        foo 🐌
+
     .example
-        PS>
         PS> $items.GetType().FullName
         System.Collections.Generic.List`1[[System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
 
     .notes
-    docs: main reference:
+    docs:
         https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties
-
-
 
     see also:
 
@@ -38,34 +35,9 @@ function Format-GenericTypeName {
             HelpMessage = 'a TypeInfo instance like: $Obj.GetType()')]
         [System.Reflection.TypeInfo]$TypeInstance,
 
-        # [Parameter(
-        #     HelpMessage = "A List of Namespaces or prefixes to ignore")]
-        # [string[]]$IgnorePrefix = @(
-        #     # Todo: the easiest way to get past collisions is to sort this list by length before doing replacements
-        #     # that also removes the hard-coded 'system' removal
-        #     'System.Collections'
-        #     'System.Collections.Generic'
-        #     'System.Text'
-        #     'System.Management.Automation'
-        #     'System.Runtime.CompilerServices'
-
-        # ),
-
         [Parameter(HelpMessage = "surround the outter most with brackets")]
         [switch]$WithBrackets
-
-        # [Parameter(
-        #     HelpMessage = "hash of renaming options")]
-        # [hashtable[]]$NameMapping
-
-        <#
-        todo: need to think at what level I want to intraspect child type
-            it should be the function that calls this? Or will typeinfo include that?
-        [Parameter(HelpMessage="Print [object[]] verses [object[string]]Output surrounded with '[]'")]
-        [switch]$IncludeChild
-        #>
     )
-
 
     begin {
 
@@ -75,16 +47,9 @@ function Format-GenericTypeName {
             'paramTypeAsString' {
                 $TypeAsString | Format-TypeName -NoBrackets
                 throw "nyi: regex parsing of Generic types from a string"
-                # $TypeAsString = $TypeName
                 break
             }
             'paramTypeAsInstance' {
-                # $FormattedTypeName = @(
-                #     $TypeInstance.Namespace
-                #     $TypeInstance.Name
-                # ) -join ''
-
-                # $FormattedTypeName = $FormattedTypeName | Format-TypeName -NoBrackets:$true
                 $FormattedTypeName = $TypeInstance.Namespace, $TypeInstance.Name -join '.'
                 | Format-TypeName -WithoutBrackets
 
@@ -97,21 +62,6 @@ function Format-GenericTypeName {
         'Original: {0}' -f ( $TypeInstance.Namespace, $TypeInstance.Name -join '.')
         | Write-Debug
 
-        $PropList = $TypeInstance | Select-Object Name, Namespace, MemberType, *gener*
-        | Format-List | Out-String -Width 400
-        | Write-Debug
-
-        # $FormattedGenericTypeArgs = (
-        #     $TypeInstance.GenericTypeArguments
-        #     | ForEach-Object {
-        #         $genericArg = $_
-        #         # maybe this is it
-        #         # $_ | Format-TypeName -NoBrackets:$NoBrackets
-        #         $FormattedTypeName = ($genericArg.Namespace, $genericArg.Name -join '.')
-        #         | Format-TypeName -WithoutBrackets
-        #     }
-        # ) -join ','
-
         $InnerList = $TypeInstance.GenericTypeArguments | ForEach-Object {
             $n = $_.Namespace, $_.Name -join '.'
             $n | Format-TypeName -NoBrackets:$false
@@ -119,73 +69,10 @@ function Format-GenericTypeName {
         $InnerList | Write-Debug
 
         $FormattedGenericTypeArgs = $InnerList -join ', '
-
-        # $FinalTemplate = '[{0}]'
-        # if ($WithBrackets) {
-        # $FinalTemplate = '[{0}]'
-        # } else {
         $FinalTemplate = '{0}'
-        # }
-
         $FinalTemplate -f (
             $FormattedTypeName, "[${FormattedGenericTypeArgs}]" -join ''
         )
-        1 + 2 | Write-Debug
-
     }
     end {}
 }
-
-# # Import-Module Ninmonkey.Console -Force
-# $type = [list[string]]
-
-# '';
-# Label '$type.FullName'
-# $type.FullName
-
-# '';
-# Label '[string]$type'
-# [string]$type
-
-# $objParam = (Get-Command -Name 'Get-ChildItem').Parameters
-# $TInfo = $objParam.GetType()
-# hr
-
-# '';
-# Label '[string]$TInfo'
-# [string]$TInfo
-# hr
-
-# '';
-# Label 'Format-TypeName'
-# $TInfo | Format-TypeName
-
-
-<#
-$objParam = (Get-Command -Name 'Get-ChildItem').Parameters
-$TInfo = $objParam.GetType()
-
-$TInfo | Format-GenericTypeName -Debug -NoBrackets
-hr
-$TInfo | Format-GenericTypeName -NoBrackets:$true
-$TInfo | Format-GenericTypeName -NoBrackets:$false
-Label 'default'
-$TInfo | Format-GenericTypeName
-Label 'orignal'
-$TInfo.FullName
-
-
-if ($false) {
-    $useDebug = $false
-
-    h1 'format type-name wip'
-    ($TInfo.Namespace, $TInfo.Name) -join '' | Format-TypeName -Debug
-
-
-    $useDebug = $false
-    h1 'format generic name wip wip'
-    $TInfo | Format-GenericTypeName -Debug:$useDebug
-    hr
-    $TInfo | Format-GenericTypeName -Debug:$useDebug -NoBrackets
-}
-#>
