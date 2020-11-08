@@ -134,7 +134,7 @@ function Format-GenericTypeName {
     end {}
 }
 
-
+<#
 $objParam = (Get-Command -Name 'Get-ChildItem').Parameters
 $TInfo = $objParam.GetType()
 
@@ -161,3 +161,4 @@ if ($false) {
     hr
     $TInfo | Format-GenericTypeName -Debug:$useDebug -NoBrackets
 }
+#>
