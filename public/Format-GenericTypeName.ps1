@@ -1,4 +1,5 @@
-﻿# Format-GenericTypeName
+﻿using namespace System.Collections.Generic
+# Format-GenericTypeName
 
 function Format-GenericTypeName {
     <#
@@ -50,8 +51,8 @@ function Format-GenericTypeName {
 
         # ),
 
-        [Parameter(HelpMessage = "Do not surround with '[]'")]
-        [switch]$NoBrackets
+        [Parameter(HelpMessage = "surround the outter most with brackets")]
+        [switch]$WithBrackets
 
         # [Parameter(
         #     HelpMessage = "hash of renaming options")]
@@ -120,19 +121,45 @@ function Format-GenericTypeName {
         $FormattedGenericTypeArgs = $InnerList -join ', '
 
         # $FinalTemplate = '[{0}]'
-        if ($NoBrackets) {
-            $FinalTemplate = '{0}'
-        } else {
-            $FinalTemplate = '[{0}]'
-        }
+        # if ($WithBrackets) {
+        # $FinalTemplate = '[{0}]'
+        # } else {
+        $FinalTemplate = '{0}'
+        # }
 
         $FinalTemplate -f (
-            $FormattedTypeName, $FormattedGenericTypeArgs -join ''
+            $FormattedTypeName, "[${FormattedGenericTypeArgs}]" -join ''
         )
+        1 + 2 | Write-Debug
 
     }
     end {}
 }
+
+# # Import-Module Ninmonkey.Console -Force
+# $type = [list[string]]
+
+# '';
+# Label '$type.FullName'
+# $type.FullName
+
+# '';
+# Label '[string]$type'
+# [string]$type
+
+# $objParam = (Get-Command -Name 'Get-ChildItem').Parameters
+# $TInfo = $objParam.GetType()
+# hr
+
+# '';
+# Label '[string]$TInfo'
+# [string]$TInfo
+# hr
+
+# '';
+# Label 'Format-TypeName'
+# $TInfo | Format-TypeName
+
 
 <#
 $objParam = (Get-Command -Name 'Get-ChildItem').Parameters

@@ -102,7 +102,8 @@ function Format-TypeName {
             'paramTypeAsInstance' {
                 if ($TypeInstance.IsGenericType) {
                     Write-Debug 'IsGenericType: True'
-                    $TypeInstance | Format-GenericTypeName -NoBrackets:$NoBrackets
+                    $ShouldBracket = ! $NoBrackets
+                    $TypeInstance | Format-GenericTypeName -WithBrackets:$ShouldBracket
                     return # full exit
                 }
 

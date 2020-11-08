@@ -36,6 +36,7 @@ function Format-NinChildItemDirectory {
     begin {
     }
     process {
+        Write-Warning "Nyi: wip:"
 
         $dirList = Get-ChildItem .. -Recurse -Directory  #-Force
 

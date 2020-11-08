@@ -85,7 +85,7 @@ System.IO.FileSystemInfo
 System.MarshalByRefObject
 System.Object
 
-🐒> ls . | foreach-object{ $_.pstypenames } | sort -Unique | Format-TypeName
+🐒>  ls . | foreach-object{ $_.pstypenames } | sort -Unique | Format-TypeName
 [IO.DirectoryInfo]
 [IO.FileInfo]
 [IO.FileSystemInfo]
@@ -97,11 +97,14 @@ System.Object
 ### Format-GenericTypeName
 
 ```powershell
-🐒> $items.GetType().FullName
+🐒> $items = [list[string]]::new()
+  $items.GetType().FullName
+
 System.Collections.Generic.List`1[[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
 
-🐒> $items.GetType() | Format-GenericTypeName
-[List`1[String]]
+🐒> $items.GetType() | Format-TypeName
+
+List`1[[String]]
 ```
 
 
