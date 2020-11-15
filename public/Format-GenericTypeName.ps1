@@ -12,6 +12,8 @@ function Format-GenericTypeName {
         System.Collections.Generic.List`1[[System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]
 
     .notes
+    see:
+        https://github.com/SeeminglyScience/EditorServicesCommandSuite/blob/33bd996d6e169f26db95a4b8f40d3418729ce03e/src/EditorServicesCommandSuite/Reflection/MemberUtil.cs#L8
     docs:
         https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties
 
