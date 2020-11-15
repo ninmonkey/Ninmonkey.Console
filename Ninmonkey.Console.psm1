@@ -90,6 +90,7 @@ $public = @(
     'Get-NinAppxPackage'
     'Invoke-Explorer'
     'Get-TerminalName'
+    'Get-NinNewestItem'
 )
 
 foreach ($file in $public) {
@@ -104,6 +105,7 @@ $functionsToExport = @(
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
+    'Get-NinNewestItem'
     'Test-UserIsAdmin'
     'Invoke-Explorer'
     'Get-NinAppxPackage'
