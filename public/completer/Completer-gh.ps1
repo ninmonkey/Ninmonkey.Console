@@ -11,6 +11,7 @@
     if (! (Test-Path $pathExport)) {
         New-Item -ItemType File -Path $pathExport -Value '' -Force
     }
+    $PathExport = Get-Item '~/.ninmonkey/completers/gh.ps1'
 
     & $commandGH completion --shell powershell
     | Set-Content -Path $pathExport
