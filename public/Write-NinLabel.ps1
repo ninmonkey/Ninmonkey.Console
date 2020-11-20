@@ -43,6 +43,9 @@ function Write-NinLabel {
         # todo: properties instead of needing % ProP to run
         # Property <Microsoft.PowerShell.Commands.PSPropertyExpression>
 
+        [Parameter(
+            HelpMessage = 'Seperator between Label and Text, default is ": "')]
+        [string]$Separator = ': ',
 
         [Parameter(HelpMessage = 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"')]
         [alias('Fg')]
@@ -92,7 +95,7 @@ function Write-NinLabel {
             Object          = $Text # both are set later anyway
         }
     }
-    process {
+    Process {
         # foreach ($Line in $Text) {
         $newTextSplat_Label['Object'] = $Label
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
@@ -107,7 +110,7 @@ function Write-NinLabel {
             $StrText = New-Text @newTextSplat_Text
         }
 
-        $FullString = $StrLabel, $StrText | Join-String -Sep ''
+        $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
 
         if ($LinesAfter -gt 0) {

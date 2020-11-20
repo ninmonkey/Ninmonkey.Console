@@ -61,6 +61,22 @@ Describe "Format-TypeName" -Tag 'wip' {
         | Should -Be $expected
     }
 
+    Context 'ShouldFail: NYI' -Tag 'wip' {
+        It 'GenericsWithNestedClass' {
+            $StringGenericTypeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String], [System.Management.Automation.ParameterMetadata]]'
+            $StringGenericTypeName -as 'type' | Format-TypeName
+            | Should -Be 20
+        }
+
+        It 'Part2' {
+            $StringGenericTypeName = 'System.Collections.Generic.IEqualityComparer`1[[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'
+            $CurrentResult = 'IEqualityComparer`1[[String]]'
+            $StringGenericTypeName -as 'type' | Format-TypeName
+            | Should -Not -Be 'IEqualityComparer`1[[String]]'
+
+        }
+
+    }
     Context 'Should Forward Generics' {
         BeforeAll {
             $items = [list[string]]::new()

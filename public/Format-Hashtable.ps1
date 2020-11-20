@@ -45,7 +45,7 @@
     #>
     [CmdletBinding(DefaultParameterSetName = "FromPipe")]
     param (
-        [Alias('Format')]
+        [Alias('Format-Hash')]
         [Parameter(
             ParameterSetName = "FromPipe",
             Mandatory = $false,
@@ -58,28 +58,48 @@
             ParameterSetName = "FromPipe",
             Mandatory, ValueFromPipeline, HelpMessage = 'Object'
         )]
-        [hashtable]$InputHash
+        [hashtable]$InputHash,
+
+        [Parameter(HelpMessage = "Sort Keys?")][switch]$NoSortKeys
     )
 
     process {
+        if ($NoSortKeys) {
+            $SortedHash = $InputHash
+        } else {
+            $SortedHash = $InputHash | Sort-Hashtable
+        }
         Switch ($FormatMode) {
             'Pair' {
-                Write-Warning 'Piping to Format-Pair'
-                $InputHash | Format-Pair
+                $SortedHash.GetEnumerator() | ForEach-Object {
+                    $splatPair = @{
+                        Label = $_.Key
+                        Text  = $_.Value
+                    }
+                    Label @splatPair
+                }
                 break
             }
             'Table' {
-                $InputHash | Format-Table
+                $SortedHash | Format-Table
                 break
             }
             'SingleLine' {
-                "$([pscustomobject]$InputHash)"
+                "$([pscustomobject]$SortedHash)"
                 break
             }
             default {
-                "$([pscustomobject]$InputHash)"
+                "$([pscustomobject]$SortedHash)"
                 break
             }
         }
     }
 }
+
+#Import-Module Ninmonkey.Console -Force
+$hash1 = @{ name = 'Jack'; species = 'Cat'; age = 12 }
+$hash1 | Sort-Hashtable -Descending
+| Format-HashTable Pair
+hr
+$hash1 | Sort-Hashtable
+| Format-HashTable Pair -NoSortKeys
