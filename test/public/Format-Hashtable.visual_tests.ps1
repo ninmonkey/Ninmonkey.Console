@@ -29,3 +29,13 @@ $hash1 | Sort-Hashtable -Descending | Format-HashTable SingleLine
 $hash1 | Sort-Hashtable | Format-HashTable Table
 hr
 $hash1 | Sort-Hashtable -Descending | Format-HashTable Table
+
+hr
+
+#Import-Module Ninmonkey.Console -Force
+$hash1 = @{ name = 'Jack'; species = 'Cat'; age = 12 }
+$hash1 | Sort-Hashtable -Descending
+| Format-HashTable Pair
+hr
+$hash1 | Sort-Hashtable
+| Format-HashTable Pair -NoSortKeys
