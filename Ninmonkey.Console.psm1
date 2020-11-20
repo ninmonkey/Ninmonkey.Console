@@ -86,6 +86,7 @@ $public = @(
     'Get-NinObjectProperty'
     'Test-NullArg'
     'Get-NinChildItem'
+    'Write-NinLabel'
     'Get-ObjectType'
     'Get-NinAppxPackage'
     'Invoke-Explorer'
@@ -107,6 +108,7 @@ $functionsToExport = @(
     'Format-Hashtable'
     'Get-NinNewestItem'
     'Test-UserIsAdmin'
+    'Write-NinLabel'
     'Invoke-Explorer'
     'Get-NinAppxPackage'
     'Format-TypeName'
@@ -147,23 +149,26 @@ if ($true) {
     New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
     # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
-    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
     New-Alias -ea 'Ignore' 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties'
+    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
     New-Alias -ea 'Ignore' 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties'
     New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
 
 
     New-Alias 'Cd' -Value 'Set-NinLocation' #todo:  make this opt in
 
+    # class-explorer
+    New-Alias -ea 'Ignore' 'fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
 
     $aliasesToExport = @(
         'Goto' # [Alias()] seems to still require export
         'nLs' # Get-NinChildItem
-        'Docs'
-        'IPython'
         'Cd'
-        'Here'
+        'Docs'
         'Get-ObjectProperty'
+        'Here'
+        'IPython'
+        'Label'
         'Prop'
     )
 

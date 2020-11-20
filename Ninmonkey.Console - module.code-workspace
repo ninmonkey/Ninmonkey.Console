@@ -49,6 +49,13 @@
                 "cwd": "${file}"
             },
             {
+                "name": "🐒 visual test.ps1",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}\\test\\public\\Write-ConsoleLabel.visual_tests.ps1",
+                "cwd": "${file}"
+            },
+            {
                 "name": "🐛 : [Details] — ", // [nin.PowerShell]",
                 "type": "PowerShell",
                 "request": "launch",
