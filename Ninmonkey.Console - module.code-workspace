@@ -84,7 +84,8 @@
                     "-Output",
                     "Detailed",
                     "-TagFilter",
-                    "wip"
+                    // "wiph"
+                    "wip-hash"
                 ],
             },
             /* pester example snippets

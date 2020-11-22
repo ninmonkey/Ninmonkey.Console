@@ -33,3 +33,6 @@
         Label 'See also: Autocomplete [enum]' '[Microsoft.PowerShell.Commands.TextEncodingType]'
     }
 }
+
+
+Set-ConsoleEncoding

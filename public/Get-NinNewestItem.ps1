@@ -50,7 +50,24 @@
     # $BasePaths = $Location | Where-Object {
     #     [string]::IsNullOrWhiteSpace($_)
     # } | Where-Object Test-Path | Get-Item
-    $BasePaths = $Location | Where-Object Test-Path | Get-Item
+    $mappedPaths = @{
+        '2020'                          = "$Env:UserProfile\Documents\2020"
+        '2020 ⇾ Powershell'             = "$Env:UserProfile\Documents\2020\Powershell"
+        '2020 ⇾ Power BI'               = "$Env:UserProfile\Documents\2020\Power BI"
+        '2020 ⇾ Ninmonkeys.com'         = "$Env:UserProfile\Documents\ninmonkeys.com ┐ main"
+        'Powershell ⇾ MyModules_Github' = "$Env:UserProfile\Documents\2020\Powershell\MyModules_Github"
+        'Github Downloads'              = 'G:\2020-github-downloads'
+    }
+
+    $MappedList = $Location | ForEach-Object {
+        if ($mappedPaths.Contains($_)) {
+            $mappedPaths[$_]
+        }
+    }
+    $MappedList | Join-String -sep ', ' -OutputPrefix 'Mapped Paths: ' | Write-Debug
+
+
+    $BasePaths = $MappedLocation | Where-Object Test-Path | Get-Item
     if ($BasePaths.count -eq 0) {
         $BasePaths = Get-Item '.'
     }
@@ -75,7 +92,7 @@
 
     $splatLs = @{
         Path    = $BasePaths
-        Filter  = '*.x'
+        Filter  = ''
         Recurse = $true
         Force   = $true
     }
@@ -86,38 +103,66 @@
     }
     $resultList = [list[psobject]]::new()
 
-    switch ($ItemType) {
-        'VS Code | Project' {
-            Get-ChildItem @lsSplat
-            | ForEach-Object { $resultList.Add( $_ ) }
-            continue
+    $resultList = foreach ($CurItemType in $ItemType) {
+        switch ($CurItemType) {
+            'VS Code | Project' {
+                # h1 'yes'
+                $itemArgs = @{
+                    Filter    = '*.code-workspace'
+                    File      = $true
+                    Directory = $false
+                }
+                # $splat = $splatLs + $itemArgs
+                $splat = Join-Hashtable $splatLs $itemArgs
+                $splat | Format-Table -Wrap | Out-String | Write-Debug
+                Get-ChildItem @splat
+                # | ForEach-Object { $resultList.Add( $_ ) }
+                break
 
-        }
-        'VS Code | Folder' {
-            'folder'
-            continue
-        }
-        'Power BI' {
-            continue
-        }
-        'Powershell' {
-            continue
-        }
-        'All' {
-            continue
-        }
-        default {
-            throw "ShouldNeverReach: '$ItemType'"
-            break
+            }
+            'VS Code | Folder' {
+                break
+            }
+            'Power BI' {
+                break
+            }
+            'Powershell' {
+                break
+            }
+            'All' {
+                break
+            }
+            default {
+                throw "ShouldNeverReach: '$ItemType'"
+                break
+            }
         }
     }
 
     ## only if not empty | Sort-Object @sortSplat
+    hr
+    h1 "Count: $($resultList.Count)"
     $resultList
+
+    Write-Warning "command is a WIP"
 
 
 }
 
-Get-NinNewestItem -Verbose -Debug -ItemType 'VS Code | Project', 'Powershell'
-hr
-Get-NinNewestItem -Verbose -Debug -ItemType 'VS Code | Folder', 'VS Code | Project'
+# # Import-Module Ninmonkey.Powershell -Force # might be needed to prevent getting overwritten by that psutil Join-hashtable
+# if ($false) {
+#     Get-NinNewestItem -Verbose -Debug -ItemType 'VS Code | Project', 'Powershell'
+#     hr
+#     Get-NinNewestItem -Verbose -Debug -ItemType 'VS Code | Folder', 'VS Code | Project' -ov lastNew
+# }
+
+# $getNinNewestItemSplat = @{
+#     SortProperty = 'LastWriteTime'
+#     ItemType     = 'VS Code | Project'
+#     # Location     = '2020 ⇾ Powershell'
+#     Location     = '2020 ⇾ Powershell', 'Github Downloads'
+#     Debug        = $true
+#     Verbose      = $true
+# }
+
+# Get-NinNewestItem @getNinNewestItemSplat -OutVariable LastNew
