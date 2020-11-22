@@ -20,9 +20,23 @@ $private = @(
 foreach ($file in $private) {
     if (Test-Path ("{0}\private\{1}.ps1" -f $psscriptroot, $file)) {
     } else {
-        Write-Error "Import: failed: private: $File"
+        Write-Error "Import: private: failed: private: $File"
     }
     . ("{0}\private\{1}.ps1" -f $psscriptroot, $file)
+}
+$private_seeminglySci = @(
+    'NamespaceAwareCompletion'
+)
+if ($psEditor) {
+    # see: <https://github.com/SeeminglyScience/dotfiles/blob/a7a9bcf3624efe5be4988922ba2e35e8ff2fcfd8/PowerShell%2Fprofile.ps1#L147>
+    $private_seeminglySci.Remove('NamespaceAwareCompletion')
+}
+foreach ($file in $private_seeminglySci) {
+    if (Test-Path ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)) {
+    } else {
+        Write-Error "Import: failed: private_seeminglySci: private: $File"
+    }
+    . ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)
 }
 
 $public_NativeWrapper = @(

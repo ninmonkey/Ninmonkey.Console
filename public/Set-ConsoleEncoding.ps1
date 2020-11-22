@@ -35,4 +35,4 @@
 }
 
 
-Set-ConsoleEncoding
+# Set-ConsoleEncoding
