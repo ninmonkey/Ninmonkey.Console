@@ -78,17 +78,35 @@
             }
             [pscustomobject]$meta
             # $x + 3
+            hr | Write-Warning
+            $prop.TypeNameOfValue -as 'type' | Format-TypeName
+            | Write-Warning
+            $prop.TypeNameOfValue -as 'type'
+            | Write-Warning
         }
     }
 
 }
 
+if ($false) {
+    $gcm = Get-Command Select-Object
+    $gcm.Parameters | Prop | Format-Table
+}
 
-$catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
-$catObj = [pscustomobject]$catHash
+if ($false) {
+    $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
+    $catObj = [pscustomobject]$catHash
 
-Label 'hash'
-$catHash | Get-NinObjectProperty
+    Label 'hash'
+    $catHash | Prop # Get-NinObjectProperty
 
-Label 'Obj'
-$catObj | Get-NinObjectProperty
+    Label 'Obj'
+    $catObj | Prop # Get-NinObjectProperty
+    hr
+
+    $gcm = Get-Command Select-Object
+    $gcm.Parameters | Prop | Format-List
+    $gcm.Parameters | Prop | Format-Table
+    $prop = $gcm.psobject.properties | Where-Object  Name -EQ Parameters # | % TypeNameOfValue
+    $prop.TypeNameOfValue -as 'type' | Format-TypeName
+}

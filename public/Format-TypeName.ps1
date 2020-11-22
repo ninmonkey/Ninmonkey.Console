@@ -55,6 +55,11 @@
     }
 
     Process {
+        <#
+        refactor:
+            attempt 'typenameString' -as 'type' before other parsing
+        #>
+
         switch ( $PSCmdlet.ParameterSetName ) {
             'paramTypeAsString' {
                 Write-Debug "Original: $TypeName"
@@ -90,5 +95,34 @@
             '[', $filteredName, ']' -join ''
         }
     }
+
+}
+
+
+function NestedOrNot( [type]$TypeInfo ) {
+    h1 'nestedOrNot'
+    $isNested = $typeInfo.IsNested
+    Label 'Nested' $isNested
+    @{
+        IsNested = $typeInfo.Name
+        Name     = $typeInfo.Name
+    } | Format-HashTable
+
+    if ($false) {
+        ( $typeInfo.IsNested ) ? $typeInfo.DeclaringType : $typeInfo.Name
+        $true -eq $typeinfo.IsNested | Label 'IsNested?: '
+        $nestedTypeName = $typeinfo.DeclaringType.Name, $typeinfo.Name -join '+'
+        ( $typeinfo.namespace), $nestedTypeName -join '.'
+    }
+
+}
+
+if ($false -or 'quick test') {
+    $typeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String],[System.Management.Automation.ParameterMetadata]]'
+    $TypeInfo = $typeName -as 'type'
+    NestedOrNot 'dsf'.GetType()
+    #| label 'string '
+    NestedOrNot $typeinfo
+    #| Label 'typeinfo '
 
 }

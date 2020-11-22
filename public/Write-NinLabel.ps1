@@ -27,6 +27,7 @@ function Write-NinLabel {
     param(
         [Parameter(
             Mandatory, Position = 0, HelpMessage = 'Label or Heading')]
+        [AllowEmptyString()]
         [string]$Label,
 
         [Parameter(
@@ -94,6 +95,14 @@ function Write-NinLabel {
             IgnoreEntities  = $true
             Object          = $Text # both are set later anyway
         }
+
+        @{
+            'ParameterSetName'  = $PSCmdlet.ParameterSetName
+            'PSBoundParameters' = $PSBoundParameters
+        } | Format-Table |  Out-String | Write-Debug
+
+        # $newTextSplat_Text | Format-Table | Out-String
+        # | Write-Debug
     }
     Process {
         # foreach ($Line in $Text) {

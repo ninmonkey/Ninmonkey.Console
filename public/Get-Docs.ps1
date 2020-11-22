@@ -28,8 +28,87 @@ https://ninmonkeys.com/blog/wp-admin/post.php?post=337&action=edit
 # lazy eval so that initial import doesn't take a long time
 $_cachedHelpTopics = $null
 
+function _get-DocsDotnet {
+    <#
+    .synopsis
+    search docs for dotnet/powershell
+    .notes
+        reference urls:
+
+        query parameters:
+            view = 'netcore-3.1', 'net-5.0', etc...
+
+        by classname:
+        by enumname:
+            https://docs.microsoft.com/en-us/dotnet/api/system.io.fileinfo
+            https://docs.microsoft.com/en-us/dotnet/api/system.io.fileattributes
+    #>
+
+    param (
+        [Parameter(
+            Mandatory, Position = 0,
+            HelpMessage = 'TypeInstance or name')]
+        # [string]
+        $InputObject
+    )
+
+    $PSBoundParameters | Format-Table |  Out-String -w 9999 | Write-Debug
+
+    if ($InputObject -is 'String') {
+        $TypeInfo = $InputObject -as 'Type'
+        if (! $TypeInfo ) {
+            Write-Error "Could not convert to typename: '$InputObject'"
+            return
+        }
+    }
+    if ($InputObject -is 'type') {
+        $TypeInfo = $InputObject
+    } else {
+        $TypeInfo = $InputObject.GetType()
+    }
+
+    $FullName = $TypeInfo.Namespace, $TypeInfo.Name -join '.'
+    Label "Goto: $FullName" -fg Yellow
+
+    $metaDebug = @{
+        'FullName'              = $TypeInfo.Namespace, $TypeInfo.Name -join '.'
+        'NameColor'             = $TypeInfo | Label 'tinfo' -fg orange
+        'InputObject.GetType()' = $InputObject | Format-TypeName
+        'TypeInfo'              = $TypeInfo
+    }
+
+    $metaDebug |  Write-Debug
 
 
+    # @{
+    #     'ParameterSetName'  = $PSCmdlet.ParameterSetName
+    #     'PSBoundParameters' = $PSBoundParameters
+    # } | Format-Table |  Out-String | Write-Debug
+
+
+
+
+    $InputObject.GetType().Name | Write-Debug
+    "InputObject: '$TypeName'" | New-Text -fg 'green' | Write-Debug
+    "TypeInfo: '$TypeInfo'" | New-Text -fg 'green' | Write-Debug
+}
+
+
+if ($false -and 'manual test') {
+    $type_gcm = Get-Command | Select-Object -First 1
+    $type_file = Get-ChildItem . -File | Select-Object -First 1
+
+    h1 ' literal: FileInfo'
+    _get-DocsDotnet 'System.IO.FileInfo' -Debug
+
+    h1 'fromObject: FileInfo'
+    _get-DocsDotnet $type_file.GetType() -Debug
+
+    h1 'fromObject: gcm'
+    _get-DocsDotnet $type_gcm.GetType() -Debug
+    # _get-DocsDotnet 'fake.FileInfo' -Debug
+    # _get-DocsDotnet 'System.IO.FileInfo' -Debug
+}
 function Get-Docs {
     <#
     .description
@@ -75,6 +154,7 @@ function Get-Docs {
         )]
         [string]$Pattern
     )
+    Write-Warning 'add: should-process before invoke (refactor to the Out-Browser command)'
 
     $QueryIsEmpty = [string]::IsNullOrWhiteSpace( $Query )
     $PatternIsEmpty = [string]::IsNullOrWhiteSpace( $Pattern )
@@ -89,7 +169,7 @@ function Get-Docs {
 
     switch ($Type) {
         'Excel' {
-            Write-AnsiHyperlink $UriList.ExcelFormula "Excel_${Breadcrumb}_Formulas_and_functions" -asMarkdown
+            Write-AnsiHyperlink $UriList.ExcelFormula "Excel_${Breadcrumb}_Formulas_and_functions" -AsMarkdown
         }
         'Ps1' {}
         'PowerShell' {

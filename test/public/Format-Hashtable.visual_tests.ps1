@@ -39,3 +39,23 @@ $hash1 | Sort-Hashtable -Descending
 hr
 $hash1 | Sort-Hashtable
 | Format-HashTable Pair -NoSortKeys
+hr
+& {
+    Label 'Test Table to Debug Stream'
+    $DebugPreference = 'Continue'
+    hr
+    $hash1
+    hr
+    $hash1 | Sort-Hashtable
+    | Format-HashTable Table
+    | Write-Debug
+    hr
+    h1 'final'
+
+    h2 'format only'
+    $hash1 | Format-HashTable Table
+
+    h2 'format to debug'
+    $hash1 | Format-HashTable Table | Label 'hash1' -fg2 white
+    | Write-Debug
+}

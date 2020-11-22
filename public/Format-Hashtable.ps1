@@ -76,11 +76,20 @@
         )]
         [hashtable]$InputHash,
 
-        [Parameter(HelpMessage = "Sort Keys?")][switch]$NoSortKeys
+        [Parameter(HelpMessage = "Sort Keys?")][switch]$NoSortKeys,
+
+        [alias('AsString')]
+        [Parameter(HelpMessage = "Force Format-Table to render, so Write-Debug prints as expected")]
+        [switch]$Force
     )
 
+    begin {
+        # Format-HashTable: Can't use it here, self-referencing
+        $PSBoundParameters | Format-Table |  Out-String -w 9999 | Write-Debug
+    }
+
     Process {
-        $InputHash.GetType().Name | Write-Debug
+        $InputHash.GetType().Name | Label 'InputObject type' |  Write-Debug
 
         if ($InputHash -is 'System.Collections.Specialized.OrderedDictionary' ) {
             # Write-debug 'sorted!'
@@ -104,7 +113,14 @@
                 break
             }
             'Table' {
-                $InputHash | Format-Table
+                # future: allow overriding args for performance
+                $formatted = $InputHash
+                | Format-Table -Wrap -AutoSize
+                if ($Force) {
+                    $formatted | Out-String -Width 9999
+                } else {
+                    $formatted
+                }
                 break
             }
             'SingleLine' {
@@ -118,3 +134,8 @@
         }
     }
 }
+
+<#
+for tests:
+@{name = 'cat'; } | Format-HashTable Table
+#>
