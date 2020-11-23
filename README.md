@@ -3,15 +3,19 @@
 Tools for a better console experience
 
 - [Ninmonkey.Console](#ninmonkeyconsole)
-  - [Console Encoding](#console-encoding)
-  - [AppxPackages : Windows Apps](#appxpackages--windows-apps)
-  - [Types](#types)
-    - [Format-TypeName](#format-typename)
-    - [Format-GenericTypeName](#format-generictypename)
-    - [Test-NullArg](#test-nullarg)
+- [Console Encoding](#console-encoding)
+- [AppxPackages : Windows Apps](#appxpackages--windows-apps)
+- [Types](#types)
+  - [Format-TypeName](#format-typename)
+  - [Format-GenericTypeName](#format-generictypename)
+  - [Test-NullArg](#test-nullarg)
+- [See More](#see-more)
+  - [libs](#libs)
+  - [vexx32.github.io : Autocomplete and more](#vexx32githubio--autocomplete-and-more)
+  - [Docs](#docs)
 
 
-## Console Encoding
+# Console Encoding
 
 ```powershell
 🐒> Get-ConsoleEncoding      
@@ -23,7 +27,7 @@ OutputEncoding            Unicode (UTF-8)    65001        False
 [console]::OutputEncoding Unicode (UTF-8)    65001        False
 ```
 
-## AppxPackages : Windows Apps
+# AppxPackages : Windows Apps
 
 Package names are not always descriptive. Sometimes nothing in the fields `Name`, `PackageName` or `FamilyName` are useful.
 
@@ -72,10 +76,10 @@ Regex        App
 state.*decay Microsoft.Dayton_2.408.280.0_x64__8wekyb3d8bbwe
 ```
 
-## Types
+# Types
 
 
-### Format-TypeName
+## Format-TypeName
 
 ```powershell
 🐒> ls . | foreach-object{ $_.pstypenames } | sort -Unique
@@ -94,7 +98,7 @@ System.Object
 ```
 
 
-### Format-GenericTypeName
+## Format-GenericTypeName
 
 ```powershell
 🐒> $items = [list[string]]::new()
@@ -108,7 +112,7 @@ List`1[[String]]
 ```
 
 
-### Test-NullArg
+## Test-NullArg
 
 
 ```powershell
@@ -123,3 +127,24 @@ Value Type   IsNull IsNullOrWhiteSpace IsNullOrEmpty AsString ToString CastStrin
     ␀ [Null]   True               True          True ''       '␀'      ''              3           False
     ␀ String  False              False         False '␀'      '␀'      '␀'             4            True
 ```
+
+# See More
+
+## libs
+
+- [ClassExplorer](https://github.com/seeminglyscience) by SeeminglyScience/ClassExplorer
+
+## vexx32.github.io : Autocomplete and more
+
+- [Creating Dynamic Sets for ValidateSet](https://vexx32.github.io/2018/11/29/Dynamic-ValidateSet/)
+- [Working With Argument Transformations in PowerShell](https://vexx32.github.io/2018/12/13/Working-Argument-Transformations/)
+- [Working with PowerShell's -replace Operator](https://vexx32.github.io/2019/03/20/PowerShell-Replace-Operator/)
+- [ScriptBlocks and GetNewClosure\(\)](https://vexx32.github.io/2020/05/30/Scriptblock-GetNewClosure/)
+- [Searching the PowerShell Abstract Syntax Tree](https://vexx32.github.io/2018/12/20/Searching-PowerShell-Abstract-Syntax-Tree/)
+- [Implementing-ShouldProcess](https://vexx32.github.io/2018/11/22/Implementing-ShouldProcess/)
+- [Invoke a PowerShell Module Command in the Global Scope](Invoke a PowerShell Module Command in the Global Scope)
+  - > & (Get-Module 'Pester') { Get-Command -Module Pester }
+
+## Docs
+- Autocompletion [enum CompletionResultType ](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.completionresulttype?view=powershellsdk-7.0.0#System_Management_Automation_CompletionResultType)
+- [IArgumentCompleter.CompleteArgument\(String, String, String, CommandAst, IDictionary\) Method](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.iargumentcompleter.completeargument?view=powershellsdk-7.0.0)
