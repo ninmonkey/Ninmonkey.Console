@@ -1,0 +1,461 @@
+﻿using namespace System.Collections
+using namespace System.Collections.Generic
+using namespace System.Management.Automation
+using namespace System.Text
+
+using namespace System.Management.Automation.Language
+using namespace System
+
+
+# [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', '', Target = '??')]
+param()
+
+<#
+    [section]: alias
+#>
+
+# at           = Select-ObjectIndex
+# skip         = Skip-Object
+# default      = Get-TypeDefaultValue
+# nameof       = Get-ElementNamed
+# cast         = ConvertTo-Array
+# append       = Join-After
+# prepend      = Join-Before
+# e            = Get-BaseException
+# se           = Show-Exception
+# show         = Show-FullObject
+# tostring     = ConvertTo-String
+# await        = Wait-AsyncResult
+# ??           = Invoke-Conditional
+# code         = Invoke-VSCode
+# ishim        = Install-Shim
+# p            = Set-AndPass
+# up           = Start-ElevatedSession
+# sms          = Show-MemberSource
+# emi          = Expand-MemberInfo
+# pslambda     = Invoke-PSLambda
+
+# $env:HOMEDRIVE = $env:SystemDrive
+# $env:HOMEPATH = $env:USERPROFILE | Split-Path -NoQualifier
+
+# $__IsWindows =
+#     -not $PSVersionTable['PSEdition'] -or
+#     $PSVersionTable['PSEdition'] -eq 'Desktop' -or
+#     $PSVersionTable['Platform'] -eq 'Win32NT'
+
+# $__IsVSCode = $env:TERM_PROGRAM -eq 'vscode'
+
+# $__IsTerminal = [bool] $env:WS_SESSION
+
+# $__IsConHost = -not ($__IsVSCode -or $__IsTerminal)
+
+<#
+    [section]: Imports
+#>
+
+<#
+    [section]: main
+#>
+
+function ConvertTo-BitString {
+    [Alias('bits')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(ValueFromPipeline)]
+        [psobject[]] $InputObject,
+
+        [Parameter(Position = 0)]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int] $Padding,
+
+        [Parameter(Position = 1)]
+        [ValidateNotNull()]
+        [AllowEmptyString()]
+        [string] $ByteSeparator = ' ',
+
+        [Parameter(Position = 2)]
+        [ValidateNotNull()]
+        [AllowEmptyString()]
+        [string] $HalfByteSeparator = '.'
+    )
+    begin {
+        function GetBinaryString([psobject] $item) {
+            $numeric = number $item
+            if ($null -eq $numeric) {
+                return
+            }
+
+            $bits = [convert]::ToString($numeric, <# toBase: #> 2)
+            if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey((nameof { $Padding }))) {
+                $padAmount = $Padding * 8
+                if ($padAmount -ge $bits.Length) {
+                    return $bits.PadLeft($Padding * 8, [char]'0')
+                }
+            }
+
+            $padAmount = 8 - ($bits.Length % 8)
+            if ($padAmount -eq 8) {
+                return $bits
+            }
+
+            return $bits.PadLeft($padAmount + $bits.Length, [char]'0')
+        }
+    }
+    process {
+        foreach ($currentItem in $InputObject) {
+            $binaryString = GetBinaryString $currentItem
+
+            # yield
+            $binaryString -replace
+            '[01]{8}(?=.)', "`$0$ByteSeparator" -replace
+            '[01]{4}(?=[01])', "`$0$HalfByteSeparator"
+        }
+    }
+}
+
+
+filter decimal { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([decimal]) } }
+filter double { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([double]) } }
+filter single { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([single]) } }
+filter ulong { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([uint64]) } }
+filter long { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([int64]) } }
+filter uint { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([uint32]) } }
+filter int { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([int]) } }
+filter ushort { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([uint16]) } }
+filter short { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([int16]) } }
+filter byte { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([byte]) } }
+filter sbyte { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([sbyte]) } }
+
+
+$script:WellKnownNumericTypes = [type[]](
+    [byte],
+    [sbyte],
+    [int16],
+    [uint16],
+    [int],
+    [uint32],
+    [int64],
+    [uint64],
+    [single],
+    [double],
+    [decimal],
+    [bigint])
+
+function ConvertTo-Number {
+    [Alias('number')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(ValueFromPipeline, Position = 0)]
+        [psobject] $InputObject
+    )
+    process {
+        foreach ($currentItem in $InputObject) {
+            if ($currentItem -is [Enum]) {
+                # yield
+                $currentItem.value__
+                continue
+            }
+
+            if ($currentItem -isnot [ValueType]) {
+                # yield
+                $currentItem -as [int]
+                continue
+            }
+
+            if ([array]::IndexOf($script:WellKnownNumericTypes, $currentItem.GetType()) -eq -1) {
+                # yield
+                $currentItem -as [int]
+                continue
+            }
+
+            # yield
+            $currentItem
+        }
+    }
+}
+
+function ConvertTo-HexString {
+    [Alias('hex')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(ValueFromPipeline)]
+        [psobject[]] $InputObject,
+
+        [Parameter(Position = 0)]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int] $Padding
+    )
+    process {
+        foreach ($currentItem in $InputObject) {
+            $numeric = number $currentItem
+
+            if ($PSBoundParameters.ContainsKey((nameof { $Padding }))) {
+                "0x{0:X$Padding}" -f $numeric
+                continue
+            }
+
+            '0x{0:x}' -f $numeric
+        }
+    }
+}
+
+
+function ConvertTo-Base64String {
+    <#
+    #>
+    [Alias('base64')] # was also 'base'
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(ValueFromPipeline, Position = 0)]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string] $InputObject,
+
+        [Parameter()]
+        [ArgumentCompleter([EncodingArgumentCompleter])]
+        [EncodingArgumentConverter()]
+        [Encoding] $Encoding
+    )
+    begin {
+        if ($PSBoundParameters.ContainsKey((nameof { $Encoding }))) {
+            $userEncoding = $Encoding
+            return
+        }
+
+        $userEncoding = [Encoding]::Unicode
+    }
+    process {
+        if ([string]::IsNullOrEmpty($InputObject)) {
+            return
+        }
+
+        return [convert]::ToBase64String($userEncoding.GetBytes($InputObject))
+    }
+}
+
+function Get-ElementName {
+    [Alias('nameof')]
+    [CmdletBinding()]
+    param(
+        [Parameter(Position = 0, Mandatory)]
+        [ValidateNotNull()]
+        [ScriptBlock] $Expression
+    )
+    end {
+        if ($Expression.Ast.EndBlock.Statements.Count -eq 0) {
+            return
+        }
+
+        $firstElement = $Expression.Ast.EndBlock.Statements[0].PipelineElements[0]
+        if ($firstElement.Expression.VariablePath.UserPath) {
+            return $firstElement.Expression.VariablePath.UserPath
+        }
+
+        if ($firstElement.Expression.Member) {
+            return $firstElement.Expression.Member.SafeGetValue()
+        }
+
+        if ($firstElement.GetCommandName) {
+            return $firstElement.GetCommandName()
+        }
+
+        if ($firstElement.Expression.TypeName.FullName) {
+            return $firstElement.Expression.TypeName.FullName
+        }
+    }
+}
+
+# function Get-SciEnumInfo {
+#     <#
+#     .description
+#         Displays name mappings to values
+#     .example
+#         PS> [IO.Compression.CompressionMode] | Get-EnumInfo
+#     #>
+#     [CmdletBinding()]
+#     param(
+#         [Parameter(ValueFromPipeline)]
+#         [psobject] $InputObject
+#     )
+#     begin {
+#         $alreadyProcessed = $null
+#     }
+#     process {
+#         if ($null -eq $InputObject) {
+#             return
+#         }
+
+#         if ($null -eq $alreadyProcessed -and $MyInvocation.ExpectingInput) {
+#             $alreadyProcessed = [HashSet[type]]::new()
+#         }
+
+#         $enumType = $InputObject.psobject.BaseObject
+#         if (-not ($enumType -is [Type] -and $enumType.IsEnum)) {
+#             $enumType = $enumType.GetType()
+#         }
+
+#         if (-not ($enumType -is [Type] -and $enumType.IsEnum)) {
+#             return
+#         }
+
+#         if ($MyInvocation.ExpectingInput -and -not $alreadyProcessed.Add($enumType)) {
+#             return
+#         }
+
+#         $names = [enum]::GetNames($enumType)
+#         $values = [enum]::GetValues($enumType)
+
+#         $lastBits = bits -InputObject $values[-1]
+#         $bitsPadding = ($lastBits -replace '[\. ]').Length / 8
+#         $hexPadding = (hex -InputObject $values[-1]).Length - 2
+#         for ($i = 0; $i -lt $names.Length; $i++) {
+#             $value = $values[$i].value__
+#             $info = [PSCustomObject]@{
+#                 PSTypeName = 'UtilityProfile.EnumValueInfo'
+#                 EnumType   = $enumType
+#                 Name       = $names[$i]
+#                 Value      = $value
+#                 Hex        = hex -InputObject $value -Padding $hexPadding
+#                 Bits       = bits -InputObject $value -Padding $bitsPadding
+#             }
+
+#             $info.psobject.Members.Add(
+#                 [PSMemberSet]::new(
+#                     'PSStandardMembers',
+#                     [PSMemberInfo[]](
+#                         [PSPropertySet]::new(
+#                             'DefaultDisplayPropertySet',
+#                             [string[]]('Name', 'Value', 'Hex', 'Bits')))))
+
+#             # yield
+#             $info
+#         }
+#     }
+# }
+
+
+class EncodingArgumentCompleter : IArgumentCompleter {
+    hidden static [string[]] $s_encodings
+
+    static EncodingArgumentCompleter() {
+        $allEncodings = [Encoding]::GetEncodings()
+        $names = [string[]]::new($allEncodings.Length + 7)
+        $names[0] = 'ASCII'
+        $names[1] = 'BigEndianUnicode'
+        $names[2] = 'Default'
+        $names[3] = 'Unicode'
+        $names[4] = 'UTF32'
+        $names[5] = 'UTF7'
+        $names[6] = 'UTF8'
+
+        for ($i = 0; $i -lt $allEncodings.Length; $i++) {
+            $names[$i + 7] = $allEncodings[$i].Name
+        }
+
+        [EncodingArgumentCompleter]::s_encodings = $names
+    }
+
+    [IEnumerable[CompletionResult]] CompleteArgument(
+        [string] $commandName,
+        [string] $parameterName,
+        [string] $wordToComplete,
+        [CommandAst] $commandAst,
+        [IDictionary] $fakeBoundParameters) {
+        $results = [List[CompletionResult]]::new(<# capacity: #> 4)
+        foreach ($name in $this::s_encodings) {
+            if ($name -notlike "$wordToComplete*") {
+                continue
+            }
+
+            $results.Add(
+                [CompletionResult]::new(
+                    <# completionText: #> $name,
+                    <# listItemText:   #> $name,
+                    <# resultType:     #> [CompletionResultType]::ParameterValue,
+                    <# toolTip:        #> $name))
+        }
+
+        return $results.ToArray()
+    }
+}
+
+class EncodingArgumentConverterAttribute : ArgumentTransformationAttribute {
+    [object] Transform([EngineIntrinsics] $engineIntrinsics, [object] $inputData) {
+        if ($null -eq $inputData) {
+            return $null
+        }
+
+        if ($inputData -is [Encoding]) {
+            return $inputData
+        }
+
+        $convertedValue = default([Encoding])
+        if ([LanguagePrimitives]::TryConvertTo($inputData, [Encoding], [ref] $convertedValue)) {
+            return $convertedValue
+        }
+
+        if ($inputData -isnot [string]) {
+            $inputData = $inputData -as [string]
+            if ([string]::IsNullOrEmpty($inputData)) {
+                return $null
+            }
+        }
+
+        switch ($inputData) {
+            ASCII { return [Encoding]::ASCII }
+            BigEndianUnicode { return [Encoding]::BigEndianUnicode }
+            'Default' { return [Encoding]::Default }
+            Unicode { return [Encoding]::Unicode }
+            UTF32 { return [Encoding]::UTF32 }
+            UTF7 { return [Encoding]::UTF7 }
+            UTF8 { return [Encoding]::UTF8 }
+        }
+
+        return [Encoding]::GetEncoding($inputData)
+    }
+}
+
+function Get-TypeDefaultValue {
+    [Alias('default')]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [ValidateNotNull()]
+        [ArgumentCompleter([ClassExplorer.TypeArgumentCompleter])]
+        [type] $Type
+    )
+    end {
+        if (-not $Type.IsValueType) {
+            return $null
+        }
+
+        $PSCmdlet.WriteObject(
+            [Activator]::CreateInstance($Type),
+            <# enumerateCollection: #> $false)
+    }
+}
+
+
+function Convert-Object {
+    [Alias('convert')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(ValueFromPipeline)]
+        [psobject] $InputObject,
+
+        [Parameter(Mandatory, Position = 0)]
+        [ValidateNotNull()]
+        [ArgumentCompleter([ClassExplorer.TypeArgumentCompleter])]
+        [type] $Type
+    )
+    process {
+        if ($null -eq $InputObject) {
+            return
+        }
+
+        $convertedValue = default($Type)
+        if ([LanguagePrimitives]::TryConvertTo($InputObject, $Type, [ref] $convertedValue)) {
+            return $convertedValue
+        }
+    }
+}
