@@ -31,7 +31,8 @@ from original:
     # $typeAccel::Add('EncodingArgumentCompleter', [EncodingArgumentCompleter])
 #>
 
-
+# Add-Type -TypeDefinition
+$TypeDefScript = @'
 class EncodingArgumentCompleter : IArgumentCompleter {
     hidden static [string[]] $s_encodings
 
@@ -113,3 +114,4 @@ class EncodingArgumentConverterAttribute : ArgumentTransformationAttribute {
         return [Encoding]::GetEncoding($inputData)
     }
 }
+'@
