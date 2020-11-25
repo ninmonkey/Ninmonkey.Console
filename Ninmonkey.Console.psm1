@@ -1,19 +1,23 @@
 ﻿<#
     section: seeminglyScience Private
 #>
+
+# . 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\private\refactor to csharp\EncodingCompletion.ps1'
+
 $private_seeminglySci = @(
     'seeminglySci_import'
     'NamespaceAwareCompletion'
     'Get-SciEnumInfo'
-    'EncodingCompletion'
+    # 'EncodingCompletion'
 )
 if ($psEditor) {
     Write-Debug 'loading namespaceAwareCompletions'
-    # see: <https://github.com/SeeminglyScience/dotfiles/blob/a7a9bcf3624efe5be4988922ba2e35e8ff2fcfd8/PowerShell%2Fprofile.ps1#L147>
+    # see: <https://github.com/SeeminglyScience/dotfiles/b lob/a7a9bcf3624efe5be4988922ba2e35e8ff2fcfd8/PowerShell%2Fprofile.ps1#L147>
     #  $private_seeminglySci.Remove('NamespaceAwareCompletion')
     $private_seeminglySci = $private_seeminglySci -ne 'NamespaceAwareCompletion'
 }
 foreach ($file in $private_seeminglySci) {
+    Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)) {
     } else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
@@ -99,6 +103,7 @@ $public = @(
     # 'Get-EnumInfo'
     'Format-FileSize'
     'Format-NullText'
+    'ConvertTo-PropertyList'
     'Test-IsDirectory'
     'Get-NinCommandSyntax'
     'Format-TypeName'
@@ -138,6 +143,7 @@ $functionsToExport = @(
     'Get-NinAppxPackage'
     'Format-TypeName'
     'Format-GenericTypeName'
+    'ConvertTo-PropertyList'
     'Format-NullText'
     'Test-NullArg'
     'Get-NinObjectProperty'

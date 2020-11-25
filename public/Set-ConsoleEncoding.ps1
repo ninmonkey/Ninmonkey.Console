@@ -1,4 +1,6 @@
-﻿Function Set-ConsoleEncoding {
+﻿
+. 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\private\refactor to csharp\EncodingCompletion.ps1'
+function Set-ConsoleEncoding {
     <#
     .synopsis
         changes the powershell session to use an encoding

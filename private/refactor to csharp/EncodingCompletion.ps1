@@ -13,6 +13,24 @@ using namespace System.Text
 # using namespace System
 
 
+# see: <https://github.com/vexx32/PSKoans/blob/073998d26a8147effc12c6ec0e3be9fdf5924eda/PSKoans/Classes/KoanAttribute.ps1>
+
+Write-Warning 'refactor: see also
+- <https://github.com/SeeminglyScience/ClassExplorer/blob/209564a1a90281cbdda667774e4bd6e1ce449610/src%2FClassExplorer%2FNamespaceArgumentCompleter.cs#L5>
+- <https://github.com/vexx32/PSKoans/blob/073998d26a8147effc12c6ec0e3be9fdf5924eda/PSKoans/Classes/KoanAttribute.ps1>
+'
+
+
+<#
+from original:
+    # Terrible dirty hack to get around using non-exported classes in some of the function
+    # parameter blocks. Don't use this in a real module pls
+    # $typeAccel = [ref].Assembly.GetType('System.Management.Automation.TypeAccelerators')
+    # $typeAccel::Add('EncodingArgumentConverterAttribute', [EncodingArgumentConverterAttribute])
+    # $typeAccel::Add('EncodingArgumentConverter', [EncodingArgumentConverterAttribute])
+    # $typeAccel::Add('EncodingArgumentCompleter', [EncodingArgumentCompleter])
+#>
+
 
 class EncodingArgumentCompleter : IArgumentCompleter {
     hidden static [string[]] $s_encodings

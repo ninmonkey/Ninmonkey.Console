@@ -80,7 +80,7 @@ function Write-NinLabel {
 
     begin {
         $newTextSplat_Label = @{
-            ForegroundColor = $ForegroundColor ?? 'Blue'
+            ForegroundColor = $ForegroundColor ?? 'green'
             BackgroundColor = $BackgroundColor
             # Separator = 'x'
             LeaveColor      = $LeaveColor
