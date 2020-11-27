@@ -42,13 +42,3 @@ $_unicode_metadata = @{
         }
     }
 }
-
-$_unicode_web_query = @{
-
-    'Fileformat.info' = @{
-        # ex: 2400
-        'Codepoint' = 'https://www.fileformat.info/info/unicode/char/{{codepoint_hex}}/index.htm'
-        # ex: 'Cc'
-        'Category'  = 'https://www.fileformat.info/info/unicode/category/Cc/index.htm'
-    }
-}
