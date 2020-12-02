@@ -80,6 +80,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Edit-GitConfig'
+    'Write-NinLabel'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Format-History'
@@ -111,7 +112,6 @@ $public = @(
     'Get-NinObjectProperty'
     'Test-NullArg'
     'Get-NinChildItem'
-    'Write-NinLabel'
     'Get-ObjectType'
     'Get-NinAppxPackage'
     'Invoke-Explorer'
