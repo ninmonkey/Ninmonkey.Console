@@ -26,16 +26,16 @@
     }
     switch ($DisplayMode) {
         'Full' {
-            h1 'Encoding: Full'
+            Label 'Encoding' 'Full'
 
             $config.GetEnumerator() | ForEach-Object {
-                h1 $_.Key
+                Label $_.Key
                 $_.Value
             }
             break
         }
         'FullAlternate' {
-            h1 'Encoding: FullAlternate'
+            Label 'Encoding' 'FullAlternate'
 
             $config.GetEnumerator() | ForEach-Object {
                 [pscustomobject]@{
@@ -47,7 +47,8 @@
                     GetDecoder             = $_.value.GetDecoder()
                     isSingleByte           = $_.Value.IsSingleByte
                 }
-            } | Format-List
+            }
+            # | Format-List
             break
 
         }
@@ -62,22 +63,23 @@
                     CodePage     = $_.Value.CodePage
                     isSingleByte = $_.Value.IsSingleByte
                 }
-            } | Format-Table
+            }
+            #| Format-Table
         }
     }
-
-    if ($Test) {
-        h1 'test1'
-        "`u{1F408}" #cat
-        ($OutputEncoding, [console]::InputEncoding, [console]::OutputEncoding).EncodingName
-        "`u{1F408}" #cat
-
-        hr
-        "`u{1F412}" #monkey
-        hr
-        'adsfs', '-', ( [char]::ConvertFromUtf32(0x1f412) ), '-', 'end' -join ''
-        hr
-        'adsfs', "`u{1F412}", '-', ( [char]::ConvertFromUtf32(0x1f412) ), '-', 'end' -join ''
-        h1 'end'
-    }
+    # move to a Test-ConsoleEncodingSupport
+    # if ($Test) {
+    #     h1 'test1'
+    #     "`u{1F408}" #cat
+    #     ($OutputEncoding, [console]::InputEncoding, [console]::OutputEncoding).EncodingName
+    #     "`u{1F408}" #cat
+    #     hr
+    #     "`u{1F412}" #monkey
+    #     hr
+    #     'adsfs', '-', ( [char]::ConvertFromUtf32(0x1f412) ), '-', 'end' -join ''
+    #     hr
+    #     'adsfs', "`u{1F412}", '-', ( [char]::ConvertFromUtf32(0x1f412) ), '-', 'end' -join ''
+    #     h1 'end'
+    # }
 }
+Get-ConsoleEncoding FullAlternate

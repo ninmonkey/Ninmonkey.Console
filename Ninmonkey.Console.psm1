@@ -172,6 +172,11 @@ $functionsToExport = @(
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
     'Test-Net'
+    # seemingly-sci
+    'ConvertTo-BitString'
+    'ConvertTo-Number'
+    'ConvertTo-HexString'
+    'ConvertTo-Base64String'
 )
 Export-ModuleMember -Function $functionsToExport
 
@@ -208,7 +213,7 @@ if ($true) {
     New-Alias 'Cd' -Value 'Set-NinLocation' #todo:  make this opt in
 
     # class-explorer
-    New-Alias -ea 'Ignore' 'fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
+    New-Alias -ea 'Ignore' 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
     New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
@@ -224,6 +229,17 @@ if ($true) {
         'IPython'
         'Label'
         'Prop'
+        'Fm'
+        'Type'
+
+        ## seemingly sci
+        'Default'
+        'Convert'
+        'NameOf'
+        'Base64'
+        'Hex'
+        'Number'
+        'Bits'
     )
 
     Export-ModuleMember -Alias $aliasesToExport

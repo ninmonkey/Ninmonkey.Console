@@ -62,7 +62,7 @@ param()
 #>
 
 function ConvertTo-BitString {
-    [Alias('bits')]
+    [Alias('Bits')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline)]
@@ -146,7 +146,7 @@ $script:WellKnownNumericTypes = [type[]](
     [bigint])
 
 function ConvertTo-Number {
-    [Alias('number')]
+    [Alias('Number')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline, Position = 0)]
@@ -179,7 +179,7 @@ function ConvertTo-Number {
 }
 
 function ConvertTo-HexString {
-    [Alias('hex')]
+    [Alias('Hex')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline)]
@@ -207,7 +207,7 @@ function ConvertTo-HexString {
 function ConvertTo-Base64String {
     <#
     #>
-    [Alias('base64')] # was also 'base'
+    [Alias('Base64')] # was also 'base'
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline, Position = 0)]
@@ -238,7 +238,7 @@ function ConvertTo-Base64String {
 }
 
 function Get-ElementName {
-    [Alias('nameof')]
+    [Alias('NameOf')]
     [CmdletBinding()]
     param(
         [Parameter(Position = 0, Mandatory)]
@@ -338,7 +338,7 @@ function Get-ElementName {
 # }
 
 function Get-TypeDefaultValue {
-    [Alias('default')]
+    [Alias('Default')]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -359,7 +359,7 @@ function Get-TypeDefaultValue {
 
 
 function Convert-Object {
-    [Alias('convert')]
+    [Alias('Convert')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline)]
