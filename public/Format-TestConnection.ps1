@@ -8,14 +8,15 @@ function Format-TestConnection {
 
     #>
     param(
+        # Ping result record
+        # [Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus]
         [Parameter(
             ParameterSetName = 'Ping',
-            Mandatory, ValueFromPipeline, Position = 0, HelpMessage = 'ping record')]
-        # [Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus]
+            Mandatory, ValueFromPipeline, Position = 0)]
         $InputRecord,
 
-        [Parameter(HelpMessage = 'extra nested information')]
-        [switch]$Detailed
+        # extra nested information
+        [Parameter()][switch]$Detailed
     )
 
     <#
@@ -73,13 +74,13 @@ function private_Format-TestConnectionPingCommand {
 
     #>
     param(
-        [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'records')]
+        # ping records
         # [Microsoft.PowerShell.Commands.TestConnectionCommand+PingStatus[]]
-        [object[]]
-        $InputObject,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object[]]$InputObject,
 
-        [Parameter(HelpMessage = 'include extra nested information')]
-        [switch]$Detailed
+        # include extra nested information
+        [Parameter()][switch]$Detailed
     )
 
     process {

@@ -1,4 +1,5 @@
-﻿'more
+﻿@'
+more
 urls for get docs
 
 
@@ -23,7 +24,7 @@ urls at:
 https://ninmonkeys.com/blog/wp-admin/post.php?post=337&action=edit
 
 
-' | Write-Debug
+'@ | Write-Debug
 
 # lazy eval so that initial import doesn't take a long time
 $_cachedHelpTopics = $null
@@ -45,10 +46,8 @@ function _get-DocsDotnet {
     #>
 
     param (
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = 'TypeInstance or name')]
-        # [string]
+        # TypeInstance or name
+        [Parameter(Mandatory, Position = 0)]
         $InputObject
     )
 
@@ -94,17 +93,17 @@ function _get-DocsDotnet {
 }
 
 
-if ($false -and 'manual test') {
+if ($true -and $TERM_DEBUG) {
     $type_gcm = Get-Command | Select-Object -First 1
     $type_file = Get-ChildItem . -File | Select-Object -First 1
 
-    h1 ' literal: FileInfo'
+    H1 ' literal: FileInfo'
     _get-DocsDotnet 'System.IO.FileInfo' -Debug
 
-    h1 'fromObject: FileInfo'
+    H1 'fromObject: FileInfo'
     _get-DocsDotnet $type_file.GetType() -Debug
 
-    h1 'fromObject: gcm'
+    H1 'fromObject: gcm'
     _get-DocsDotnet $type_gcm.GetType() -Debug
     # _get-DocsDotnet 'fake.FileInfo' -Debug
     # _get-DocsDotnet 'System.IO.FileInfo' -Debug
@@ -117,17 +116,12 @@ function Get-Docs {
     #>
 
     param(
-        [Parameter(
-            Mandatory = $false,
-            Position = 1,
-            HelpMessage = 'Main Query'
-        )]
+        # Main Query
+        [Parameter(Position = 1)]
         [string]$Query,
 
-        [Parameter(
-            Mandatory,
-            Position = 0,
-            HelpMessage = "which preset to search?")]
+        # Which preset to search?
+        [Parameter(Mandatory, Position = 0)]
         [ValidateSet(
             '.Net',
             '.Net Core',
@@ -149,9 +143,8 @@ function Get-Docs {
         )]
         [string]$Type,
 
-        [parameter(
-            HelpMessage = 'Optional regex pattern for some commands'
-        )]
+        # Optional regex pattern for some commands
+        [parameter()]
         [string]$Pattern
     )
     Write-Warning 'add: should-process before invoke (refactor to the Out-Browser command)'

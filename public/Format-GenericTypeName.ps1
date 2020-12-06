@@ -25,20 +25,20 @@ function Format-GenericTypeName {
 
     #>
     param(
+        # typename as string
         [Parameter(
             ParameterSetName = "paramTypeAsString",
-            Mandatory, ValueFromPipeline,
-            HelpMessage = 'Type name as a string:')]
+            Mandatory, ValueFromPipeline)]
         [string]$TypeName,
 
+        # a TypeInfo instance like: $Obj.GetType()
         [Parameter(
             ParameterSetName = "paramTypeAsInstance",
-            ValueFromPipeline,
-            HelpMessage = 'a TypeInfo instance like: $Obj.GetType()')]
+            ValueFromPipeline)]
         [System.Reflection.TypeInfo]$TypeInstance,
 
-        [Parameter(HelpMessage = "surround the outter most with brackets")]
-        [switch]$WithBrackets
+        # surround the outter most with brackets ?
+        [Parameter()][switch]$WithBrackets
     )
 
     begin {

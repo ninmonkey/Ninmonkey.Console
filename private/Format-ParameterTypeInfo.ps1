@@ -7,7 +7,8 @@ function _Format-ParameterTypeInfo {
         formats [System.Management.Automation.ParameterMetadata]
     #>
     param(
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = '[ParameterMetadata] instance')]
+        # [ParameterMetadata] instance
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         $InputObject
     )
 

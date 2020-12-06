@@ -10,10 +10,9 @@
         .
     #>
     param (
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = 'Item Type')]
+        # Item type?
         # todo: refactor using a config file
+        [Parameter(Mandatory, Position = 0)]
         [ValidateSet(
             'VS Code | Project',
             'VS Code | Folder',
@@ -23,10 +22,8 @@
         )]
         [string[]]$ItemType = 'All',
 
-        [Parameter(
-            # Mandatory,
-            Position = 1,
-            HelpMessage = 'Saved Locations')]
+        # saved locations
+        [Parameter(Position = 1)]
         [ValidateSet(
             '2020',
             '2020 ⇾ Powershell',
@@ -37,9 +34,8 @@
         )]
         [string[]]$Location,
 
-        [Parameter(
-
-            HelpMessage = 'Optionally specify sort property')]
+        # optional property name to sort by
+        [Parameter()]
         [ValidateSet('LastWriteTime', 'LastAccessTime')]
         [string]$SortProperty
     )
@@ -141,7 +137,7 @@
 
     ## only if not empty | Sort-Object @sortSplat
     hr
-    h1 "Count: $($resultList.Count)"
+    H1 "Count: $($resultList.Count)"
     $resultList
 
     Write-Warning "command is a WIP"

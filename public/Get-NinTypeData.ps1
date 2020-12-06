@@ -15,16 +15,16 @@
         PS> Get-NinTypeData 'System.IO.FileInfo' 'Summary'
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "Which type[s] to find?")]
+        # Which type[s] to find?
+        # future: Pass type as instance or by name
+        [Parameter(Mandatory, Position = 0)]
         [string[]]$TypeName,
 
-        [Parameter(HelpMessage = "Display list of types, then quit")][switch]$List,
+        # List types only, skip exporting data
+        [Parameter()][switch]$List,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = "Output Mode")]
+        # Output Mode
+        [Parameter(Position = 1)]
         [ValidateSet('DefaultProperties', 'All', 'Members', 'Summary')]
         [string]$OutputMode = 'DefaultProperties'
     )
@@ -53,7 +53,7 @@
             $td.Members.GetEnumerator() | ForEach-Object {
                 $Key = $_.Key
                 $Value = $_.Value
-                h1 "Member: $Key"
+                H1 "Member: $Key"
                 $Value | Format-List
             }
             break
@@ -84,21 +84,21 @@
 if ($false -and 'enabledTests') {
 
 
-    h1 'default'
+    H1 'default'
     $a = Get-NinTypeData 'System.IO.FileInfo' DefaultProperties
     $a | Format-List
 
-    h1 'All'
+    H1 'All'
     $b = Get-NinTypeData 'System.IO.FileInfo' All
     $b | Format-List
 
-    h1 'Members'
+    H1 'Members'
     $c = Get-NinTypeData 'System.IO.FileInfo' Members
     $c | Format-List
 
     hr
 
-    h1 'Default (from $all)'
+    H1 'Default (from $all)'
     $b.psobject.Properties | Where-Object Name -Match 'default'
     hr
     $b.psobject.Properties | Where-Object Name -Match 'default' | ForEach-Object {

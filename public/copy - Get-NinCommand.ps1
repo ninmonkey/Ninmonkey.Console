@@ -8,7 +8,8 @@ using namespace System.Management.Automation
 
 function _FilterFunctionInfo {
     param(
-        [Parameter(Mandatory, Position = 0, HelpMessage = 'inputObject', ValueFromPipeline)]
+        # InputObject
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [ValidateNotNull()]
         # [FunctionInfo[]]$FunctionInfo
         [object[]]$CmdletInfo
@@ -50,7 +51,7 @@ function _FilterFunctionInfo {
 
             #>
             # foreach ($Command in $CurCmdletInfo.ExportedCommands.Keys) {
-            h1 'SummaryTable' | Write-Debug
+            H1 'SummaryTable' | Write-Debug
             # $CurCmdletInfo
             # | Select-Object -Property $Prop.SummaryTable
             # | Format-Table -Wrap -AutoSize
@@ -87,18 +88,15 @@ function Get-NinCommand {
             -UseAbbreviationExpansion
     #>
     param(
-        [Parameter(
-            Position = 0,
-            HelpMessage = "Command Name"
-        )]
+        # Command Name
+        [Parameter(Position = 0)]
         [string[]]$Name,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = 'Output Mode'
-        )]
         # later it might make sense to maek this [string[]]
         # if they are not exclusive
+
+        # Output Mode
+        [Parameter(Position = 1)]
         [ValidateSet('Commands', 'Summary')]
         [string]$OutputMode,
 
@@ -156,14 +154,14 @@ $Sample = @{
 }
 $AllSamples = $Sample.Values
 
-h1 'misc commands samples'
+H1 'misc commands samples'
 Get-NinCommand 'Get-Command', 'Get-ChildItem'
 
 Label 'Sample commands'
 $AllSamples | Select-Object -Property  Name | Out-Default
 
 
-h1 'now samples'
+H1 'now samples'
 $sample.FunctionInfo_NonBlank| ForEach-Object {
     _FilterFunctionInfo $_
 }

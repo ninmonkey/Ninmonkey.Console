@@ -42,7 +42,7 @@ function Format-Predent {
         $isFirstItem = $true
     }
     Process {
-        label 'firstProc?' $isFirstItem -bg 'pink' | Write-Debug
+        Label 'firstProc?' $isFirstItem -bg 'pink' | Write-Debug
         if ($isFirstItem) {
             $isFirstItem = $false
         }

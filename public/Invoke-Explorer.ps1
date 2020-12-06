@@ -21,14 +21,14 @@
     [Alias('Here')]
     [CmdletBinding(SupportsShouldProcess)]
     param(
+        # Which type[s] to find?"
         [Parameter(
             Position = 0,
-            ValueFromPipeline,
-            HelpMessage = "Which type[s] to find?")]
+            ValueFromPipeline)]
         [string[]]$Path = '.',
 
-        [Parameter(
-            HelpMessage = "Minimum number of folders that trigger confirmation")]
+        # Minimum number of folders required to trigger confirmation
+        [Parameter()]
         [int]$MinWarning = 3
     )
     begin {

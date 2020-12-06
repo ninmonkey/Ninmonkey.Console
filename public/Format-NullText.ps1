@@ -7,16 +7,14 @@ function Format-NullText {
         turns $null values, and null unicode in strings
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            ValueFromPipeline, HelpMessage = "piped objects, possible null")]
-        [AllowNull()]
+        # piped objects, allows null
         # Not actually text, but,
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [AllowNull()]
         [object]$InputObject,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = "String to use if not the default")]
+        # safe String to use if not the default
+        [Parameter(Position = 1)]
         [string]$ReplacementString = '␀'
     )
     begin {

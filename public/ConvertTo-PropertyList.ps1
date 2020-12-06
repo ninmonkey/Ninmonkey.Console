@@ -38,16 +38,14 @@ function ConvertTo-PropertyList {
     #>
     [alias('ConvertTo-HashTable')]
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [object]$InputObject,
+        # InputObject
+        [Parameter(Mandatory, ValueFromPipeline)][object]$InputObject,
 
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = 'names of properties, the default uses an exact match')]
-        [string[]]$Property,
+        # properties to include, uses Select-Object's wildcards syntax
+        [Parameter(Mandatory, Position = 0)][string[]]$Property,
 
-        [Parameter(HelpMessage = "return a [pscustomobject] instead")]
-        [switch]$AsObject
+        # return a [pscustomobject] instead
+        [Parameter()][switch]$AsObject
 
     )
     begin {}

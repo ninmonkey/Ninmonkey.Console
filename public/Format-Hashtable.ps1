@@ -62,25 +62,22 @@
     #>
     [CmdletBinding(DefaultParameterSetName = "FromPipe")]
     param (
+        # format as line or format-pair?
         [Alias('Format-Hash')]
-        [Parameter(
-            ParameterSetName = "FromPipe",
-            Position = 0, HelpMessage = "format as line or format-pair"
-        )]
+        [Parameter(ParameterSetName = "FromPipe", Position = 0)]
         [ValidateSet('SingleLine', 'Table', 'Pair')]
         [string]$FormatMode = 'Pair',
 
-        [Parameter(
-            ParameterSetName = "FromPipe",
-            Mandatory, ValueFromPipeline, HelpMessage = 'Object'
-        )]
+        # Input hash
+        [Parameter(ParameterSetName = "FromPipe", Mandatory, ValueFromPipeline)]
         [hashtable]$InputHash,
 
-        [Parameter(HelpMessage = "Sort Keys?")][switch]$NoSortKeys,
+        # Skip sorting keys?
+        [Parameter()][switch]$NoSortKeys,
 
-        [alias('AsString')]
-        [Parameter(HelpMessage = "Force Format-Table to render, so Write-Debug prints as expected")]
-        [switch]$Force
+        # Force Format-Table to render (so Write-Debug prints as expected) -AsString
+        [Alias('AsString')]
+        [Parameter()][switch]$Force
     )
 
     begin {

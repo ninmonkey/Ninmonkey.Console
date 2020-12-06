@@ -33,9 +33,8 @@ function Format-ControlChar {
             - [ ] use string builder, or pipe results directly directly
     #>
     param(
-        # [AllowNull()]
-        # [AllowEmptyString()]
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "Text to map")]
+        # Input text to map
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]

@@ -10,36 +10,27 @@
         [https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties]
     #>
     param(
-        [Parameter(
-            ParameterSetName = "paramTypeAsString",
-            Mandatory, ValueFromPipeline,
-            HelpMessage = 'list of types as strings')]
+        # list of types as strings
+        [Parameter(ParameterSetName = "paramTypeAsString", Mandatory, ValueFromPipeline)]
         [string]$TypeName,
 
-        [Parameter(
-            ParameterSetName = "paramTypeAsInstance",
-            ValueFromPipeline,
-            HelpMessage = 'list of types')]
+        # list of types / type instances
+        [Parameter(ParameterSetName = "paramTypeAsInstance", ValueFromPipeline)]
         [System.Reflection.TypeInfo]$TypeInstance,
 
-        [Parameter(
-            HelpMessage = "A List of Namespaces or prefixes to ignore")]
+        # A List of Namespaces or prefixes to ignore: -IgnoreNamespace
+        [Parameter()]
         [string[]]$IgnorePrefix = @(
             'System.Collections'
             'System.Collections.Generic'
             'System.Text'
             'System.Management.Automation'
             'System.Runtime.CompilerServices'
-
         ),
 
-        [Parameter(HelpMessage = "Output surrounded with '[]'")]
+        # surround type names with '[]' ?
         [Alias('WithoutBrackets')]
-        [switch]$NoBrackets,
-
-        [Parameter(
-            HelpMessage = "hash of renaming options")]
-        [hashtable[]]$NameMapping
+        [Parameter()][switch]$NoBrackets
     )
     begin {
         $DefaultIgnorePrefix = @(
@@ -100,7 +91,7 @@
 
 
 function NestedOrNot( [type]$TypeInfo ) {
-    h1 'nestedOrNot'
+    H1 'nestedOrNot'
     $isNested = $typeInfo.IsNested
     Label 'Nested' $isNested
     @{
@@ -117,12 +108,14 @@ function NestedOrNot( [type]$TypeInfo ) {
 
 }
 
-if ($false -or 'quick test') {
-    $typeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String],[System.Management.Automation.ParameterMetadata]]'
-    $TypeInfo = $typeName -as 'type'
-    NestedOrNot 'dsf'.GetType()
-    #| label 'string '
-    NestedOrNot $typeinfo
-    #| Label 'typeinfo '
+& {
+    if ($false -or 'quick test') {
+        $typeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String],[System.Management.Automation.ParameterMetadata]]'
+        $TypeInfo = $typeName -as 'type'
+        NestedOrNot 'dsf'.GetType()
+        #| label 'string '
+        NestedOrNot $typeinfo
+        #| Label 'typeinfo '
 
-}
+    }
+} | Write-Debug

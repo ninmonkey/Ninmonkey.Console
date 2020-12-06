@@ -11,10 +11,8 @@
     #>
     [cmdletbinding()]
     param (
-        [Parameter(Mandatory, Position = 0,
-            ValueFromPipeline,
-            HelpMessage = "Size in bytes")]
-
+        # size in Bytes
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [int64] $Size
     )
 

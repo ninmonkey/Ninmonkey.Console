@@ -13,17 +13,19 @@
     #>
     [CmdletBinding()]
     param (
-        [Parameter(HelpMessage = "Minimum (max-ping) value required before popping up (in ms)")]
+        # Minimum (max-ping) value required before popping up (in ms)
+        [Parameter()]
         [int]$MaxPingWarning = 200,
 
-        [Parameter(HelpMessage = "Minimum (avg-ping) value required before popping up (in ms)")]
+        # Minimum (avg-ping) value required before popping up (in ms)
+        [Parameter()]
         [int]$AvgPingWarning = 100,
 
-        [Parameter(HelpMessage = "Force Popup for testing")]
-        [switch]$Force,
+        # Force Popup for testing
+        [Parameter()][switch]$Force,
 
-        [Parameter(HelpMessage = "force sounds?")]
-        [switch]$NotSilent
+        # force sounds?
+        [Parameter()][switch]$NotSilent
     )
 
     $TimeFormatString = 'h:m tt' # equal to 't'

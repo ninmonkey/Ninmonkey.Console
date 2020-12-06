@@ -8,8 +8,10 @@
         PS> Format-History
     #>
     param(
-        [Parameter(HelpMessage = 'Disable ANSI color output')][switch]$NoColor
+        # Disable ANSI color output
+        [Parameter()][switch]$NoColor
     )
+
     Get-History | Sort-Object -Property CommandLine -Unique | Sort-Object Id | ForEach-Object {
         hr
         if ($NoColor) {

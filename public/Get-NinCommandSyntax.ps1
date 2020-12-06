@@ -13,9 +13,8 @@
         PS> Get-NinCommandSyntax 'ls'
     #>
     param (
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "Name of Command")]
+        # name of command
+        [Parameter(Mandatory, Position = 0)]
         [string]$Name
     )
     $cmd = (Get-Command $Name)

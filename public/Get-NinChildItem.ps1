@@ -11,7 +11,8 @@
     #>
     [Alias('nLs')]
     param (
-        [Parameter(HelpMessage = "show all")][switch]$All
+        # Show all?
+        [Parameter()][switch]$All
     )
 
     begin {

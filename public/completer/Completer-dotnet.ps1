@@ -27,23 +27,20 @@ function New-CompletionResult {
         ToolTip        : List installed .net runtime
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "Completion Result returned")]
+        # Completion Result returned
+        [Parameter(Mandatory, Position = 0)]
         [string]$CompletionText,
 
-        [Parameter(
-            Mandatory, Position = 1,
-            HelpMessage = 'Text displayed in the popup, usually equal to -CompletionText without a "--" prefix. ')]
+        # Text displayed in the popup, usually equal to -CompletionText without a "--" prefix.
+        [Parameter(Mandatory, Position = 1)]
         [string]$ListItemText,
 
-        [Parameter(
-            Mandatory, Position = 2,
-            HelpMessage = "enum: [System.Management.Automation.CompletionResultType]")]
+        # enum: [System.Management.Automation.CompletionResultType]
+        [Parameter(Mandatory, Position = 2)]
         [CompletionResultType]$ResultType,
 
-        [Parameter(
-            Mandatory, Position = 3, HelpMessage = 'Verbose description shown when a single command is selected')]
+        # Verbose description shown when a single command is selected
+        [Parameter(Mandatory, Position = 3)]
         [string]$Tooltip
     )
 

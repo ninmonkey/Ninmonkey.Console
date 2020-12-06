@@ -4,11 +4,15 @@
             compare results of [Environment]::GetFolderPath() across different platforms and versions
     #>
     param(
-        [Parameter(HelpMessage = 'Try both versions of powershell in a subprocess, otherwise defaults to using the current session '
-        )][switch]$TryAll,
+        # Try both versions of powershell in a subprocess, otherwise defaults to using the current session
+        [Parameter()]
+        [switch]$TryAll,
 
-        [Parameter(HelpMessage = 'skip converting to json')][switch]$PassThru,
-        [Parameter(HelpMessage = 'minify JSON if used')][switch]$CompressJson
+        # return PSObject instead of Json ?
+        [Parameter()][switch]$PassThru,
+
+        # minify JSON ?
+        [Parameter()][switch]$CompressJson
     )
 
     $folderList = [enum]::GetNames( [System.Environment+SpecialFolder] ) | ForEach-Object {

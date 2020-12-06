@@ -21,7 +21,8 @@ Get-Module pester -ListAvailable
 
 function _FilterExportedCommands {
     param(
-        [Parameter(Mandatory, Position = 0, HelpMessage = 'inputObject', ValueFromPipeline)]
+        # Input object
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [ValidateNotNull()]
         [psmoduleinfo[]]$ModuleInfo
     )
@@ -47,21 +48,18 @@ function _FilterExportedCommands {
 
 function Get-NinModule {
     param(
-        [Parameter(
-            Position = 0,
-            HelpMessage = "Module Name"
-        )]
+        # Module name
+        [Parameter(Position = 0)]
         [string[]]$Name,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = 'Output Mode'
-        )]
+        # Output mode
         # later it might make sense to maek this [string[]]
         # if they are not exclusive
+        [Parameter(Position = 1)]
         [ValidateSet('Commands', 'Summary', 'Uri', 'All')]
         [string]$OutputMode = 'Summary',
 
+        # return an object
         [Parameter()][switch]$PassThru
     )
 

@@ -40,12 +40,12 @@
     [Alias('Prop', 'ObjectProperty')]
     param(
 
-        [Parameter(
-            Mandatory, Position = 0, ValueFromPipeline,
-            HelpMessage = "any object with properties to inspect")]
+        # any object with properties to inspect
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject,
 
-        [Parameter(HelpMessage = "Return extra information")][switch]$Detailed
+        # Return extra informaiton?
+        [Parameter()][switch]$Detailed
     )
 
     begin {

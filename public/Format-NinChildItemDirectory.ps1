@@ -24,8 +24,8 @@ function Format-NinChildItemDirectory {
     #>
     [Alias('lsd')]
     param (
-        [Parameter(
-            Position = 0, HelpMessage = 'format mode')]
+        # format mode
+        [Parameter(Position = 0)]
         [ValidateSet('Line', 'List')]
         [string]$Mode = 'Line'
     )

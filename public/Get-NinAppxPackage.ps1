@@ -58,13 +58,15 @@
 
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = 'Regex compares against FullName of the exe')]
+        # Regex to compare against the FullName of the exe
+        [Parameter(Mandatory, Position = 0)]
         [string[]]$Regex,
 
-        [Parameter(HelpMessage = "GetAppXPackage -AllUsers. (Requires admin)")][switch]$AllUsers,
-        [Parameter(HelpMessage = "Return Instances without formatting")][switch]$PassThru
+        # GetAppXPackage -AllUsers. (Requires admin)
+        [Parameter()][switch]$AllUsers,
+
+        # Return Instances without formatting ?
+        [Parameter()][switch]$PassThru
     )
 
     begin {
@@ -124,7 +126,7 @@
         $finalResults | Format-List Regex, App, ExeList, TargetList
         $finalResults | Format-Table Regex, App
 
-        h1 'linked to'
+        H1 'linked to'
         $LinkList | ForEach-Object FullName
     }
     end {
