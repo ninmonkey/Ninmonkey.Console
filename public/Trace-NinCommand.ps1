@@ -43,15 +43,21 @@
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory,
-            HelpMessage = "ScriptBlock to run")]
+        # ScriptBlock to run
+        [Parameter(Mandatory)]
         [scriptblock]$Expression,
 
-        [Parameter(HelpMessage = "do not print results to StdOut")][switch]$Silent,
-        [Parameter(HelpMessage = "do not open filtered log automatically")][switch]$AutoOpen,
+        # do not print results to StdOut
+        [Parameter()][switch]$Silent,
 
-        [Parameter(HelpMessage = "do not open original log automatically")][switch]$WithOriginal,
-        [Parameter(HelpMessage = "special color formatting, requires python package 'Pygments'")][switch]$Color
+        # open filtered log automatically ?
+        [Parameter()][switch]$AutoOpen,
+
+        # open original log automatically ?
+        [Parameter()][switch]$WithOriginal,
+
+        # use syntax highlighting, (requires python package 'Pygments')
+        [Parameter()][switch]$Color
     )
 
 

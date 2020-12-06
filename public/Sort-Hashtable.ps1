@@ -22,31 +22,23 @@
     #>
     [CmdletBinding(DefaultParameterSetName = 'FromParam')]
     param (
-        [Parameter(
-            ParameterSetName = 'FromParam',
-            Mandatory, Position = 0,
-            HelpMessage = 'Hashtable to sort')]
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Mandatory,
-            ValueFromPipeline,
-            HelpMessage = 'piped hashtables to sort')]
+        # Hashtable to sort
+        [Parameter(ParameterSetName = 'FromParam', Mandatory, Position = 0)]
+        [Parameter(ParameterSetName = 'FromPipe', Mandatory, ValueFromPipeline)]
         [hashtable]$InputHash,
 
-        [Parameter(
-            ParameterSetName = 'FromParam',
-            Position = 1, HelpMessage = 'Sort by key or value?')]
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Position = 0)]
+        # Sort by key or value?
+        [Parameter(ParameterSetName = 'FromParam', Position = 1)]
+        [Parameter(ParameterSetName = 'FromPipe', Position = 0)]
         [ValidateSet('Key', 'Value')]
         [String]$SortBy = 'Key',
 
-        [Parameter(HelpMessage = "sort by descending")][switch]$Descending
+        # Sort by Descending?
+        [Parameter()][switch]$Descending
 
         # would it ever
-
         # [Parameter(HelpMessage = "return hash or ordered hash?")][switch]$NotOrdered
+        # ?
     )
     begin {}
     Process {

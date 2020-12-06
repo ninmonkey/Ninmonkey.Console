@@ -92,7 +92,7 @@ function _FilterFunctionInfo {
 
             #>
             # foreach ($Command in $CurFunctionInfo.ExportedCommands.Keys) {
-            h1 'SummaryTable' | Write-Debug
+            H1 'SummaryTable' | Write-Debug
             'wip'
             # $CurFunctionInfo | Select-Object * -ExcludeProperty 'ScriptBlock', 'Definition'
             # h2 'all'
@@ -161,21 +161,18 @@ function Get-NinCommand {
             -UseAbbreviationExpansion
     #>
     param(
-        [Parameter(
-            Position = 0,
-            HelpMessage = "Command Name"
-        )]
+        # Command name
+        [Parameter(Position = 0)]
         [string[]]$Name,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = 'Output Mode'
-        )]
+        # output mode
+        [Parameter(Position = 1)]
         # later it might make sense to maek this [string[]]
         # if they are not exclusive
         [ValidateSet('Commands', 'Summary')]
         [string]$OutputMode,
 
+        # do not format
         [Parameter()][switch]$PassThru
     )
 
@@ -249,9 +246,9 @@ $AllSamples | Select-Object -Property  Name | Out-Default
 if ($False) {
 
 
-    h1 'misc commands samples'
+    H1 'misc commands samples'
     Get-NinCommand 'Get-Command', 'Get-ChildItem'
-    h1 'now samples'
+    H1 'now samples'
     $sample.FunctionInfo, $sample.FunctionInfo_NonBlank | ForEach-Object {
         _FilterFunctionInfo $_
     }

@@ -12,10 +12,8 @@
         # $False
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            ValueFromPipeline,
-            HelpMessage = 'File object or path to test')]
+        # File object or path to test
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [Alias('PSPath')]
         [string]$Path
     )

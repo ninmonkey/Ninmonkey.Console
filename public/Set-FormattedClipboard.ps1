@@ -22,24 +22,21 @@
 
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "Object to format")]
+        # Input object
+        [Parameter(Mandatory, Position = 0)]
         $InputObject,
 
-        [Parameter(
-            Position = 1,
-            HelpMessage = "Which type of formatting to use? Format-Table, Format-List. Use none if already formatted.")]
+        # Which type of formatting to use? Format-Table, Format-List. Use none if already formatted.
+        [Parameter(Position = 1)]
         [ValidateSet('Table', 'List', 'None')]
         [String]$FormatMode = 'Table',
 
-        [Parameter(
-            Position = 2,
-            HelpMessage = "-Width for Out-String")]
+        # -Width for Out-String
+        [Parameter(Position = 2)]
         [int]$Width,
 
-        [Parameter(
-            HelpMessage = 'temporarily overrides $FormatEnumerationLimit')]
+        # temporarily overrides '$FormatEnumerationLimit'
+        [Parameter()]
         [int]$EnumerationLimit
     )
 

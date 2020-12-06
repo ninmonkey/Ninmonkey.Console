@@ -21,11 +21,10 @@ function StringTo-Object {
     .notes
         should the name be ConvertFrom-String ?
     #>
-    [alias('StrObject')]
+    [Alias('StrObject')]
     param(
-        [Parameter(
-            Mandatory, Position = 0, ValueFromPipeline,
-            HelpMessage = "convert strings to objects")]
+        # convert strings to objects
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$StringList
     )
 
@@ -44,12 +43,12 @@ function Format-StringWide {
     give a better user experience
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0, ValueFromPipeline,
-            HelpMessage = "List of strings to display")]
+        # List of strings to display
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$String,
 
-        [Parameter(HelpMessage = "format-wide's -AutoSize")][switch]$AutoSize
+        # Use 'Format-Wide -Autosize'
+        [Parameter()][switch]$AutoSize
     )
 
     begin {
@@ -81,7 +80,7 @@ $allTagNames = $lastGetModule
 | Select-Object -ExpandProperty Tags
 | Sort-Object -Unique
 
-h1 'manual Fw -9'
+H1 'manual Fw -9'
 $allTagNames | Select-Object | ForEach-Object {
     [pscustomobject]@{
         Name = $_

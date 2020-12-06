@@ -20,23 +20,22 @@
     [CmdletBinding(DefaultParameterSetName = 'GoToPath')]
 
     param(
+        # change directory to target Directory or (even a Filename)
         [Parameter(
             ParameterSetName = 'GoToPath',
             Mandatory, Position = 0,
             ValueFromPipeline,
-            ValueFromPipelineByPropertyName,
-            HelpMessage = 'change directory to target Directory or (even a Filename)')]
+            ValueFromPipelineByPropertyName)]
         [Alias('PSPath')]
         [String]$Path,
 
-        [Parameter(
-            ParameterSetName = 'GoBack',
-            HelpMessage = 'Go back: Pop-Location')]
+        # Go back? (uses Pop-Location on custom stack name)
+        [Parameter(ParameterSetName = 'GoBack')]
         [Switch]$Back,
 
-        [Parameter(HelpMessage = "Always run 'pwd' after changing directory?")]
+        # Always run 'pwd' after changing directory?
         [Alias('AlwaysGci')]
-        [switch]$AlwaysLsAfter
+        [Parameter()][switch]$AlwaysLsAfter
     )
     Write-Debug "Path: '$Path'"
 

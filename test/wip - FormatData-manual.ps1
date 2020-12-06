@@ -11,9 +11,8 @@ Import-Module Ninmonkey.Console -Force -ea Stop
 
 function runTest_TypeInfo {
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "object to test format data")]
+        # object to test format data
+        [Parameter(Mandatory, Position = 0)]
         $InputObject
     )
     $TypeInfo = $InputObject.GetType()
@@ -23,17 +22,17 @@ function runTest_TypeInfo {
         @($InputObject)[0].GetType().FullName
     )
     hr 4
-    h1 "$InputObject | format-list"
+    H1 "$InputObject | format-list"
     Label $LabelText
     $TypeInfo | Format-List
 
     hr
-    h1 "$InputObject | format-Table"
+    H1 "$InputObject | format-Table"
     Label $LabelText
     $TypeInfo | Format-Table
 
     hr
-    h1 "$InputObject"
+    H1 "$InputObject"
     Label $LabelText
     $TypeInfo
 }
@@ -67,14 +66,14 @@ if ($false) {
     h2 'net'
     runTest_TypeInfo $netTrace
     h2 'net end'
-    h1 'implicit'
+    H1 'implicit'
     $netTrace
-    h1 'ft'
+    H1 'ft'
     $netTrace | Format-Table
 
 }
 if ($TestConfig.TracePing) {
-    h1 'TracePing'
+    H1 'TracePing'
     if ($null -eq $Cache.TracePing) {
         Write-Warning 'Ping...'
         Test-Connection stpl-dsl-gw21.stpl.qwest.net -ResolveDestination
@@ -85,7 +84,7 @@ if ($TestConfig.TracePing) {
 }
 
 if ($TestConfig.TraceRoute) {
-    h1 'TraceRoute'
+    H1 'TraceRoute'
     Label 'Ft'
     if ($null -eq $Cache.TraceRoute) {
         Write-Warning 'TraceRoute...'

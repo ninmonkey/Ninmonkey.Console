@@ -1,28 +1,27 @@
 ﻿
 function Start-LogTestNet {
+    # better verb: Invoke-TestNetLog  ?
     param(
-        [Parameter(HelpMessage = 'time to sleep between requests')]
+        # time to sleep between requests
+        [Parameter()]
         [double]$DelaySeconds = 15.,
 
-        [Parameter(
-            Mandatory = $false,
-            Position = 0,
-            HelpMessage = '-TargetName param of Test-Connection')]
+        # -TargetName param of Test-Connection
+        [Parameter(Position = 0)]
         [string[]]$TargetName,
 
-        [parameter(
-            HelpMessage = 'output filepath to current log')]
-        [switch]$GetLogPath,
+        # output filepath to current log
+        [Parameter()][switch]$GetLogPath,
 
-        [parameter(
-            HelpMessage = 'Do not print to console, no Write-Progress')]
+        # Do not print to console, no Write-Progress
+        [Parameter()]
         [switch]$Silent,
 
-        [Parameter(HelpMessage = "Enable toast popups of results")][switch]$WithToast,
+        # Enable toast popups of results ?
+        [Parameter()][switch]$WithToast,
 
-        [parameter(
-            HelpMessage = 'enable write-progress status')]
-        [switch]$WriteProgress
+        # enable write-progress status ?
+        [Parameter()][switch]$WriteProgress
     )
     $FilenameSafeDate = (Get-Date).ToString("yyyy_M_dd")
     $FileName = "PingLog_${FilenameSafeDate}.csv"

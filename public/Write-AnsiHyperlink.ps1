@@ -28,19 +28,17 @@
     [CmdletBinding()]
     param(
         #The Uri that you wish to have as part of the hyperlink
-        [Parameter(Mandatory, ValueFromPipeline)][UriBuilder]$Uri,
         #The label text that will actually be shown in Windows Terminal
+        [Parameter(Mandatory, ValueFromPipeline)][UriBuilder]$Uri,
         [ValidateNotNullOrEmpty()][String]$Label = $Uri.uri,
 
-
-        [Parameter(
-            HelpMessage = 'Allows you to automatically disable this by setting a $PSDefaultParameterValues')]
+        # Allows you to automatically disable this by setting a $PSDefaultParameterValues
+        [Parameter()]
         [Alias('PassThru')]
         [switch]$NoAnsi,
 
-        [Parameter(
-            HelpMessage = 'output raw markdown instead')]
-        [switch]$AsMarkdown
+        # output raw markdown instead
+        [Parameter()][switch]$AsMarkdown
     )
 
     $e = [char]27

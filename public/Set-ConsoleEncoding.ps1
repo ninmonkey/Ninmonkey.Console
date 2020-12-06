@@ -9,7 +9,8 @@ function __old_Set-ConsoleEncoding {
         changing encodings multiple times in code works at least on 'pwsh' and the integrated terminal
     #>
     param(
-        [Parameter(Mandatory, Position = 0, HelpMessage = "Which encoding to use?")]
+        # Which encoding to use?
+        [Parameter(Mandatory, Position = 0)]
         [System.Management.Automation.ArgumentCompleterAttribute([EncodingArgumentCompleter])]
         [EncodingArgumentConverter()]
         [Encoding] $Encoding
@@ -53,18 +54,16 @@ function __old_Set-ConsoleEncoding {
 
 function Set-ConsoleEncoding {
     param(
-        [Parameter(
-            Mandatory, Position = 0,
-            HelpMessage = "Which encoding to use?")]
-        # [encoding]$EncodingName
+        # Which encoding to use?
+        # [string] or [encoding]
+        [Parameter(Mandatory, Position = 0)]
         [ValidateSet('Utf8', 'Utf16-LE', 'Unicode')]
         [string]$EncodingName
-        # [system.test.encoding]$EncodingName
 
     )
     switch ($EncodingName) {
         { $_ -in 'Utf16-LE', 'Unicode' } {
-            h1 'uni16'
+            H1 'uni16'
             $global:OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UnicodeEncoding]::new()
             break
         }

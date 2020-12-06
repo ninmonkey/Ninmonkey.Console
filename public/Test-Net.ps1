@@ -14,26 +14,29 @@ function Test-Net {
             [ ] formatter for high ping values on default formatter
     #>
     param(
-        [Parameter(
-            Mandatory = $false,
-            Position = 0,
-            HelpMessage = '-TargetName param of Test-Connection')]
+        # -TargetName param of Test-Connection
+        [Parameter(Position = 0)]
         [string[]]$TargetName,
 
-        [Parameter(
-            HelpMessage = 'minimum value before turning yellow')]
+        # minimum value before turning yellow
+        [Parameter()]
         [int]$YellowThreshold = 40,
 
-        [Parameter(
-            HelpMessage = 'minimum value before turning yellow')]
+        # minimum value before turning red
+        [Parameter()]
         [int]$RedThreshold = 60,
 
-        [Parameter(HelpMessage = 'Output results below YellowThreshold')][switch]$HideNormal,
-        [Parameter(HelpMessage = 'Unmodified results')][switch]$PassThru,
+        # Hide results better than YellowThreshold ?
+        [Parameter()][switch]$HideNormal,
 
-        [Parameter(HelpMessage = 'TestConnection -Count')][int]$Count = 2,
+        # unmodified results ?
+        [Parameter()][switch]$PassThru,
 
-        [Parameter(HelpMessage = 'nested info')][switch]$Detailed
+        # for 'TestConnection -Count'
+        [Parameter()][int]$Count = 2,
+
+        # incldue nested info?
+        [Parameter()][switch]$Detailed
     )
 
     $Config = @{
