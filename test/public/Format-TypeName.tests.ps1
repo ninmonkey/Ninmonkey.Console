@@ -61,19 +61,27 @@ Describe "Format-TypeName" -Tag 'wip' {
         | Should -Be $expected
     }
 
-    Context 'ShouldFail: NYI' -Tag 'wip' {
-        It 'GenericsWithNestedClass' {
+    Context 'GenericsWithNestedClass: NYI' -Tag 'wip', 'nyi' {
+        It 'Nested Generic from String' {
             $StringGenericTypeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String], [System.Management.Automation.ParameterMetadata]]'
-            $StringGenericTypeName -as 'type' | Format-TypeName
-            | Should -Be 20
+            $Expected = '[Dictionary`2+KeyCollection[[System.String], [System.Management.Automation.ParameterMetadata]]]'
+            $StringGenericTypeName | Format-TypeName
+            | Should -Be $Expected
         }
-
-        It 'Part2' {
+        It 'Nested Generic from [Type] instance' {
+            $StringGenericTypeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String], [System.Management.Automation.ParameterMetadata]]'
+            # $Expected = '[Dictionary`2+KeyCollection[[System.String], [System.Management.Automation.ParameterMetadata]]]'
+            $ExpectedFail = 'KeyCollection[[String], [ParameterMetadata]]'
+            $StringGenericTypeName -as 'Type' | Format-TypeName
+            | Should -Not -Be $ExpectedFail
+        }
+    }
+    Context 'Generics with Full Assembly Name from [String]' -Tag 'wip', 'nyi' {
+        It 'Could Fail' {
             $StringGenericTypeName = 'System.Collections.Generic.IEqualityComparer`1[[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'
             $CurrentResult = 'IEqualityComparer`1[[String]]'
             $StringGenericTypeName -as 'type' | Format-TypeName
             | Should -Not -Be 'IEqualityComparer`1[[String]]'
-
         }
 
     }

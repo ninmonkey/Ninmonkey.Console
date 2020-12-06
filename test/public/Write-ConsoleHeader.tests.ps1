@@ -2,7 +2,7 @@
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 }
 
-Describe "Format-Predent" -Tag 'wip' {
+Describe "Write-ConsoleHeader" -Tag 'wip' {
     BeforeAll {
         $Newline = "`n"
 
@@ -27,41 +27,6 @@ $x = 20
 '@
     }
 
-
-    It 'singleLine' {
-        # $expected = "$Newline    a"
-        $expected = "`n    a"
-
-        'a' | Format-Predent -PassThru
-        | Should -be $expected
-    }
-
-    # It 'from clipboard array' -Tag 'wip' {
-    # }
-
-    #     It 'multiLine' -Tag 'wip' {
-    #         $sample = @'
-    # $stuff = $false
-    # if($stuff) {
-    #     foo {
-    #         bar
-    #     }
-    # }
-    # '@
-    #         $expected = @'
-    #     $stuff = $false
-    #     if($stuff) {
-    #         foo {
-    #             bar
-    #         }
-    #     }
-    # '@ -split '\r?\n' -join "`n"
-    #         # $sample -join
-
-    #         $sample | Format-Predent -PassThru
-    #         | Should -be $expected
-    #     }
-
     # test was't working great, but it was overkill for this tiny function
 
     # It 'Piping' {
@@ -78,6 +43,13 @@ $x = 20
 
     # }
 
+    It 'single' -Tag 'wip' {
+        # $expected = "$Newline    a"
+        # $expected = "`n    a"
+
+        # 'a' | Format-Predent
+        10 | Should -be 3
+    }
 }
 
 # hr

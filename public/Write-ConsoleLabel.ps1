@@ -1,8 +1,8 @@
 ﻿# New-Alias 'Label' -Value 'Write-NinLabel' -Description 'visual break using colors' -ErrorAction Ignore
 
-function Write-NinLabel {
+function Write-ConsoleLabel {
     [cmdletbinding(DefaultParameterSetName = 'TextFromPipe')]
-    [Alias('Label')] #, 'Write-Label')]
+    [Alias('Label')] #, 'Write-NinLabel')] #, 'Write-Label')]
     <#
     .synopsis
         visual break on output, similar to h1 with spacing and indentation removed.
@@ -25,56 +25,57 @@ function Write-NinLabel {
         some examples at 'test\public\Write-ConsoleLabel.visual_tests.ps1'
     #>
     param(
-        [Parameter(
-            Mandatory, Position = 0, HelpMessage = 'Label or Heading')]
+        # Label or Heading
+        [Parameter(Mandatory, Position = 0)]
         [AllowEmptyString()]
         [string]$Label,
 
-        [Parameter(
-            ParameterSetName = 'TextFromPipe',
-            Mandatory = $false, ValueFromPipeline,
-            HelpMessage = 'text / content')]
-        [Parameter(
-            ParameterSetName = 'TextFromParam',
-            Mandatory = $false, Position = 1,
-            HelpMessage = 'Text is not required. defaults to no color.'
-        )]
+        # Text / content
+        [Parameter(ParameterSetName = 'TextFromPipe', Mandatory = $false, ValueFromPipeline)]
+        # Text is not required. defaults to no color.
+        [Parameter(ParameterSetName = 'TextFromParam', Mandatory = $false, Position = 1)]
         [string[]]$Text,
 
         # todo: properties instead of needing % ProP to run
         # Property <Microsoft.PowerShell.Commands.PSPropertyExpression>
 
-        [Parameter(
-            HelpMessage = 'Seperator between Label and Text, default is ": "')]
+        # Seperator between Label and Text, default is ": "
+        [Parameter()]
         [string]$Separator = ': ',
 
-        [Parameter(HelpMessage = 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"')]
-        [alias('Fg')]
+        # Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
+        [Parameter()]
+        [Alias('Fg')]
         [PoshCode.Pansies.RgbColor]$ForegroundColor,
 
-        [Parameter(HelpMessage = 'optional color for the rest of text')]
-        [alias('Fg2')]
+        # optional color for the rest of text
+        [Parameter()]
+        [Alias('Fg2')]
         [PoshCode.Pansies.RgbColor]$TextForegroundColor,
 
-        [Parameter(HelpMessage = 'optional color for the rest of text')]
-        [alias('Bg2')]
-        [PoshCode.Pansies.RgbColor]$TextBackgroundColor,
+        # optional color for the rest of text
         # todo: Default as null but use user preference default parameters
+        [Parameter()]
+        [Alias('Bg2')]
+        [PoshCode.Pansies.RgbColor]$TextBackgroundColor,
 
-        [Parameter(
-            HelpMessage = 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"')]
-        [alias('Bg')]
+        # Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
+        [Parameter()]
+        [Alias('Bg')]
         [PoshCode.Pansies.RgbColor]$BackgroundColor,
 
-        [Parameter(HelpMessage = 'number of blank lines before Label')]
+        # number of blank lines before Label
+        [Parameter()]
         [Alias('Before')]
         [uint]$LinesBefore = 0,
 
-        [Parameter(HelpMessage = 'number of blank lines after Label')]
+        # Number of blank lines after Label
+        [Parameter()]
         [Alias('After')]
         [uint]$LinesAfter = 0,
 
-        [Parameter(HelpMessage = "Do not clear ANSI colors at the end")][switch]$LeaveColor
+        # Do not clear ANSI colors at the end
+        [Parameter()][switch]$LeaveColor
 
     )
 

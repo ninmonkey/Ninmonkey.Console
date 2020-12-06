@@ -80,7 +80,8 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Edit-GitConfig'
-    'Write-NinLabel'
+    'Write-ConsoleLabel'
+    'Write-ConsoleHeader'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Format-History'
@@ -131,18 +132,19 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    'Write-ConsoleLabel'
+    'Write-ConsoleHeader'
+    'Format-TypeName'
+    'Format-GenericTypeName'
+    'Format-Hashtable'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
-    'Format-Hashtable'
     'Get-NinNewestItem'
     'Format-Predent'
     'Test-UserIsAdmin'
     'Sort-Hashtable'
-    'Write-NinLabel'
     'Invoke-Explorer'
     'Get-NinAppxPackage'
-    'Format-TypeName'
-    'Format-GenericTypeName'
     'ConvertTo-PropertyList'
     'Format-NullText'
     'Test-NullArg'
@@ -218,6 +220,7 @@ if ($true) {
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
     $aliasesToExport = @(
+        'H1'
         'Format-Indent'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
