@@ -62,7 +62,7 @@
     #>
     [CmdletBinding(DefaultParameterSetName = "FromPipe")]
     param (
-        # format as line or format-pair?
+        # Format Mode: SingleLine, Table, Pair. ( Default is 'pair' )
         [Alias('Format-Hash')]
         [Parameter(ParameterSetName = "FromPipe", Position = 0)]
         [ValidateSet('SingleLine', 'Table', 'Pair')]
@@ -71,6 +71,10 @@
         # Input hash
         [Parameter(ParameterSetName = "FromPipe", Mandatory, ValueFromPipeline)]
         [hashtable]$InputHash,
+
+        # optional title name
+        [Parameter()]
+        [String]$Title,
 
         # Skip sorting keys?
         [Parameter()][switch]$NoSortKeys,
@@ -89,7 +93,7 @@
         $InputHash.GetType().Name | Label 'InputObject type' |  Write-Debug
 
         if ($InputHash -is 'System.Collections.Specialized.OrderedDictionary' ) {
-            # Write-debug 'sorted!'
+            Label 'isOrderedDictionary' 'true' | Write-Debug
             $SortedHash = $InputHash
         } else {
             if ($NoSortKeys) {
@@ -98,6 +102,13 @@
                 $SortedHash = $InputHash | Sort-Hashtable
             }
         }
+
+        # hashtables don't enumerate, so starting title *does* go in process
+        if (! [string]::IsNullOrWhiteSpace( $Title )) {
+            Label 'Hashtable' $Title -fg blue
+        }
+
+        # enumerate values
         Switch ($FormatMode) {
             'Pair' {
                 $SortedHash.GetEnumerator() | ForEach-Object {
