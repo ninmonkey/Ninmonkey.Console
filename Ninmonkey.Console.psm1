@@ -17,7 +17,7 @@ if ($psEditor) {
     $private_seeminglySci = $private_seeminglySci -ne 'NamespaceAwareCompletion'
 }
 foreach ($file in $private_seeminglySci) {
-    Write-Warning "file: seeminglySci -> : $File"
+    # Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)) {
     } else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
