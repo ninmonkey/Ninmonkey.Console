@@ -1,22 +1,5 @@
 ﻿using namespace System.Text
 
-# h1 'final'
-# 0..50 | ForEach-Object {
-#     [char]::ConvertFromUtf32( $_ )
-# } | ForEach-Object {
-#     $CurrentLine = $_
-#     $CurrentLine.enumerateRunes() | ForEach-Object {
-#         $RuneInfo = $_
-#         $Codepoint = $RuneInfo.Value
-#         if ($Codepoint -ge 0 -and $Codepoint -le 0x1f ) {
-#             $Codepoint += 0x2400
-#         }
-#         [char]::ConvertFromUtf32( $Codepoint )
-#     }
-
-#     # $_ -replace '[\x00-\x1f]', '~'
-# } | Join-String -sep ''
-
 function Format-ControlChar {
     <#
     .synopsis
@@ -42,14 +25,11 @@ function Format-ControlChar {
 
     )
     begin {
-        $uni_range = 0..0x1f
-        $uni_increment = 0x2400
         $controlMin = 0x0
         $controlMax = 0x1f
         $finalString = ""
-        $runeReplace = [Rune]::ReplacementChar
-        $runeNull = [char]::ConvertFromUtf32( 0 ) # or "`u{0}" [null]
-        $runeNoSign = [char]::ConvertFromUtf32( 0x1f6ab )  # or "`u{1f6ab}" 🚫
+        # future: use a string builder
+
     }
 
     process {
