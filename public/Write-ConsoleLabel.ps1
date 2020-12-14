@@ -128,6 +128,8 @@ function Write-ConsoleLabel {
         }
 
     }
-    end {}
+    end {
+        Write-Debug 'rewrite to call Write-ConsoleColor'
+    }
 
 }

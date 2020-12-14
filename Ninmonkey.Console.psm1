@@ -80,8 +80,17 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Edit-GitConfig'
+
+    # console formatting
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
+    'Write-ConsoleNewline'
+
+    # unicode + encoding
+    'Get-TextEncoding'
+    'Get-UnicodeInfo'
+
+    # the rest
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Format-History'
@@ -117,7 +126,8 @@ $public = @(
     'Get-NinAppxPackage'
     'Invoke-Explorer'
     'Get-TerminalName'
-    'Get-NinNewestItem'
+    # 'Get-NinNewestItem'
+
 )
 
 <#
@@ -132,14 +142,22 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    # console formatting
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
+    'Write-ConsoleNewline'
+
+    # unicode + encoding
+    'Get-TextEncoding'
+    'Get-UnicodeInfo'
+
+    # the rest
     'Format-TypeName'
     'Format-GenericTypeName'
     'Format-Hashtable'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
-    'Get-NinNewestItem'
+    # 'Get-NinNewestItem'
     'Format-Predent'
     'Test-UserIsAdmin'
     'Sort-Hashtable'
@@ -175,10 +193,12 @@ $functionsToExport = @(
     'Start-LogTestNet'
     'Test-Net'
     # seemingly-sci
+    # 'Get-ElementName'
     'ConvertTo-BitString'
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
+
 )
 Export-ModuleMember -Function $functionsToExport
 
@@ -219,9 +239,10 @@ if ($true) {
     New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
+    Write-Warning '- [ ] Overwrite pansies alias'
+
     $aliasesToExport = @(
         'H1'
-        'Format-Indent'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
         'nLs' # Get-NinChildItem
@@ -230,7 +251,15 @@ if ($true) {
         'Get-ObjectProperty'
         'Here'
         'IPython'
+
+        # console formatting
+        'Format-Indent'
         'Label'
+        'Br'
+        # which alias for 'Write-ConsoleText'?
+        # 'Text' # warning: pansi uses alias 'text'
+        'Write-Text'
+
         'Prop'
         'Fm'
         'Type'
@@ -238,7 +267,7 @@ if ($true) {
         ## seemingly sci
         'Default'
         'Convert'
-        'NameOf'
+        # 'NameOf'
         'Base64'
         'Hex'
         'Number'
