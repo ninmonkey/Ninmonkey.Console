@@ -17,6 +17,28 @@ Describe "Sort-Hashtable" -Tag 'wip', 'wip-hash' {
         }
     }
 
+    It 'Sort: mixed types so not throw' {
+        $hash = @{ 'one' = 1; 1 = 'one' }
+        { $hash | Sort-Hashtable }
+        | Should -Not -Throw
+    }
+
+    It 'Sort: mixed types' {
+        $hash = @{
+            'one' = 1;
+            1     = 'one'
+        }
+        $expectedSort = [ordered]@{
+            1     = 'one'
+            'one' = 1
+        }
+        $orderedHash = $hash | Sort-Hashtable
+
+        $orderedHash[0] | Should -Be $expectedSort[0]
+        $orderedHash[1] | Should -Be $expectedSort[1]
+
+    }
+
     It 'Sort: Key: Ascending' {
         $sorted = $hash1 | Sort-Hashtable
 

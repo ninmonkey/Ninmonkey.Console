@@ -105,7 +105,7 @@
 
         # hashtables don't enumerate, so starting title *does* go in process
         if (! [string]::IsNullOrWhiteSpace( $Title )) {
-            Label 'Hashtable' $Title -fg blue
+            Label '' -sep '' "┊ $Title ┊" -fg2 blue -LinesBefore 3
         }
 
         # enumerate values
