@@ -111,9 +111,11 @@ function Write-ConsoleLabel {
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
         $StrLabel = New-Text @newTextSplat_Label
 
-        if ($LinesBefore -gt 0) {
-            '' * $LinesBefore
-        }
+        # if ($LinesBefore -gt 0) {
+        #     '' * $LinesBefore
+        # }
+
+        Br -Count $LinesBefore
 
         if ($Text) {
             $newTextSplat_Text['Object'] = $Text
@@ -122,10 +124,11 @@ function Write-ConsoleLabel {
 
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
+        Br -Count $LinesAfter
 
-        if ($LinesAfter -gt 0) {
-            '' * $LinesAfter
-        }
+        # if ($LinesAfter -gt 0) {
+        #     "`n" * $LinesAfter
+        # }
 
     }
     end {

@@ -105,7 +105,8 @@
 
         # hashtables don't enumerate, so starting title *does* go in process
         if (! [string]::IsNullOrWhiteSpace( $Title )) {
-            Label '' -sep '' "┊ $Title ┊" -fg2 blue -LinesBefore 3
+            # Label '' -sep '' "┊ $Title ┊" -fg2 blue -LinesBefore 3
+            Label "# $Title #" -sep '' -Text '' -fg blue -LinesBefore 0
         }
 
         # enumerate values
@@ -145,5 +146,11 @@
 
 <#
 for tests:
-@{name = 'cat'; } | Format-HashTable Table
+@{name = 'cat'; } | Format-HashTable Table -Debug
+
+
+@{name = 'cat'; } | Format-HashTable -Title 'Default -Debug' -Debug
+@{name = 'cat'; } | Format-HashTable -Title 'Default'
+@{name = 'cat'; } | Format-HashTable -Title 'SingleLine' -FormatMode SingleLine
+@{name = 'cat'; } | Format-HashTable -Title 'Table' -FormatMode Table
 #>
