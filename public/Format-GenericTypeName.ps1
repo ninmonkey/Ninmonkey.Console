@@ -53,7 +53,7 @@ function Format-GenericTypeName {
             }
             'paramTypeAsInstance' {
                 $FormattedTypeName = $TypeInstance.Namespace, $TypeInstance.Name -join '.'
-                | Format-TypeName -WithoutBrackets
+                | Format-TypeName
 
                 break
             }
