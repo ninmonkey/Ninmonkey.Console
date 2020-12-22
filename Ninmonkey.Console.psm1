@@ -119,7 +119,7 @@ $public = @(
     'Get-NinCommandSyntax'
     'Format-TypeName'
     'Format-GenericTypeName'
-    'Get-NinObjectProperty'
+    'Get-ObjectProperty'
     'Test-NullArg'
     'Get-NinChildItem'
     'Get-ObjectType'
@@ -166,7 +166,7 @@ $functionsToExport = @(
     'ConvertTo-PropertyList'
     'Format-NullText'
     'Test-NullArg'
-    'Get-NinObjectProperty'
+    'Get-ObjectProperty'
     'Get-ObjectType'
     'Format-FileSize'
     'Format-ControlChar'
@@ -226,17 +226,13 @@ if ($true) {
     New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
     # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
-    New-Alias -ea 'Ignore' 'Get-ObjectProperty' -Value Get-NinObjectProperty -Description 'Inspect object properties'
-    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
-    New-Alias -ea 'Ignore' 'Prop' -Value Get-NinObjectProperty -Description 'Inspect object properties'
-    New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
 
+    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
 
     New-Alias 'Cd' -Value 'Set-NinLocation' #todo:  make this opt in
 
     # class-explorer
     New-Alias -ea 'Ignore' 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
-    New-Alias -ea 'Ignore' 'Type' -Value Get-ObjectType -Description 'Get type info'
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
     Write-Warning '- [ ] Overwrite pansies alias'
@@ -248,7 +244,6 @@ if ($true) {
         'nLs' # Get-NinChildItem
         'Cd'
         'Docs'
-        'Get-ObjectProperty'
         'Here'
         'IPython'
 
@@ -262,7 +257,7 @@ if ($true) {
 
         'Prop'
         'Fm'
-        'Type'
+        'TypeOf'
 
         ## seemingly sci
         'Default'

@@ -1,4 +1,4 @@
-﻿function Get-NinObjectProperty {
+﻿function Get-ObjectProperty {
     <#
     .synopsis
         Nicer output to inspect objects than ($obj.psobject.properties | format-table)
@@ -85,6 +85,9 @@
             | Write-Warning
         }
     }
+    end {
+        Write-Warning 'should not be a raw table'
+    }
 
 }
 
@@ -98,10 +101,10 @@ if ($false) {
     $catObj = [pscustomobject]$catHash
 
     Label 'hash'
-    $catHash | Prop # Get-NinObjectProperty
+    $catHash | Prop # Get-ObjectProperty
 
     Label 'Obj'
-    $catObj | Prop # Get-NinObjectProperty
+    $catObj | Prop # Get-ObjectProperty
     hr
 
     $gcm = Get-Command Select-Object

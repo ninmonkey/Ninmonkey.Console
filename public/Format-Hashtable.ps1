@@ -81,7 +81,10 @@
 
         # Force Format-Table to render (so Write-Debug prints as expected) -AsString
         [Alias('AsString')]
-        [Parameter()][switch]$Force
+        [Parameter()][switch]$Force,
+
+        # LinesBefore
+        [Parameter()][uint]$LinesBefore = 1
     )
 
     begin {
@@ -105,8 +108,8 @@
 
         # hashtables don't enumerate, so starting title *does* go in process
         if (! [string]::IsNullOrWhiteSpace( $Title )) {
-            # Label '' -sep '' "┊ $Title ┊" -fg2 blue -LinesBefore 3
-            Label "# $Title #" -sep '' -Text '' -fg blue -LinesBefore 0
+            # Label '' -sep '' "┊ $Title ┊" -fg2 blue
+            Label "# $Title #" -sep '' -Text '' -fg blue -LinesBefore $LinesBefore
         }
 
         # enumerate values

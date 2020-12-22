@@ -5,6 +5,7 @@
     .description
         filters out duplicate commands
     .notes
+        - [ ] better  methods for piping text to native app multiple times?
         Parameterset was used to test improving performance
         bottleneck is whether 'pygmentize' is called once per command, or once per entire call
     .example

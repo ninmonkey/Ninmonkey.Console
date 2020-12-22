@@ -19,7 +19,7 @@ Get-Module pester -ListAvailable
 
 
 
-function _FilterExportedCommands {
+function _FormatExportedCommands {
     param(
         # Input object
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -28,15 +28,28 @@ function _FilterExportedCommands {
     )
 
     process {
+        $sort_CommandOrder = @{ # default sort order if converted to custom type
+            Property = (
+                @{Expression = 'Module'; Descending = $false },
+                @{Expression = 'Command'; Descending = $false }
+            )
+        }
+
         $ModuleInfo | ForEach-Object {
             $CurModuleInfo = $_
-            foreach ($Command in $CurModuleInfo.ExportedCommands.Keys) {
+            foreach ($Command in $CurModuleInfo.ExportedCommands.Values) {
                 [pscustomobject]@{
-                    Module  = $CurModuleInfo.Name
-                    Command = $Command
+                    Module      = $CurModuleInfo.Name
+                    Command     = $Command
+                    CommandType = $Command.CommandType
+                    Version     = $Command.Version
+                    Source      = $Command.Source
+                    Name        = $Command.Name
                 }
+                $x = 3
             }
         }
+        | Sort-Object @sort_CommandOrder
         #| Sort-Object -Property $SortBy.ModuleName_CommandName
     }
 
@@ -44,7 +57,16 @@ function _FilterExportedCommands {
 }
 
 #  tests
-# _FilterExportedCommands (Get-Module 'Ninmonkey.Console' -ListAvailable )
+# _FormatExportedCommands (Get-Module 'Ninmonkey.Console' -ListAvailable )
+$ft_ExportedCommands = @{
+    GroupBy  = 'Module'
+    Property = 'Command'
+}
+
+_FormatExportedCommands (Get-Module 'Ninmonkey.*' -ListAvailable )
+| Format-Table -Wrap -AutoSize
+# | Format-Table *
+# | Format-Table @ft_ExportedCommands
 
 function Get-NinModule {
     param(
@@ -77,12 +99,12 @@ function Get-NinModule {
 
 
     process {
-        $ModuleInfo = Get-Module $Name -ListAvailable
+        $ModuleInfo = Get-Module #-Name:$Name   #$Name #-ListAvailable
         | Sort-Object Name
 
         Switch ($OutputMode) {
             'Commands' {
-                $result = _FilterExportedCommands $ModuleInfo
+                $result = _FormatExportedCommands $ModuleInfo
                 | Select-Object -Property Command
                 $result
                 break

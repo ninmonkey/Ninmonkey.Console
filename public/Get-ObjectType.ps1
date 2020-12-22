@@ -10,7 +10,11 @@
             - base/parent type
             - category = class, enum, typeReflectionInfo
     #>
+    [Alias('TypeOf')]
     param(
+        # InputObject[s] to get type[s] of
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [object]$InputObject
     )
 
     process {
@@ -28,4 +32,20 @@
         "
 
     }
+}
+
+
+if ($true) {
+    # test cases
+    $mod = Get-Module 'Ninmonkey.Console'
+    $cmd = Get-Command 'Get-Item'
+    $nums = 2, 4, 55
+    $hash = @{Species = 'cat' }
+    $psobj = [pscustomobject]$hash
+
+
+    34 | Get-ObjectType
+    'sdf' | Get-ObjectType
+
+    , 100 | Get-ObjectType
 }
