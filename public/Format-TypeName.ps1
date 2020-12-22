@@ -19,30 +19,44 @@
         [System.Reflection.TypeInfo]$TypeInstance,
 
         # A List of Namespaces or prefixes to ignore: -IgnoreNamespace
-        [Parameter()]
-        [string[]]$IgnorePrefix = @(
-            'System.Collections'
-            'System.Collections.Generic'
-            'System.Text'
-            'System.Management.Automation'
-            'System.Runtime.CompilerServices'
-        ),
+        [Parameter()][Alias('WithoutPrefix')]
+        [string[]]$IgnorePrefix = @(),
+
+        # A list of Namespaces to include (overriding defaults)
+        [Parameter()][Alias('WithPrefix')]
+        [string[]]$IncludePrefix = @(),
 
         # surround type names with '[]' ?
-        [Alias('WithoutBrackets')]
-        [Parameter()][switch]$NoBrackets
+        [Alias('Brackets')]
+        [Parameter()][switch]$WithBrackets
+
+
+        # [Alias('WithoutBrackets')]
+        # [Parameter()][switch]$NoBrackets
     )
     begin {
         $DefaultIgnorePrefix = @(
-            'System.Collections'
             'System.Collections.Generic'
-            'System.Text'
+            'System.Collections'
             'System.Management.Automation'
+            'System.Runtime.CompilerServices'
+            'System.Text'
             'System'
         )
         # Sorting by longest regex simplifies namespace collisions when handling  removal
+        $DefaultIgnorePrefix | Join-String -sep ', ' | Label 'IgnoreDefault' | Write-Debug
+        $IgnorePrefix | Join-String -sep ', ' | Label 'IgnorePrefix' | Write-Debug
+
         $IgnorePrefix += $DefaultIgnorePrefix
         $IgnorePrefix = $IgnorePrefix | Sort-Object -Property Length -Descending
+        $IgnorePrefix | Join-String -sep ', ' | Label 'IgnoreCombined' | Write-Debug
+
+
+        # Write-Warning 'Ignore prefix is not working?'
+
+        if ( $IncludePrefix.Count -gt 0) {
+            throw "Prefix include list NYI"
+        }
     }
 
     Process {
@@ -62,8 +76,7 @@
             'paramTypeAsInstance' {
                 if ($TypeInstance.IsGenericType) {
                     Write-Debug 'IsGenericType: True'
-                    $ShouldBracket = ! $NoBrackets
-                    $TypeInstance | Format-GenericTypeName -WithBrackets:$ShouldBracket
+                    $TypeInstance | Format-GenericTypeName -WithBrackets:$WithBrackets
                     return # full exit
                 }
 
@@ -80,7 +93,7 @@
             $filteredName = $filteredName -replace $Pattern, ''
             continue
         }
-        if ($NoBrackets) {
+        if (! $WithBrackets) {
             $filteredName
         } else {
             '[', $filteredName, ']' -join ''
