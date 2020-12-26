@@ -92,6 +92,7 @@ $public = @(
 
     # the rest
     'Get-NativeCommand'
+    'Invoke-NativeCommand'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Format-History'
@@ -155,6 +156,7 @@ $functionsToExport = @(
 
     # the rest
     'Get-NativeCommand'
+    'Invoke-NativeCommand'
     'Format-TypeName'
     'Format-GenericTypeName'
     'Format-Hashtable'
@@ -236,20 +238,18 @@ if ($true) {
 
     New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
 
-    New-Alias 'Cd' -Value 'Set-NinLocation' #todo:  make this opt in
+    # Set-Alias 'Cd' -Value 'Set-NinLocation' -ea Continue #todo:  make this opt in
 
     # class-explorer
     New-Alias -ea 'Ignore' 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
-
-    Write-Warning '- [ ] Overwrite pansies alias'
 
     $aliasesToExport = @(
         'H1'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
         'nLs' # Get-NinChildItem
-        'Cd'
+        # 'Cd'
         'Docs'
         'Here'
         'IPython'
