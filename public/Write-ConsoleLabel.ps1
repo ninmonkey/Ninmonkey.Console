@@ -97,6 +97,10 @@ function Write-ConsoleLabel {
             Object          = $Text # both are set later anyway
         }
 
+        # how do I set
+        $DebugPreference = 'SilentlyContinue'
+        # $DebugPreference = $debug ?? 'SilentlyContinue'
+        # note: explicitly formatted because Format-HashTable calls Label
         @{
             'ParameterSetName'  = $PSCmdlet.ParameterSetName
             'PSBoundParameters' = $PSBoundParameters
@@ -132,7 +136,7 @@ function Write-ConsoleLabel {
 
     }
     end {
-        Write-Debug 'rewrite to call Write-ConsoleColor'
+        # todo: Write-Debug 'rewrite to call Write-ConsoleColor'
     }
 
 }

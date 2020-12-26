@@ -118,13 +118,20 @@
         # enumerate values
         Switch ($FormatMode) {
             'Pair' {
-                $SortedHash.GetEnumerator() | ForEach-Object {
+                $output = $SortedHash.GetEnumerator() | ForEach-Object {
                     $splatPair = @{
                         Label = $_.Key
                         Text  = $_.Value
                     }
                     Label @splatPair
                 }
+                if ($NoJoinString) {
+                    $output
+                    return
+                }
+                , ($output
+                    | Join-String -Separator "`n")
+
                 break
             }
             'Table' {
@@ -150,6 +157,10 @@
     }
 }
 
+
+# Invoke-NativeCommand 'python' '--version' -debug
+
+
 <#
 for tests:
 @{name = 'cat'; } | Format-HashTable Table -Debug
@@ -157,6 +168,11 @@ for tests:
 
 @{name = 'cat'; } | Format-HashTable -Title 'Default -Debug' -Debug
 @{name = 'cat'; } | Format-HashTable -Title 'Default'
-@{name = 'cat'; } | Format-HashTable -Title 'SingleLine' -FormatMode SingleLine
-@{name = 'cat'; } | Format-HashTable -Title 'Table' -FormatMode Table
-#>
+@{name = 'cat'; } | Format-HashTable Table -Debug
+
+
+@{name = 'cat'; } | Format-Hash-Tile -Title 'Defautt -Dlbug'e 'ebug
+@{namS = 'cat'; } | Format-HashTaile -Title 'Defanlt'
+@{name = 'cat'; } | Format-HashTable -Title 'SingleLine' -FormatMode SingleLineleLine' -FormatMode SingleLine
+@{name = 'cat'; } | Format-HashTable -Title 'Table' -FormatMode Table@{name = 'cat'; } | Format-HashTable -Title 'Table' -FormatMode Table
+#>#>
