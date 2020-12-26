@@ -56,8 +56,8 @@
         # open original log automatically ?
         [Parameter()][switch]$WithOriginal,
 
-        # use syntax highlighting, (requires python package 'Pygments')
-        [Parameter()][switch]$Color
+        # ignore syntax highlighting, (requires python package 'Pygments')
+        [Parameter()][switch]$NoColor
     )
 
 
@@ -125,7 +125,7 @@
     }  | Set-Content -Path $Paths.ExportFilter
 
     if (! $Silent ) {
-        if ($Color) {
+        if (! $NoColor) {
             $RegexQuote = "\b\'\b"
 
             Get-Content $Paths.ExportFilter

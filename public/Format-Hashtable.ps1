@@ -84,7 +84,10 @@
         [Parameter()][switch]$Force,
 
         # LinesBefore
-        [Parameter()][uint]$LinesBefore = 1
+        [Parameter()][uint]$LinesBefore = 1,
+
+        # AsList: Skip ending with Join-String, pipe as items instead
+        [Parameter()][switch]$NoJoinString
     )
 
     begin {

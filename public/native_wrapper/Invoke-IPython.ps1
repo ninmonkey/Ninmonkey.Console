@@ -10,6 +10,20 @@ function Invoke-IPython {
         [ ] json configures default profile
 
     #>
-    param([string]$ProfileName = 'ninmonkey')
-    ipython.exe --profile=${ProfileName}
+    [Alias('IPython')]
+    param(
+        # [string]$ProfileName = 'ninmonkey'
+    )
+
+    process {
+
+        $cmdList = Get-Command 'ipython' -CommandType Application -All
+        $cmdList | Join-String -sep "`n" { $_.Name, $_.Version, $_.Source -join ', ' }
+        | Write-Debug
+    }
+    # ipython.exe --profile=${ProfileName}
+    # write-warning 'fix: use the proper  pattern with args array'
 }
+
+# Invoke-IPython --version -Debug
+# Invoke-IPython --version

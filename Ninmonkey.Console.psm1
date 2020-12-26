@@ -91,6 +91,7 @@ $public = @(
     'Get-UnicodeInfo'
 
     # the rest
+    'Get-NativeCommand'
     'Export-PlatformFolderPath'
     'Format-Hashtable'
     'Format-History'
@@ -127,6 +128,7 @@ $public = @(
     'Invoke-Explorer'
     'Get-TerminalName'
     # 'Get-NinNewestItem'
+    'Out-Fzf'
 
 )
 
@@ -152,11 +154,13 @@ $functionsToExport = @(
     'Get-UnicodeInfo'
 
     # the rest
+    'Get-NativeCommand'
     'Format-TypeName'
     'Format-GenericTypeName'
     'Format-Hashtable'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
+
     # 'Get-NinNewestItem'
     'Format-Predent'
     'Test-UserIsAdmin'
@@ -171,6 +175,7 @@ $functionsToExport = @(
     'Format-FileSize'
     'Format-ControlChar'
     'Trace-NinCommand'
+
     'Test-IsDirectory'
     'Set-NinLocation'
     'Get-NinCommandSyntax'
@@ -198,6 +203,8 @@ $functionsToExport = @(
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
+
+    'Out-Fzf'
 
 )
 Export-ModuleMember -Function $functionsToExport
