@@ -6,6 +6,14 @@
         a simple multi-item selection for the console without the extra features of 'Out-ConsoleGridView'
     .notes
         selected items are returned **in-order** that they are selected in 'fzf'
+
+        'fzf' is documented here:
+
+        - [keybinding and their related ENV vars](https://github.com/junegunn/fzf#key-bindings-for-command-line)
+        - [Youtube: Vim universe. fzf - command line fuzzy finder](https://youtu.be/qgG5Jhi_Els)
+
+        - [args: preview Window](https://github.com/junegunn/fzf#preview-window)
+
     .example
         PS>
     .notes

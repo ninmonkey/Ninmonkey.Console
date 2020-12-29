@@ -14,6 +14,13 @@ function Get-NativeCommand {
         $binPy = Get-NativeCommand python
         $cmdArgs = @('--version')
         & $binPy @cmdArgs
+    .example
+        PS> # conditionally set profile if commands are available
+
+        if((Get-NativeCommand fd) -and (Get-NativeCommand fzf)) {
+            'both fd and fzf found!'
+            $ENV:FZF_DEFAULT_COMMAND = 'fd'
+        }
 
     #>
     [cmdletbinding()]

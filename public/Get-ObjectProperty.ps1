@@ -78,11 +78,11 @@
             }
             [pscustomobject]$meta
             # $x + 3
-            hr | Write-Warning
-            $prop.TypeNameOfValue -as 'type' | Format-TypeName
-            | Write-Warning
-            $prop.TypeNameOfValue -as 'type'
-            | Write-Warning
+            # hr | Write-Warning
+            # $prop.TypeNameOfValue -as 'type' | Format-TypeName
+            # | Write-Warning
+            # $prop.TypeNameOfValue -as 'type'
+            # | Write-Warning
         }
     }
     end {
