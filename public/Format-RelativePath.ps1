@@ -52,7 +52,7 @@ function Format-RelativePath {
     }
 }
 
-if ($DebugTestMode) {
+if ($false -and $DebugTestMode) {
     # refactor to use Pester temp drives
     Push-Location -StackName 'debugStack' 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public'
 

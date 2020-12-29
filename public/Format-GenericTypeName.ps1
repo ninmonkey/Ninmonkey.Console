@@ -66,7 +66,7 @@ function Format-GenericTypeName {
 
         $InnerList = $TypeInstance.GenericTypeArguments | ForEach-Object {
             $n = $_.Namespace, $_.Name -join '.'
-            $n | Format-TypeName -NoBrackets:$false
+            $n | Format-TypeName
         }
         $InnerList | Write-Debug
 

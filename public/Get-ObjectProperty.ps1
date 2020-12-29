@@ -91,12 +91,14 @@
 
 }
 
-if ($false) {
+if ($true -and $DebugTestMode) {
+
     $gcm = Get-Command Select-Object
     $gcm.Parameters | Prop | Format-Table
 }
 
-if ($false) {
+if ($true -and $DebugTestMode) {
+
     $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
     $catObj = [pscustomobject]$catHash
 

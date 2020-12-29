@@ -168,7 +168,7 @@ if ($false) {
     # hr
 }
 
-if ($false) {
+if ($true -and $DebugTestMode) {
     H1 'enumerate all'
     $results = foreach ($Key in $items.Keys) {
         [pscustomobject]@{
