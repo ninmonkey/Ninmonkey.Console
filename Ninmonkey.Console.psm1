@@ -85,6 +85,7 @@ $public = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
+    'Format-RelativePath'
 
     # unicode + encoding
     'Get-TextEncoding'
@@ -149,6 +150,7 @@ $functionsToExport = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
+    'Format-RelativePath'
 
     # unicode + encoding
     'Get-TextEncoding'

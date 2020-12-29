@@ -136,7 +136,7 @@ function Write-ConsoleLabel {
 
     }
     end {
-        # todo: Write-Debug 'rewrite to call Write-ConsoleColor'
+        Write-Debug 'todo: rewrite to call Write-ConsoleText'
     }
 
 }
