@@ -9,10 +9,34 @@
 
         'fzf' is documented here:
 
+        - [wiki of fzf examples](https://github.com/junegunn/fzf/wiki/examples)
         - [keybinding and their related ENV vars](https://github.com/junegunn/fzf#key-bindings-for-command-line)
         - [Youtube: Vim universe. fzf - command line fuzzy finder](https://youtu.be/qgG5Jhi_Els)
-
+        - [integrating with 'fd'](https://github.com/junegunn/fzf#respecting-gitignore)
+            # Setting fd as the default source for fzf
+            export FZF_DEFAULT_COMMAND='fd --type f'
         - [args: preview Window](https://github.com/junegunn/fzf#preview-window)
+        - [execute external programs](https://github.com/junegunn/fzf#executing-external-programs)
+        - [automatically reloading list](https://github.com/junegunn/fzf#reloading-the-candidate-list)
+        - [preview modes](https://github.com/junegunn/fzf#preview-window)
+        - [regex-like syntax](https://github.com/junegunn/fzf#search-syntax)
+            space delimited like:
+                ^music .mp3$ sbtrkt !fire
+
+    env vars:
+        main:
+            FZF_DEFAULT_COMMAND
+            FZF_DEFAULT_OPTS
+
+        hotkey related:
+            [hotkey binding docs](https://github.com/junegunn/fzf#key-bindings-for-command-line)
+            [hotkey binding wiki](https://github.com/junegunn/fzf/wiki/Configuring-shell-key-bindings)
+
+            FZF_ALT_C_COMMAND
+            FZF_ALT_C_OPTS
+            FZF_CTRL_R_OPTS
+            FZF_CTRL_T_COMMAND
+            FZF_CTRL_T_OPTS
 
     .example
         PS>
