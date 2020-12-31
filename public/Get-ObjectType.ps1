@@ -54,6 +54,12 @@ function Get-ObjectType {
         # show more information , or todo: refactor as custom view type
         [Parameter()][switch]$Detail,
 
+        # output format mode
+        [Parameter()]
+        [ValidateSet('', 'Join-String')]
+        [string]$FormatMode,
+
+
         # ignore colors using: PassThru (until refactor to move colors to format types)
         [Parameter()][switch]$PathThru
 
@@ -103,6 +109,12 @@ function Get-ObjectType {
     Process {
         $cur = $InputObject
         $element1 = $InputObject | Select-Object -First 1
+
+        if ($FormatMode -eq 'Join-String') {
+            # *should* work regardless if process inputs an array or one elemenent
+            $InputObject | Join-String -sep "`n- " -OutputPrefix "`n- " { $_.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+            return
+        }
 
 
 
