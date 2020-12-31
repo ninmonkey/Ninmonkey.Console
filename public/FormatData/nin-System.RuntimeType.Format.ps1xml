@@ -32,7 +32,8 @@ docs:
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <PropertyName>Name</PropertyName>
+                                <ScriptBlock></ScriptBlock>
+                                <!-- <PropertyName>Name</PropertyName> -->
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>FullName</PropertyName>

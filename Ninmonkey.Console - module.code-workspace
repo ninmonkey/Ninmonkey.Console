@@ -6,6 +6,19 @@
         }
     ],
     "settings": {
+        /*
+        schema for Powershell Types.ps1xml and Format.ps1xml
+    */
+        "xml.fileAssociations": [
+            {
+                "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Format.xsd",
+                "pattern": "**/*.Format.ps1xml"
+            },
+            {
+                "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Types.xsd",
+                "pattern": "**/*.Types.ps1xml"
+            }
+        ],
         // /*
         //     self color test
         // */
@@ -51,6 +64,13 @@
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
         "version": "0.2.0",
         "configurations": [
+            {
+                "name": "🐒 Test Format.ps1xml",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/test_Format.ps1xml.ps1",
+                "cwd": "${workspaceFolder}"
+            },
             {
                 "name": "🐒 cur.ps1 — ",
                 "type": "PowerShell",

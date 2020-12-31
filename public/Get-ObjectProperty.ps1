@@ -86,18 +86,23 @@
         }
     }
     end {
-        Write-Warning 'should not be a raw table'
+        # Write-Warning 'should not be a raw table'
     }
 
 }
 
 if ($true -and $DebugTestMode) {
-
+    H1 'Test1] Param'
     $gcm = Get-Command Select-Object
     $gcm.Parameters | Prop | Format-Table
 }
+if ($true -eq $DebugTestMode) {
+    H1 'Test2] Basic Objects'
+    $catHash | Prop | Format-Table
+    $catObj | Prop | Format-Table
+}
 
-if ($true -and $DebugTestMode) {
+if ($false -and $DebugTestMode) {
 
     $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
     $catObj = [pscustomobject]$catHash

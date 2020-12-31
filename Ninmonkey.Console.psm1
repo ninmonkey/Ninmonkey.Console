@@ -217,12 +217,14 @@ Export-ModuleMember -Function $functionsToExport
     section: FormatData
 #>
 $formatData = @(
-    'System.RuntimeType'
-    'Microsoft.PowerShell.Commands.TestConnectionCommand'
+    # 'System.RuntimeType'
+    # 'Microsoft.PowerShell.Commands.TestConnectionCommand'
 )
 
 foreach ($typeName in $formatData) {
-    $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $typeName)
+
+    $FileName = ("{0}\public\FormatData\nin-{1}.Format.ps1xml" -f $psscriptroot, $typeName)
+    Get-Item $FileName -ea Stop
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
