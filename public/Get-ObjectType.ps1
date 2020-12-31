@@ -4,8 +4,18 @@ function Get-ObjectType {
     .synopsis
         simplify getting type name of an object and child types
     .example
+        PS> ls | Get-Unique -OnType | TypeOf
+
+            Count isList Type
+            ----- ------ ----
+            1  False IO.DirectoryInfo
+            1  False IO.FileInfo
+
+    .example
 
         ls | sort -Unique { $_.GetType().FullName }  | TypeOf
+        ls . | sort { $_.GetType().Fullname } | Get-Unique -OnType | typeof
+
     .notes
         rename to Get-TypeName? Get-ItemTypeName? Get-TypeInfo?
     future:
@@ -168,7 +178,7 @@ if ($false) {
     # hr
 }
 
-if ($true -and $DebugTestMode) {
+if ($false -and $DebugTestMode) {
     H1 'enumerate all'
     $results = foreach ($Key in $items.Keys) {
         [pscustomobject]@{
