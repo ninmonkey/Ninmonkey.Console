@@ -2,8 +2,12 @@
     <#
     .synopsis
         Formats type names to be more readable, removes common prefixes
-    .notes
+    .example
+        # $cat is a [pscustomobject] with PSTypeName = 'Nin.Animal'
+        PS> $cat.pstypenames | Format-TypeName | join-string -sep ', ' { "[$_]" }
 
+            [Selected.System.Management.Automation.PSCustomObject], [Nin.Animal], [PSCustomObject], [Object]
+    .notes
     see also:
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
 

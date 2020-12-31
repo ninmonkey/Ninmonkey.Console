@@ -49,14 +49,14 @@ function Get-ObjectType {
     param(
         # InputObject[s] to get type[s] of
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [object]$InputObject,
+        [object[]]$InputObject,
 
         # show more information , or todo: refactor as custom view type
         [Parameter()][switch]$Detail,
 
         # output format mode
         [Parameter()]
-        [ValidateSet('', 'Join-String')]
+        [ValidateSet('', 'PSTypeNameList')]
         [string]$FormatMode,
 
 
@@ -110,9 +110,10 @@ function Get-ObjectType {
         $cur = $InputObject
         $element1 = $InputObject | Select-Object -First 1
 
-        if ($FormatMode -eq 'Join-String') {
+        if ($FormatMode -eq 'PSTypeNameList') {
             # *should* work regardless if process inputs an array or one elemenent
-            $InputObject | Join-String -sep "`n- " -OutputPrefix "`n- " { $_.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+            # foreach($item in $InputObject) {}
+            $InputObject | Join-String -sep "`n- " -OutputPrefix "- " { $_.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
             return
         }
 
