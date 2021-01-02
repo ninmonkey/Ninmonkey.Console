@@ -18,9 +18,9 @@ function Get-ObjectType {
 
     .notes
         rename to Get-TypeName? Get-ItemTypeName? Get-TypeInfo?
-    future:
 
-        - [ ] custom object type, because
+    future:
+        - [ ] output custom object type of this commands results, because
             - [ ] display output uses | Format-TypeName
             - [ ] but properties are still full 'Type' instances
     future:
@@ -48,27 +48,28 @@ function Get-ObjectType {
     [Alias('TypeOf')]
     param(
         # InputObject[s] to get type[s] of
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [object[]]$InputObject,
 
-        # show more information , or todo: refactor as custom view type
+        # (to refactor as a custom Format.ps1xml) include more properties
         [Parameter()][switch]$Detail,
 
         # output format mode
-        [Parameter()]
-        [ValidateSet('', 'PSTypeNameList')]
-        [string]$FormatMode,
+        [Parameter(Position = 0)]
+        [ValidateSet('', 'PSTypeNameList', 'Table', 'Default')]
+        [string]$FormatMode = 'PSTypeNameList',
 
 
         # ignore colors using: PassThru (until refactor to move colors to format types)
-        [Parameter()][switch]$PathThru
+        # skip colors and returns an array of PSTypeNames
+        [Parameter()][switch]$PassThru
 
         # All: Test all elements similar to Select-Object -Wait
         # [Parameter()][switch]$AllElements
 
     )
     begin {
-        $UseColor = ! $PathThru
+        $UseColor = ! $PassThru
         $joinAsList_splat = @{
             Separator    = ', '
             OutputPrefix = '{'
@@ -107,22 +108,66 @@ function Get-ObjectType {
     }
 
     Process {
-        $cur = $InputObject
+        # curTypeObj = instance of Object
+        # curTypeInfo = [type] of Object
+        if ($InputObject -is 'type') {
+            $curTypeInfo = $InputObject
+            $curTypeObj = $InputObject
+        } elseif ($InputObject -is [string]) {
+            $curTypeInfo = $InputObject -as [type]
+            if ($null -eq $curTypeInfo) {
+                throw "Failed on typeName: '$curTypeInfo'"
+            }
+            $curTypeObj = $null
+        } else {
+            $curTypeInfo = $InputObject.GetType()
+            $curTypeObj = $InputObject
+        }
+        # if has children
         $element1 = $InputObject | Select-Object -First 1
 
+        if ($FormatMode -eq 'Default') {
+            # if assembly is verbose, replace FullName with 'namespace', 'name' to strip assembly
+            #no $PassThru ?
+            $tinfo = $curTypeInfo.Namespace, $curTypeInfo.Name -join '.'
+            # $tinfo = $curTypeInfo.GetType().Namespace, $curTypeInfo.GetType().Name -join '.'
+            $tinfo
+            return
+
+        }
         if ($FormatMode -eq 'PSTypeNameList') {
+            if ($PassThru) {
+                if ($curTypeObj) {
+                    , $curTypeObj.PSTypeNames
+                }
+                return
+            }
             # *should* work regardless if process inputs an array or one elemenent
             # foreach($item in $InputObject) {}
-            $InputObject | Join-String -sep "`n- " -OutputPrefix "- " { $_.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+            $splat_JoinPSTypeName = @{
+                Separator    = "`n- "
+                OutputPrefix = "- "
+                Property     = { $curTypeObj.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+            }
+
+            $InputObject | Join-String @splat_JoinPSTypeName
+
+            # $splat_JoinPSTypeNamedsf = @{
+            #     OutputPrefix = { $_.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+            # }
+
+            # $InputObject | Join-String @splat_JoinPSTypeName
+
+
             return
         }
 
 
 
         $meta = [ordered]@{
-            Count  = $cur.Count
-            isList = $cur.Count -gt 1
-            Type   = $cur.GetType() | Format-TypeName
+            Count  = $curTypeObj.Count
+            isList = $curTypeObj.Count -gt 1
+            Type   = $curTypeObj.GetType() | Format-TypeName
         }
 
         $metaDetailed = [ordered]@{
@@ -156,7 +201,7 @@ function Get-ObjectType {
 }
 
 
-if ($isdebugmode) {
+if ($isDebugMod) {
     # test cases
     $items = [ordered]@{}
     $items.mod = Get-Module 'Ninmonkey.Console'
@@ -166,17 +211,18 @@ if ($isdebugmode) {
     $items.object = [pscustomobject]($items['hash'])
 }
 
-if ($false) {
+if ($true) {
     H1 'mod'
     $items.mod | TypeOf
     H1 'sdf'
     hr
     234, 'sdf' | TypeOf
     hr
-    TypeOf 'dog' | Format-Table
+    TypeOf -InputObject 'dog' | Format-Table
     hr
-    TypeOf 'dog' -Detail | Format-Table
+    TypeOf -InputObject 'dog' -Detail | Format-Table
 
+    $items.GetEnumerator() | ForEach-Object { $_.Value } | ForEach-Object gettype | ForEach-Object FullName
     # # final
     # hr;
     # $items.mod | TypeOf
@@ -191,7 +237,7 @@ if ($false) {
     # hr
 }
 
-if ($false -and $DebugTestMode) {
+if ($true -and $isDebugMod) {
     H1 'enumerate all'
     $results = foreach ($Key in $items.Keys) {
         [pscustomobject]@{
