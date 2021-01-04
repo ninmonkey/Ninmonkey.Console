@@ -1,7 +1,11 @@
 function Test-PesterLinesAreEqual {
     <#
     .synopsis
-        test if strings are equal, regardless of line ending style
+        test if strings are equa
+        l, regardless of line ending style
+    .notes
+        - Is it better to throw an exception or return a [bool] for [Pester] ?
+        - if the text delim is '\r' with no '\n' then splitting on '\r?\n' fails
     #>
     param(
         # Expected Text
@@ -12,7 +16,7 @@ function Test-PesterLinesAreEqual {
         [Parameter(Mandatory, Position = 1)]
         [string[]]$ActualText,
 
-        # this will throw an error when there are newlines verses line feed
+        # strict coompare: Treat different line endings as a failed match
         [Parameter()][switch]$PreserveLineEnding
     )
     process {
@@ -37,15 +41,6 @@ function Test-PesterLinesAreEqual {
         }
 
         $Meta | Format-HashTable | Write-Debug
-
-        # $cleanActual = $ActualText.Trim()
-
-        # -join "`n" -split '\r?\n' -join "`n"
-
-        # $ExpectedText | Should -Be $ActualText
-        # ($cleanActual -eq $cleanExpected) | Should -Be $rue
-
         $cleanActual | Should -Be $cleanExpected
-        # $cleanActual | Should -Be $cleanExpected
     }
 }
