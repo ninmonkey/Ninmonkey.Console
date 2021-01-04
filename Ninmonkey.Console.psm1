@@ -30,6 +30,7 @@ foreach ($file in $private_seeminglySci) {
 #>
 $private = @(
     'Toast-LogTestNetResult'
+    'pester/Test-PesterLinesAreEqual'
 )
 
 foreach ($file in $private) {
@@ -79,6 +80,7 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
+    # misc
     'Edit-GitConfig'
 
     # console formatting
@@ -156,6 +158,8 @@ $functionsToExport = @(
     'Get-TextEncoding'
     'Get-UnicodeInfo'
 
+
+
     # the rest
     'Get-NativeCommand'
     'Invoke-NativeCommand'
@@ -209,6 +213,9 @@ $functionsToExport = @(
     'ConvertTo-Base64String'
 
     'Out-Fzf'
+
+    # Pester: to remove from Public scope; should be private or only loaded by pester
+    'Test-PesterLinesAreEqual'
 
 )
 Export-ModuleMember -Function $functionsToExport

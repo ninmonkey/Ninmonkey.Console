@@ -1,5 +1,80 @@
-﻿
-function Get-ObjectType {
+﻿function Get-ObjectType {
+    [Alias('TypeOf')]
+    <#
+    .notes
+        parametersets 2 position-type  modes
+            1]  object[] | TypeOf mode
+            2]  TypeOf object[] mode
+
+        todo: FormatTypeName that does 'abbreviateNamespace'
+
+    pipeline notes:
+        It seems like for this function I should go with
+        - parameter type that is not an array [obj]
+        - process returns array ', $array'
+        - then optionally enumerate on [obj] if I want to inspect child element
+    #>
+    param(
+        # InputObject[s] to get type[s] of
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object]$InputObject,
+
+        # Format Mode
+        [Parameter(Position = 0)]
+        [ValidateSet('PSTypeNames', 'GetType')]
+        [string]$Format,
+
+        # Return list of type names
+        [Parameter()][switch]$PassThru
+
+
+    )
+    begin {
+        # if ($PassThru) {
+        #     throw "NotImplementedError: -PassThru"
+        # }
+
+    }
+    process {
+        if ([string]::IsNullOrWhiteSpace( $Format)) {
+            $Format = 'PSTypeNames'
+        }
+        switch ($Format) {
+
+            'GetType' {
+                $typeInstance = $InputObject.GetType()
+                if ($PassThru) {
+                    $typeInstance
+                    break
+                }
+                $typeInstance | Format-TypeName
+                break
+            }
+
+            'PSTypeNames' {
+                if ($PassThru) {
+                    , $InputObject.pstypenames
+                    break
+                }
+
+                # foreach ($Obj in $InputInputObjectect) {
+                $splat_JoinPSTypeName = @{
+                    Separator = ', '
+                    Property  = { $_ | Format-TypeName }
+                }
+
+                $InputObject.pstypenames | Join-String @splat_JoinPSTypeName
+                break
+            }
+
+            default { Throw "UnhandledCase: $Format" }
+        }
+    }
+    end {}
+}
+
+
+function old_Get-ObjectType {
     <#
     .synopsis
         simplify getting type name of an object and child types
@@ -45,7 +120,7 @@ function Get-ObjectType {
             - [ ] @(obj)[0].pstypenames ?
         "
         #>
-    [Alias('TypeOf')]
+    # [Alias('TypeOf')]
     param(
         # InputObject[s] to get type[s] of
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -72,13 +147,13 @@ function Get-ObjectType {
         $UseColor = ! $PassThru
         $joinAsList_splat = @{
             Separator    = ', '
-            OutputPrefix = '{'
+            OutputPrefix = '{ '
             OutputSuffix = '}'
         }
 
         $joinTypesAsList_splat = @{
             Separator    = ', '
-            OutputPrefix = '{'
+            OutputPrefix = '{ '
             OutputSuffix = '}'
             Property     = { $_ | Format-TypeName -WithBrackets }
         }
@@ -209,9 +284,20 @@ if ($isDebugMod) {
     $items.nums = 2, 4, 55
     $items.hash = @{ Species = 'cat'; }
     $items.object = [pscustomobject]($items['hash'])
+    $items.GetEnumerator() | ForEach-Object { $_.Value } | ForEach-Object gettype | ForEach-Object FullName
+
+    H1 'try 1: As Obj Instance (required)'
+    $items.GetEnumerator() | ForEach-Object { $_.Value }
+    | ForEach-Object FullName
+    | TypeOf
+
+    H1 'try 2: As Type instance (optional)'
+    $items.GetEnumerator() | ForEach-Object { $_.Value }
+    | ForEach-Object gettype | ForEach-Object FullName
+    | TypeOf
 }
 
-if ($true) {
+if ($false) {
     H1 'mod'
     $items.mod | TypeOf
     H1 'sdf'
@@ -222,7 +308,6 @@ if ($true) {
     hr
     TypeOf -InputObject 'dog' -Detail | Format-Table
 
-    $items.GetEnumerator() | ForEach-Object { $_.Value } | ForEach-Object gettype | ForEach-Object FullName
     # # final
     # hr;
     # $items.mod | TypeOf
