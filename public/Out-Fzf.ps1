@@ -56,9 +56,18 @@
 
 
         # main piped input
-        [Parameter(
-            Mandatory, ValueFromPipeline)]
-        [string[]]$InputText
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [string[]]$InputText,
+
+        # fzf's default is 'reverse'
+        [Parameter()]
+        [ValidateSet('default', 'reverse', 'reverse-list')]
+        [string]$Layout
+
+
+        # Optional args as raw text as the final parameter
+        # [Parameter()]
+        # [string]$FinalArgs
 
         # [1] Future: param -Property
         # [2] future: support PSObjects with property '.Name' or ToString
@@ -75,6 +84,7 @@
             '<https://github.com/junegunn/fzf#tips> and ''fzf --help'''
             break
         }
+        # to: refactor /w Get-NativeCommand
         $binFzf = Get-Command 'fzf' -CommandType Application
         $fzfArgs = @()
         $inputList = [list[string]]::New()
@@ -85,6 +95,9 @@
 
         if ($MultiSelect) {
             $fzfArgs += '--multi'
+        }
+        if($Layout) {
+            $fzfArgs += "--layout=$Layout"
         }
 
         $debugMeta.FzfArgs = $fzfArgs
@@ -113,6 +126,10 @@
 
         }
         $debugMeta | Format-HashTable -Title '@debugMeta' | Write-Debug
+        $debugMeta.SelectionCount | Label 'Num Selected' | Write-Debug
+        $Selection | Join-String -sep ', ' -SingleQuote | Label  'Selection' | Write-Debug
+
+        $fzfArgs | Join-String -sep "`n-" -SingleQuote | Label 'FzfArgs' | Write-Debug
     }
 }
 
