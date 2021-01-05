@@ -108,11 +108,12 @@
                 $SortedHash = $InputHash | Sort-Hashtable
             }
         }
+        $Color_NiceBlue = '#0078c8'
 
         # hashtables don't enumerate, so starting title *does* go in process
         if (! [string]::IsNullOrWhiteSpace( $Title )) {
             # Label '' -sep '' "┊ $Title ┊" -fg2 blue
-            Label "# $Title #" -sep '' -Text '' -fg blue -LinesBefore $LinesBefore
+            Label "# $Title #" -sep '' -Text '' -fg $Color_NiceBlue -LinesBefore $LinesBefore
         }
 
         # enumerate values

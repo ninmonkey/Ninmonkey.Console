@@ -1,4 +1,6 @@
-﻿function Out-Fzf {
+﻿
+
+function Out-Fzf {
     <#
     .synopsis
         uses commandline app 'fzf' similar to 'out-gridview'
@@ -48,7 +50,7 @@
         [Parameter()][switch]$Help,
 
         # Multi select
-        [Parameter()][switch]$MultiSelect,
+        [Parameter()][switch]$MultiSelect = $true,
 
         # Prompt title
         [Parameter()]
@@ -60,9 +62,31 @@
         [string[]]$InputText,
 
         # fzf's default is 'reverse'
+        # reverse: TextInput on Top
+        # reverse-list: TextInput on bottom
+        #
         [Parameter()]
         [ValidateSet('default', 'reverse', 'reverse-list')]
-        [string]$Layout
+        [string]$Layout = 'reverse',
+
+        # Height as a percent. (0, $null, or 100) are full screen
+        [Parameter()]
+        [AllowNull()]
+        [ValidateRange(0, 100)]
+        [int]$Height = 30,
+
+        # --min-height=HEIGHT   Minimum height when --height is given in percent
+                        #   (default: 10)
+        # Height as a percent
+        # [Parameter()]
+        # [AllowNull()]
+        # [ValidateRange(0, 100)]
+        # [int]$MinHeight,
+
+        # Exact Match  --exact
+        [Parameter()][switch]$ExactMatch,
+        [Alias('LoopForever')]
+        [Parameter()][switch]$Cycle
 
 
         # Optional args as raw text as the final parameter
@@ -80,6 +104,7 @@
     begin {
         $debugMeta = @{}
 
+
         if ($Help) {
             '<https://github.com/junegunn/fzf#tips> and ''fzf --help'''
             break
@@ -90,7 +115,7 @@
         $inputList = [list[string]]::New()
 
         if ( ! [String]::IsNullOrWhiteSpace(  $PromptText  ) ) {
-            $fzfArgs += ("--prompt={0}" -f $PromptText)
+            $fzfArgs += "--prompt=$PromptText "
         }
 
         if ($MultiSelect) {
@@ -98,6 +123,36 @@
         }
         if($Layout) {
             $fzfArgs += "--layout=$Layout"
+        }
+
+        if($Height)  {
+            $fzfArgs += "--height=$Height%"
+        }
+
+        if($Cycle) {
+            $fzfArgs += '--cycle'
+        }
+
+        # future ags
+        if ($false) {
+            if($NotExtended)  { # default is on
+                $fzfArgs += "--no-extended"
+            }
+        @'
+            --tac
+                'fzf' then switches to Sort Descending
+             -n, --nth=N[,..]
+            --with-nth=N[,..]
+            -d, --delimiter=STR
+            --literal
+            -n, -nth=<int>
+            --no-sort
+
+            --filepath-word
+            --jump-labels=CHARS
+
+            --keep-right
+'@
         }
 
         $debugMeta.FzfArgs = $fzfArgs
@@ -146,3 +201,86 @@ if ($false) {
 
     # Get-ChildItem -Name | Out-Fzf -MultiSelect -Debug
 }
+
+<#
+NYI args:
+    -x, --extended
+
+    -e, --exact
+    --algo=TYPE
+    -i
+    +i
+    --literal
+    -n, --nth=N[,..]
+
+
+    --with-nth=N[,..]
+
+    -d, --delimiter=STR
+    +s, --no-sort
+    --tac
+    --phony
+    --tiebreak=CRI[,..]
+
+
+
+  Interface
+    -m, --multi[=MAX]
+    --no-mouse
+    --bind=KEYBINDS
+    --cycle
+    --keep-right
+    --no-hscroll
+    --hscroll-off=COL
+
+    --filepath-word
+    --jump-labels=CHARS
+
+  Layout
+    --height=HEIGHT[%]
+
+    --min-height=HEIGHT
+
+    --layout=LAYOUT
+    --border[=STYLE]
+
+    --margin=MARGIN
+    --info=STYLE
+    --prompt=STR
+    --pointer=STR
+    --marker=STR
+    --header=STR
+    --header-lines=N
+
+  Display
+    --ansi
+    --tabstop=SPACES
+    --color=COLSPEC
+    --no-bold
+
+  History
+    --history=FILE
+    --history-size=N
+
+  Preview
+    --preview=COMMAND
+    --preview-window=OPT
+
+
+  Scripting
+    -q, --query=STR
+    -1, --select-1
+    -0, --exit-0
+    -f, --filter=STR
+    --print-query
+    --expect=KEYS
+    --read0
+    --print0
+    --sync
+    --version
+
+  Environment variables
+    FZF_DEFAULT_COMMAND
+    FZF_DEFAULT_OPTS
+
+#>

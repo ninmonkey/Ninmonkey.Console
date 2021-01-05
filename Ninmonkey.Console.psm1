@@ -256,6 +256,8 @@ if ($true) {
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
     $aliasesToExport = @(
+
+
         'H1'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
@@ -268,6 +270,7 @@ if ($true) {
         # console formatting
         'Format-Indent'
         'Label'
+        'Br'
         'Br'
         # which alias for 'Write-ConsoleText'?
         # 'Text' # warning: pansi uses alias 'text'
