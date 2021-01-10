@@ -131,6 +131,8 @@ $public = @(
     'Get-NinAppxPackage'
     'Invoke-Explorer'
     'Get-TerminalName'
+    'Format-PrettyJson'
+    'Format-HashTableList'
     # 'Get-NinNewestItem'
     'Out-Fzf'
 
@@ -213,9 +215,10 @@ $functionsToExport = @(
     'ConvertTo-Base64String'
 
     'Out-Fzf'
-
+    'Format-PrettyJson'
     # Pester: to remove from Public scope; should be private or only loaded by pester
     'Test-PesterLinesAreEqual'
+    'Format-HashTableList'
 
 )
 Export-ModuleMember -Function $functionsToExport
@@ -275,6 +278,7 @@ if ($true) {
         # which alias for 'Write-ConsoleText'?
         # 'Text' # warning: pansi uses alias 'text'
         'Write-Text'
+        'PrettyJson'
 
         'Prop'
         'Fm'
@@ -288,6 +292,7 @@ if ($true) {
         'Hex'
         'Number'
         'Bits'
+
     )
 
     Export-ModuleMember -Alias $aliasesToExport
