@@ -14,6 +14,34 @@ Describe "Get-ObjectType" {
         }
     }
 
+    Context 'Ensuring Piping is wrapping and unwrapping correctly' {
+        BeforeAll {
+            $SampleList = @(
+                @{ expression = 'Name'; Descending = $true; cat = 4 }
+                @{ expression = 'Id'; Descending = $true }
+            )
+        }
+        It 'Validate Return Count' {
+            $SampleList | TypeOf GetType | Measure-Object | ForEach-Object Count
+            | Should -Be 1
+
+            , $SampleList | TypeOf GetType | Measure-Object | ForEach-Object Count
+            | Should -Be 2
+        }
+        It 'Validate Return Value' {
+
+
+            $SampleList.GetType().Name | Should -be 'Object[]'
+            $SampleList[0].gettype().Name | Should -Be 'Hashtable'
+
+            $SampleList | TypeOf GetType
+            | Should -Be 'Object[]'
+
+            # , $SampleList | Format-HashTableList
+
+        }
+    }
+
     Context 'Input from Pipeline' {
         Context 'SingleInput' {
             It 'PSTypeNames' {
@@ -36,6 +64,7 @@ Describe "Get-ObjectType" {
             Context 'Test Default' {
                 It 'Default is PSTypeNames' {
                     ('A', 4 | TypeOf )
+                    # todo" default was changed
                     | Should -Be ('A', 4 | TypeOf PSTypeNames)
                 }
                 It 'PassThru returns a TypeInfo instance' {

@@ -1,4 +1,6 @@
-﻿function Format-HashTable {
+﻿
+
+function Format-HashTable {
     <#
     .synopsis
         consistently format hashtables/PSCO objects
@@ -28,6 +30,8 @@
         Currently only formats a depth of 1
 
         future:
+            Should some logic be moved to formatters?
+
             display abbreviation for nested values
 
             PS> $hash = @{app='pip'; meta=@{a=3} }

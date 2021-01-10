@@ -90,6 +90,27 @@
     }
 
 }
+if ($false) {
+    H1 'Prop output:'
+    Get-ChildItem . | Get-Unique -OnType | Select-Object -First 1 | Prop | Format-Table
+
+    (Get-Date) | Prop | Format-Table
+
+    Write-Warning 'bug:'
+
+
+    <#
+# is not returning properties on itself:
+> @(34) | prop
+
+> (34) | Prop | ExpectedToBe Blank
+
+> @(34) | Prop | ExpectedToBe List
+
+# Should be:
+> $x.psobject.properties'
+#>
+}
 
 if ($true -and $DebugTestMode) {
     H1 'Test1] Param'

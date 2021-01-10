@@ -37,7 +37,7 @@
     }
     process {
         if ([string]::IsNullOrWhiteSpace( $Format)) {
-            $Format = 'PSTypeNames'
+            $Format = 'GetType'
         }
         switch ($Format) {
 
