@@ -25,8 +25,9 @@ function Format-HashTableList {
     process {
         # foreach ($element in $InputList) {
         $NestedIndentString = $IndentString * $Depth
+        $PrefixTypeName = TypeOf -InputObject $InputList
         $joinStringSplat = @{
-            OutputPrefix = "[hashtable[]] = @(`n${NestedIndentString}"
+            OutputPrefix = "${PrefixTypeName} = @(`n${NestedIndentString}"
             Separator    = "`n${NestedIndentString}"
             OutputSuffix = "`n)"
         }
