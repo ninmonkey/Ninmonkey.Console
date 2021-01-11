@@ -87,6 +87,7 @@
     }
     end {
         # Write-Warning 'should not be a raw table'
+        Write-Warning 'usej: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
     }
 
 }
@@ -113,11 +114,14 @@ if ($false) {
 }
 
 if ($true -and $DebugTestMode) {
+
+    $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
+    $catObj = [pscustomobject]$catHash
+
     H1 'Test1] Param'
     $gcm = Get-Command Select-Object
     $gcm.Parameters | Prop | Format-Table
-}
-if ($true -eq $DebugTestMode) {
+
     H1 'Test2] Basic Objects'
     $catHash | Prop | Format-Table
     $catObj | Prop | Format-Table
