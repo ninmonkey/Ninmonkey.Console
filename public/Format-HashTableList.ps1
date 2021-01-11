@@ -38,15 +38,3 @@ function Format-HashTableList {
         # }
     }
 }
-
-if ($DebugTestMode) {
-    $SampleList = @(
-        @{ expression = 'Name'; Descending = $true; cat = 4 }
-        @{ expression = 'Id'; Descending = $true }
-    )
-
-    $SampleList | Format-HashTable
-    hr
-    , $SampleList | Format-HashTableList
-
-}
