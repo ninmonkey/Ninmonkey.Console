@@ -7,7 +7,21 @@ function Format-HashTableList {
         expects a [hashtable[]]
     .notes
         refactor to a list of any type with nested expansion ?
+    .example
 
+        PS>
+        $SampleList = @(
+            @{ expression = 'Name'; Descending = $true; cat = 4 }
+            @{ expression = 'Id'; Descending = $true }
+        )
+        , $SampleList | Format-HashTableList
+
+        # Output:
+
+            Hashtable[] = @(
+                @{cat = 4; Descending = True; expression = Name }
+                @{Descending = True; expression = Id }
+            )
 
     #>
     param(
