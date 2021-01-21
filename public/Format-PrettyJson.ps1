@@ -12,7 +12,8 @@ function Format-PrettyJson {
     .notes
         Should it be ConvertTo-PrettyJson ?
     #>
-    [Alias('PrettyJson')]
+
+    [Alias('PrettyJson', 'Json🎨')]
     param(
         # input array
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -31,7 +32,7 @@ function Format-PrettyJson {
         $useColor = $true
 
         try {
-            Get-NativeCommand pygmentize -ea Stop
+            Get-NativeCommand pygmentize -ea Stop | Out-Null
         } catch {
             $useColor = $false
         }

@@ -87,7 +87,8 @@
                 "cwd": "${file}"
             },
             {
-                "name": "🐛 : [Details] — ", // [nin.PowerShell]",
+                // slower, and verbose
+                "name": "🐛 : [Details] — ",
                 "type": "PowerShell",
                 "request": "launch",
                 "script": "Invoke-Pester",

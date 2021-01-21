@@ -4,6 +4,10 @@
 
 # . 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\private\refactor to csharp\EncodingCompletion.ps1'
 
+$__Config = @{
+    includeAliasesUnicode = $true
+}
+
 $private_seeminglySci = @(
     'seeminglySci_import'
     'NamespaceAwareCompletion'
@@ -82,22 +86,29 @@ Export-ModuleMember -Function $completer
 $public = @(
     # misc
     'Edit-GitConfig'
+    'Get-NinAlias'
 
     # console formatting
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
     'Format-RelativePath'
+    'Format-Hashtable'
+    'Format-ControlChar'
 
     # unicode + encoding
     'Get-TextEncoding'
     'Get-UnicodeInfo'
 
-    # the rest
+    # other core funcs
     'Get-NativeCommand'
     'Invoke-NativeCommand'
+
+    # the rest
+    'Compare-Directory'
+
+
     'Export-PlatformFolderPath'
-    'Format-Hashtable'
     'Format-History'
     'Format-MeasureCommand'
     'Format-TestConnection'
@@ -109,7 +120,6 @@ $public = @(
     'Trace-NinCommand'
     'Format-Predent'
     'Sort-Hashtable'
-    'Format-ControlChar'
     'Get-NinTypeData'
     # 'Get-NinFormatData'
     'Set-NinLocation'
@@ -159,6 +169,7 @@ $functionsToExport = @(
     # unicode + encoding
     'Get-TextEncoding'
     'Get-UnicodeInfo'
+    'Compare-Directory'
 
 
 
@@ -171,6 +182,8 @@ $functionsToExport = @(
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
 
+
+    'Get-NinAlias'
     # 'Get-NinNewestItem'
     'Format-Predent'
     'Test-UserIsAdmin'
@@ -259,8 +272,6 @@ if ($true) {
     New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
 
     $aliasesToExport = @(
-
-
         'H1'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
@@ -275,6 +286,10 @@ if ($true) {
         'Label'
         'Br'
         'Br'
+
+        # misc
+        'DiffDir'
+
         # which alias for 'Write-ConsoleText'?
         # 'Text' # warning: pansi uses alias 'text'
         'Write-Text'
@@ -292,8 +307,16 @@ if ($true) {
         'Hex'
         'Number'
         'Bits'
-
+        'Format-HashTable'
     )
-
     Export-ModuleMember -Alias $aliasesToExport
+    if ($__Config.includeAliasesUnicode) {
+        $aliasesUnicode_ToExport = @(
+            'Json🎨'
+            # 'Format-HashTable🎨'
+        )
+        Export-ModuleMember -Alias $aliasesUnicode_ToExport
+    }
+
+
 }

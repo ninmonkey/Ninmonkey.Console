@@ -20,6 +20,10 @@ Get-Module pester -ListAvailable
 
 
 function _FormatExportedCommands {
+    <#
+    .synopsis
+    should be cleaned up/refactored
+    #>
     param(
         # Input object
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -131,6 +135,9 @@ function Get-NinModule {
                 break
             }
         }
+    }
+    end {
+        Write-Warning 'WIP'
     }
 
 }

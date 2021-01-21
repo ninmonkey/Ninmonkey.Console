@@ -58,6 +58,8 @@ function Get-NativeCommand {
 
         Write-Debug "Using Item: $($query.Source)"
 
+
+        Write-Verbose 'If not working, validate whether target binary has: $_LinkType is AppExeCLink. Python3 on windows does this when it''s not yet installed, but gcm shows it'
         $query
     }
 
