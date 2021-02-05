@@ -1,4 +1,4 @@
-﻿
+﻿using namespace System.Collections.Generic
 
 function Out-Fzf {
     <#
@@ -59,6 +59,7 @@ function Out-Fzf {
 
         # main piped input
         [Parameter(Mandatory, ValueFromPipeline)]
+        [AllowEmptyString()]
         [string[]]$InputText,
 
         # fzf's default is 'reverse'
@@ -76,7 +77,7 @@ function Out-Fzf {
         [int]$Height = 30,
 
         # --min-height=HEIGHT   Minimum height when --height is given in percent
-                        #   (default: 10)
+        #   (default: 10)
         # Height as a percent
         # [Parameter()]
         # [AllowNull()]
@@ -121,24 +122,25 @@ function Out-Fzf {
         if ($MultiSelect) {
             $fzfArgs += '--multi'
         }
-        if($Layout) {
+        if ($Layout) {
             $fzfArgs += "--layout=$Layout"
         }
 
-        if($Height)  {
+        if ($Height) {
             $fzfArgs += "--height=$Height%"
         }
 
-        if($Cycle) {
+        if ($Cycle) {
             $fzfArgs += '--cycle'
         }
 
         # future ags
         if ($false) {
-            if($NotExtended)  { # default is on
+            if ($NotExtended) {
+                # default is on
                 $fzfArgs += "--no-extended"
             }
-        @'
+            @'
             --tac
                 'fzf' then switches to Sort Descending
              -n, --nth=N[,..]
@@ -158,8 +160,12 @@ function Out-Fzf {
         $debugMeta.FzfArgs = $fzfArgs
     }
     process {
-        foreach ($Line in $InputText) {
-            $inputList.add( $Line )
+        $InputText | ForEach-Object {
+            if ( [string]::IsNullOrWhiteSpace( $_ )) {
+                return
+            }
+
+            $inputList.Add( $_ )
         }
     }
 

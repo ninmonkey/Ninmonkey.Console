@@ -38,13 +38,17 @@ function _Format-ParameterTypeInfo {
         }
     }
 }
+<#
+if ($false) {
+    $Sample = @{
+        FunctionInfo_WithParam = Get-Command * | Where-Object {
+            $_ -is 'FunctionInfo' -and $null -ne $_.Version -and $_.Parameters.PSBase.Count -gt 0
+        } | Select-Object -First 1 -Wait
+    }
+    $g_paramDict = $Sample.FunctionInfo_WithParam.Parameters
+    $g_paramSingle = $Sample.FunctionInfo_WithParam.Parameters.GetEnumerator() | Select-Object -First 1 -ExpandProperty Value
 
-$Sample = @{
-    FunctionInfo_WithParam = Get-Command * | Where-Object {
-        $_ -is 'FunctionInfo' -and $null -ne $_.Version -and $_.Parameters.PSBase.Count -gt 0
-    } | Select-Object -First 1 -Wait
+    _Format-ParameterTypeInfo $g_paramDict
+
 }
-$g_paramDict = $Sample.FunctionInfo_WithParam.Parameters
-$g_paramSingle = $Sample.FunctionInfo_WithParam.Parameters.GetEnumerator() | Select-Object -First 1 -ExpandProperty Value
-
-_Format-ParameterTypeInfo $g_paramDict
+#>

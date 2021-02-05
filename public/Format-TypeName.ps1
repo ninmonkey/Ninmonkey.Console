@@ -30,6 +30,9 @@
         [Parameter()][Alias('WithPrefix')]
         [string[]]$IncludePrefix = @(),
 
+        # use Ansi coloring for formatting, using Format.ps1xml
+        [Parameter()][switch]$Colorize,
+
         # surround type names with '[]' ?
         [Alias('Brackets')]
         [Parameter()][switch]$WithBrackets
@@ -60,6 +63,9 @@
 
         if ( $IncludePrefix.Count -gt 0) {
             throw "Prefix include list NYI"
+        }
+        if ($Colorize) {
+            throw "Format.ps1xml Ansi Escape NYI"
         }
     }
 
@@ -136,3 +142,23 @@ function NestedOrNot( [type]$TypeInfo ) {
 
     }
 } | Write-Debug
+
+
+# Need to convert string type to typename when able
+Write-Warning @'
+changefix:
+    always convert to [System.RuntimeType] if not already a [System.RuntimeType]
+    require a manual  opt-out to not do it
+
+bugfix:
+🐒> $target.gettype() | % fullname | %{ $_ -as 'type' } |  Format-TypeName
+
+Dictionary`2[String, ParameterMetadata]
+
+🐒> $target.gettype() | % fullname | Format-TypeName
+
+Dictionary`2[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neu
+tral, PublicKeyToken=7cec85d7bea7798e],[System.Management.Automation.ParameterMet
+adata, System.Management.Automation, Version=7.1.0.0, Culture=neutral, PublicKeyT
+oken=31bf3856ad364e35]]
+'@

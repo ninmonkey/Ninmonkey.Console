@@ -23,7 +23,8 @@ function Write-ConsoleHeader {
         # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
         [Parameter()]
         [alias('Fg')]
-        [PoshCode.Pansies.RgbColor]$ForegroundColor = 'Orange',
+        [PoshCode.Pansies.RgbColor]$ForegroundColor = '#EBCB8B',
+        #'Orange',
 
         # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
         [Parameter()]
@@ -38,7 +39,7 @@ function Write-ConsoleHeader {
         # number of blank lines after Label
         [Parameter()]
         [Alias('After')]
-        [uint]$LinesAfter = 0,
+        [uint]$LinesAfter = 1, #0,
 
         # how deep, h1 to h6
         [Parameter()]

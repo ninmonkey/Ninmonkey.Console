@@ -11,13 +11,15 @@ see:
 
 #>
 # function Add-NativeAutoCompleterDotnet {
-'todo: refactor inline constants'
 
 # $temp_old_Debug = $DebugPreference
 function New-CompletionResult {
     <#
     .synopsis
         Create a [System.Management.Automation.CompletionResult]
+    .notes
+    todo:
+        - refactor inline constants'
     .example
         PS> New-CompletionResult '--info' 'info' ParameterName 'List installed .net runtimes'
 
