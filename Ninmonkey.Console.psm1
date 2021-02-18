@@ -104,6 +104,13 @@ $public = @(
     'Get-NativeCommand'
     'Invoke-NativeCommand'
 
+    # converters
+    'ConvertTo-Number'
+    'ConvertTo-HexString'
+    'ConvertTo-Base64String'
+    'ConvertTo-BitString'
+    'ConvertTo-PropertyList'
+
     # the rest
     'Compare-Directory'
 
@@ -129,7 +136,7 @@ $public = @(
     # 'Get-EnumInfo'
     'Format-FileSize'
     'Format-NullText'
-    'ConvertTo-PropertyList'
+    # 'ConvertTo-PropertyList'
     'Test-IsDirectory'
     'Get-NinCommandSyntax'
     'Format-TypeName'
@@ -171,6 +178,12 @@ $functionsToExport = @(
     'Get-UnicodeInfo'
     'Compare-Directory'
 
+    # converters
+    'ConvertTo-Number'
+    'ConvertTo-HexString'
+    'ConvertTo-Base64String'
+    'ConvertTo-BitString'
+    'ConvertTo-PropertyList'
 
 
     # the rest

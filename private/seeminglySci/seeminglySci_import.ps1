@@ -61,7 +61,7 @@ param()
     [section]: main
 #>
 
-function ConvertTo-BitString {
+function ConvertTo-SciBitString {
     [Alias('Bits')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -145,8 +145,8 @@ $script:WellKnownNumericTypes = [type[]](
     [decimal],
     [bigint])
 
-function ConvertTo-Number {
-    [Alias('Number')]
+function ConvertTo-SciNumber {
+    # [Alias('Number')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline, Position = 0)]
@@ -178,7 +178,8 @@ function ConvertTo-Number {
     }
 }
 
-function ConvertTo-HexString {
+
+function ConvertTo-SSciHexString {
     [Alias('Hex')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -204,7 +205,7 @@ function ConvertTo-HexString {
 }
 
 
-function ConvertTo-Base64String {
+function ConvertTo-SSciBase64String {
     <#
     #>
     [Alias('Base64')] # was also 'base'
@@ -237,7 +238,7 @@ function ConvertTo-Base64String {
     }
 }
 
-function Get-ElementName {
+function Get-SciElementName {
     [Alias('NameOf')]
     [CmdletBinding()]
     param(
@@ -371,6 +372,7 @@ function Convert-Object {
         [type] $Type
     )
     process {
+        throw "who uses me?"
         if ($null -eq $InputObject) {
             return
         }

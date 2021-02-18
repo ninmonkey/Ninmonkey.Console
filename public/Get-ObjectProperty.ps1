@@ -1,4 +1,6 @@
-﻿function Get-ObjectProperty {
+﻿using namespace System.Collections.Generic
+
+function Get-ObjectProperty {
     <#
     .synopsis
         Nicer output to inspect objects than ($obj.psobject.properties | format-table)
@@ -35,6 +37,34 @@
         [XmlNode] [␀]            PreviousSibling
         [XmlNode] [␀]            NextSibling
 
+    .notes
+        now defaults to one output per typename
+
+    example output:
+        # example output:
+
+        PS> ps | prop | ft
+
+            TypeOfInstance Name                 Value
+            -------------- ----                 -----
+                    String Name                 Agent
+                    Int32 SI                   0
+                    Int32 Handles              495
+                    Int64 VM                   176238592
+                    Int64 WS                   16920576
+                    Int64 PM                   41918464
+                    Int64 NPM                  77528
+                        [␀] Path
+                        [␀] CommandLine
+                        [␀] Parent
+                        [␀] Company
+                        [␀] CPU
+                        [␀] FileVersion
+                        [␀] ProductVersion
+                        [␀] Description
+                        [␀] Product
+                    String __NounName           Process
+
     #>
     [cmdletbinding()]
     [Alias('Prop', 'ObjectProperty')]
@@ -44,7 +74,7 @@
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject,
 
-        # Return extra informaiton?
+        # Return extra information?
         [Parameter()][switch]$Detailed
     )
 
@@ -57,40 +87,65 @@
         $Config = @{
             SymbolNull = "[`u{2400}]" # [Null]
         }
+        $inputList = [list[object]]::new()
     }
     process {
-        $InputObject.psobject.properties | ForEach-Object {
-            $prop = $_
-            $prop | Format-Table | Out-String | Write-Debug
-
-            $ValueIsNull = $null -eq $prop.Value
-            if ($ValueIsNull) {
-                $DisplayedValueType = $Config.SymbolNull
-            } else {
-                $DisplayedValueType = $prop.Value.GetType()  | Format-TypeName @splat_FormatType
-            }
-
-            $meta = [ordered]@{
-                Type           = $prop.TypeNameOfValue | Format-TypeName @splat_FormatType
-                TypeOfInstance = $DisplayedValueType
-                Name           = $prop.Name
-                Value          = $prop.Value
-            }
-            [pscustomobject]$meta
-            # $x + 3
-            # hr | Write-Warning
-            # $prop.TypeNameOfValue -as 'type' | Format-TypeName
-            # | Write-Warning
-            # $prop.TypeNameOfValue -as 'type'
-            # | Write-Warning
-        }
+        $inputList.Add( $InputObject )
     }
     end {
         # Write-Warning 'should not be a raw table'
         Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
-    }
+        $inputList
+        | Get-Unique -OnType
+        | ForEach-Object {
+            $curObject = $_
+            Write-Debug "Object: $($_.GetType().FullName)"
+            $curObject.psobject.properties | ForEach-Object {
+                $curProp = $_
+                Write-Debug "Property: $($curProp.Name)"
+                $curProp | Format-Table | Out-String | Write-Debug
 
+                $ValueIsNull = $null -eq $curProp.Value
+                if ($ValueIsNull) {
+                    $DisplayedValueType = $Config.SymbolNull
+                } else {
+                    $DisplayedValueType = $curProp.Value.GetType()  | Format-TypeName @splat_FormatType
+                }
+
+                $meta = [ordered]@{
+                    Type           = $curProp.TypeNameOfValue | Format-TypeName @splat_FormatType
+                    TypeOfInstance = $DisplayedValueType
+                    Name           = $curProp.Name
+                    Value          = $curProp.Value
+                    PsTypeName     = 'Nin.PropertyList'
+                }
+                [pscustomobject]$meta
+                # $x + 3
+                # hr | Write-Warning
+                # $prop.TypeNameOfValue -as 'type' | Format-TypeName
+                # | Write-Warning
+                # $prop.TypeNameOfValue -as 'type'
+                # | Write-Warning
+            }
+        }
+
+        if ($false -and 'manual typeinfo') {
+
+            $splat_TypeData_PropertyList = @{
+                TypeName                  = 'Nin.PropertyList'
+                Force                     = $true
+                DefaultDisplayPropertySet = 'TypeOfInstance', 'Name', 'Value', 'Type'
+                # DefaultDisplayPropertySet = @('Name', 'Species', 'Age')
+                DefaultDisplayProperty    = 'Name'
+                # 'DefaultKeyPropertySet' = '??'
+            }
+
+            Update-TypeData @splat_TypeData_PropertyList -Force
+        }
+    }
 }
+
+
 if ($false) {
     H1 'Prop output:'
     Get-ChildItem . | Get-Unique -OnType | Select-Object -First 1 | Prop | Format-Table

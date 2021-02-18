@@ -1,4 +1,5 @@
-﻿function Set-NinLocation {
+﻿
+function Set-NinLocation {
     <#
     .Synopsis
         A nicer 'cd' command that doesn't error when the target is a filename
@@ -37,6 +38,12 @@
         [Alias('AlwaysGci')]
         [Parameter()][switch]$AlwaysLsAfter
     )
+
+    $Regex = @{
+        RegistryProviderPrefix = [regex]::Escape('Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\')
+    }
+
+
     Write-Debug "Path: '$Path'"
 
     if ($Back) {
@@ -48,12 +55,25 @@
         return
     }
 
+    $DestItem = Get-Item $Path
+    # need to rewrite to support registry provider
+    if ($Path.PSPath -match $Regex.RegistryProviderPrefix) {
+        throw 'registry'
+    }
+    if ($DestItem.PSProvider.Name -eq 'Registry') {
+
+    }
     if (! (Test-Path -Path $Path)) {
         'Invalid path: {0}' -f $Path | Write-Error
         return
     }
 
-    $DestItem = Get-Item $Path
+
+    # $cust = 'Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -replace (), 'HKCU:\'
+    # Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Keyboard Layout\
+
+
+
     if (!(Test-IsDirectory $DestItem.FullName)) {
         Write-Debug "Input was a file: $DestItem"
         $DestItem = $DestItem.Directory

@@ -21,11 +21,14 @@
 
         # Format Mode
         [Parameter(Position = 0)]
-        [ValidateSet('PSTypeNames', 'GetType')]
+        [ValidateSet('List', 'PSTypeNames', 'GetType')]
         [string]$Format,
 
-        # Return list of type names
-        [Parameter()][switch]$PassThru
+        # Returns type as Typeinfo if possible
+        [Parameter()][switch]$PassThru,
+
+        # Returns a unique list of types
+        [Parameter()][switch]$Unique
 
 
     )
@@ -33,16 +36,22 @@
         # if ($PassThru) {
         #     throw "NotImplementedError: -PassThru"
         # }
-
-    }
-    process {
+        $typeList = [list[object]]::new()
         if ([string]::IsNullOrWhiteSpace( $Format)) {
             $Format = 'GetType'
         }
+
+    }
+    process {
+        $typeList.Add( $InputObject )
+    }
+    end {
+        # $
+
         switch ($Format) {
 
             'GetType' {
-                $typeInstance = $InputObject.GetType()
+                $typeInstance = $curObject.GetType()
                 if ($PassThru) {
                     $typeInstance
                     break
@@ -51,9 +60,9 @@
                 break
             }
 
-            'PSTypeNames' {
+            { 'PSTypeNames' -or 'List' } {
                 if ($PassThru) {
-                    , $InputObject.pstypenames
+                    , $curObject.pstypenames
                     break
                 }
 
@@ -63,14 +72,13 @@
                     Property  = { $_ | Format-TypeName }
                 }
 
-                $InputObject.pstypenames | Join-String @splat_JoinPSTypeName
+                $curObject.pstypenames | Join-String @splat_JoinPSTypeName
                 break
             }
 
             default { Throw "UnhandledCase: $Format" }
         }
     }
-    end {}
 }
 
 

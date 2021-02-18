@@ -5,6 +5,9 @@ function Invoke-NativeCommand {
     .example
         PS> # Use the first 'python' in path:
         Invoke-NativeCommand 'python' -Args '--version'
+    .notes
+        Not sure if this is a a bug or not. currently this creats a new window:
+            Invoke-NativeCommand 'code' -ArgumentList @('--help')
     #>
 
     param(
@@ -23,13 +26,23 @@ function Invoke-NativeCommand {
 
     $binCommand = Get-NativeCommand $CommandName -OneOrNone:$OneOrNone -ea Stop
 
-    $meta = @{
-        binCommand   = $binCommand
-        ArgumentList = $ArgumentList | Join-String -sep ', ' -DoubleQuote
-    }
+    # $meta = @{
+    #     binCommand   = $binCommand
+    #     ArgumentList = $ArgumentList | Join-String -sep ', ' -DoubleQuote
+    # }
 
     # $meta | Format-HashTable | Join-String -sep "`n" | Write-Debug
-    $meta | Format-HashTable -Title 'Invoke-NativeCommand' | Write-Debug
+    # $meta | Format-HashTable -Title 'Invoke-NativeCommand' | Write-Debug
 
     & $binCommand @ArgumentList
+
 }
+
+# # works
+# code --help
+
+# # works
+# Invoke-NativeCommand 'pwsh' -Args @('--help')
+
+# # 'pops up black window, does not print the help file to console'
+# Invoke-NativeCommand 'code' -Args @('--help')

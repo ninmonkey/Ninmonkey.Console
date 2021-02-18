@@ -36,7 +36,7 @@ function ConvertTo-PropertyList {
         | % GetEnumerator
         | Join-String -sep "`n" -Property { '{0} = {1}' -f ($_.Key, $_.Value) }
     #>
-    [alias('ConvertTo-HashTable')]
+    [alias('Select-ObjectProperty-HashTable')]
     param (
         # InputObject
         [Parameter(Mandatory, ValueFromPipeline)][object]$InputObject,

@@ -107,6 +107,21 @@
                 "cwd": "${workspaceFolder}",
             },
             {
+                "name": "🐛 | 🏃 | #currentFilter |",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "cwd": "${workspaceFolder}",
+                "args": [
+                    // "-Output",
+                    // "Detailed",
+                    "-TagFilter",
+                    "ConvertTo"
+                    // "wip"
+                    // "wip-hash"
+                ],
+            },
+            {
                 "name": "🐛 | 🏃 | #WIP |",
                 "type": "PowerShell",
                 "request": "launch",
@@ -116,8 +131,9 @@
                     "-Output",
                     "Detailed",
                     "-TagFilter",
-                    // "wiph"
-                    "wip-hash"
+                    "ConvertTo"
+                    // "wip"
+                    // "wip-hash"
                 ],
             },
             /* pester example snippets

@@ -3,6 +3,9 @@
 Tools for a better console experience
 
 - [Ninmonkey.Console](#ninmonkeyconsole)
+- [Useful Commands](#useful-commands)
+  - [Text output](#text-output)
+  - [Conversions](#conversions)
 - [Console Encoding](#console-encoding)
 - [AppxPackages : Windows Apps](#appxpackages--windows-apps)
 - [Types](#types)
@@ -14,6 +17,37 @@ Tools for a better console experience
   - [vexx32.github.io : Autocomplete and more](#vexx32githubio--autocomplete-and-more)
   - [Docs](#docs)
 
+
+# Useful Commands
+
+| Name           | Description                                 |
+| -------------- | ------------------------------------------- |
+| `Hex`          | `ConvertTo-HexString`                       |
+| `Bits`         | `ConvertTo-BitString`                       |
+| `Base64`       | .                                           |
+| `Get-EnumInf`o | .                                           |
+| `Out-Fzf`      | .                                           |
+| `Out-Code`     | .                                           |
+| `Goto`         | `cd` to directory, works on non-directories |
+| `Here`         | Open filemanager                            |
+
+## Text output
+| Name    | Description                  |
+| ------- | ---------------------------- |
+| `Label` | Colored `Label: Value` pairs |
+| `H1`    | Heading text                 |
+| `Br`    | Add newlines                 |
+| `Hr`    | Horizontal Rule with padding |
+
+## Conversions
+
+```powershell
+$numbers = 0, 127, 0xffef
+$numbers | Hex | Join-String -sep ', '
+$numbers | Bits | Join-String -sep ', '
+'0x34' | Number | Join-String -sep ', '
+$x | Base64
+```
 
 # Console Encoding
 
