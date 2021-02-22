@@ -85,6 +85,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     # misc
+    'Invoke-Wget'
     'Edit-GitConfig'
     'Get-NinAlias'
 
@@ -168,6 +169,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     # console formatting
+    'Invoke-Wget'
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'

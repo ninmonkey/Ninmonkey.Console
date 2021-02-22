@@ -94,7 +94,7 @@ function Get-ObjectProperty {
     }
     end {
         # Write-Warning 'should not be a raw table'
-        Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
+        # Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
         $inputList
         | Get-Unique -OnType
         | ForEach-Object {
@@ -129,8 +129,9 @@ function Get-ObjectProperty {
             }
         }
 
+        <# explicit, inline: 
         if ($false -and 'manual typeinfo') {
-
+            
             $splat_TypeData_PropertyList = @{
                 TypeName                  = 'Nin.PropertyList'
                 Force                     = $true
@@ -139,9 +140,10 @@ function Get-ObjectProperty {
                 DefaultDisplayProperty    = 'Name'
                 # 'DefaultKeyPropertySet' = '??'
             }
-
+            
             Update-TypeData @splat_TypeData_PropertyList -Force
         }
+        #>
     }
 }
 

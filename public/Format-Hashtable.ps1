@@ -100,7 +100,7 @@ function Format-HashTable {
     }
 
     Process {
-        $InputHash.GetType().Name | Label 'InputObject type' |  Write-Debug
+        # $InputHash.GetType().Name | Label 'InputObject type' |  Write-Debug
 
         if ($InputHash -is 'System.Collections.Specialized.OrderedDictionary' ) {
             Label 'isOrderedDictionary' 'true' | Write-Debug

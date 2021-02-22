@@ -1,10 +1,41 @@
+if ($false) {
+    # examples
+
+    # will error on ambigious matches, like 'python' which has multiple versions in $Env:PATH
+    Invoke-NativeCommand 'python' -OneOrNone -Args '--version'
+
+    # runs first result
+    Invoke-NativeCommand 'python' -Args '--version'
+    # Python 3.7.3
+
+    Invoke-NativeCommand python -args '--version' -Debug
+    # DEBUG: Using Item: '$env:LOCALAPPDATA\Programs\Python\Python37-32\python.exe'
+    # Python 3.7.3
+}
+
 function Invoke-NativeCommand {
     <#
+    .link
+        Get-NativeCommand
     .synopsis
         wrapper to both call 'Get-NativeCommand' and invoke an argument list
     .example
         PS> # Use the first 'python' in path:
         Invoke-NativeCommand 'python' -Args '--version'
+        # Error: OneOrNone: Multiple results for 'python'. -Debug for details).
+        # First was: '$env:LOCALAPPDATA\Programs\Python\Python37-32\python.exe'
+
+    .example
+        # OneOrNone will error on ambigious matches, like 'python' which has multiple versions in $Env:PATH
+        Invoke-NativeCommand 'python' -OneOrNone -Args '--version'
+
+        # runs first result
+        Invoke-NativeCommand 'python' -Args '--version'
+        # Python 3.7.3
+
+        Invoke-NativeCommand python -args '--version' -Debug
+        # DEBUG: Using Item: '$env:LOCALAPPDATA\Programs\Python\Python37-32\python.exe'
+        # Python 3.7.3
     .notes
         Not sure if this is a a bug or not. currently this creats a new window:
             Invoke-NativeCommand 'code' -ArgumentList @('--help')
