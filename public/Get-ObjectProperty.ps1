@@ -129,9 +129,9 @@ function Get-ObjectProperty {
             }
         }
 
-        <# explicit, inline: 
+        <# explicit, inline:
         if ($false -and 'manual typeinfo') {
-            
+
             $splat_TypeData_PropertyList = @{
                 TypeName                  = 'Nin.PropertyList'
                 Force                     = $true
@@ -140,7 +140,7 @@ function Get-ObjectProperty {
                 DefaultDisplayProperty    = 'Name'
                 # 'DefaultKeyPropertySet' = '??'
             }
-            
+
             Update-TypeData @splat_TypeData_PropertyList -Force
         }
         #>
@@ -202,3 +202,4 @@ if ($false -and $DebugTestMode) {
     $prop = $gcm.psobject.properties | Where-Object  Name -EQ Parameters # | % TypeNameOfValue
     $prop.TypeNameOfValue -as 'type' | Format-TypeName
 }
+

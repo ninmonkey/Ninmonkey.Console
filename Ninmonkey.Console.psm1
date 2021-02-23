@@ -257,12 +257,20 @@ Export-ModuleMember -Function $functionsToExport
 $formatData = @(
     # 'System.RuntimeType'
     # 'Microsoft.PowerShell.Commands.TestConnectionCommand'
+    # 'Nin.PropertyList'
 )
+<#
+see also:
+    Trace-Command -Name FormatViewBinding, FormatFileLoading {
+        #    Update-FormatData -AppendPath 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public\FormatData\Nin.PropertyList.Format.ps1xml'
+        get-date | prop | ft
+    } -Verbose -PSHost
+#>
 
 foreach ($typeName in $formatData) {
 
-    $FileName = ("{0}\public\FormatData\nin-{1}.Format.ps1xml" -f $psscriptroot, $typeName)
-    Get-Item $FileName -ea Stop
+    $FileName = ("{0}\public\FormatData\{1}.Format.ps1xml" -f $psscriptroot, $typeName)
+    Get-Item $FileName -ea Continue
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"

@@ -4,6 +4,7 @@ Tools for a better console experience
 
 - [Ninmonkey.Console](#ninmonkeyconsole)
 - [Useful Commands](#useful-commands)
+  - [`Fzf` : Select Values like a simplified `Out-GridView -PassThru`](#fzf--select-values-like-a-simplified-out-gridview--passthru)
   - [Text output](#text-output)
   - [Conversions](#conversions)
 - [Console Encoding](#console-encoding)
@@ -25,11 +26,26 @@ Tools for a better console experience
 | `Hex`          | `ConvertTo-HexString`                       |
 | `Bits`         | `ConvertTo-BitString`                       |
 | `Base64`       | .                                           |
-| `Get-EnumInf`o | .                                           |
+| `Get-EnumInfo` | .                                           |
 | `Out-Fzf`      | .                                           |
 | `Out-Code`     | .                                           |
 | `Goto`         | `cd` to directory, works on non-directories |
 | `Here`         | Open filemanager                            |
+ 
+## `Fzf` : Select Values like a simplified `Out-GridView -PassThru`
+
+```powershell
+🐒> Get-ChildItem $Env:APPDATA -Directory | Out-Fzf | Format-RelativePath $Env:APPDATA
+.\Code           
+.\Code - Insiders
+```
+```powershell
+🐒> $Fzf
+C:\Users\monkey\AppData\Roaming\Code           
+C:\Users\monkey\AppData\Roaming\Code - Insiders
+# $Fzf was set because it defaults to:
+$PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
+```
 
 ## Text output
 | Name    | Description                  |
@@ -42,11 +58,20 @@ Tools for a better console experience
 ## Conversions
 
 ```powershell
-$numbers = 0, 127, 0xffef
-$numbers | Hex | Join-String -sep ', '
-$numbers | Bits | Join-String -sep ', '
-'0x34' | Number | Join-String -sep ', '
-$x | Base64
+🐒> $numbers = 0, 127, 0xffef
+  >> $numbers | Hex  
+0x0                 
+0x7f                
+0xffef              
+                    
+🐒> $numbers | Bits 
+0000.0000           
+0111.1111           
+1111.1111 1110.1111 
+
+🐒> '0x34' | Number # returned type [Int32]
+
+🐒> $bytes | Base64
 ```
 
 # Console Encoding

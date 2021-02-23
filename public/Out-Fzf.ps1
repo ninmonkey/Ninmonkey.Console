@@ -110,35 +110,36 @@ function Out-Fzf {
             '<https://github.com/junegunn/fzf#tips> and ''fzf --help'''
             break
         }
-        # to: refactor /w Get-NativeCommand
-        $binFzf = Get-Command 'fzf' -CommandType Application
-        $fzfArgs = @()
-        $inputList = [list[string]]::New()
+        # note: Invoke-NativeCommand does not (currently) support piping from STDIN Stream to native
+        $binFzf = Get-NativeCommand 'fzf'
+
+        $fzfArgs = [list[string]]::new()    # accumulator
+        $inputList = [list[string]]::new()  # collect pipeline inputs
 
         if ( ! [String]::IsNullOrWhiteSpace(  $PromptText  ) ) {
-            $fzfArgs += "--prompt=$PromptText "
+            $fzfArgs.Add("--prompt=$PromptText ")
         }
 
         if ($MultiSelect) {
-            $fzfArgs += '--multi'
+            $fzfArgs.Add('--multi')
         }
         if ($Layout) {
-            $fzfArgs += "--layout=$Layout"
+            $fzfArgs.Add("--layout=$Layout")
         }
 
         if ($Height) {
-            $fzfArgs += "--height=$Height%"
+            $fzfArgs.Add("--height=$Height%")
         }
 
         if ($Cycle) {
-            $fzfArgs += '--cycle'
+            $fzfArgs.Add('--cycle')
         }
 
         # future ags
         if ($false) {
             if ($NotExtended) {
                 # default is on
-                $fzfArgs += "--no-extended"
+                $fzfArgs.Add("--no-extended")
             }
             @'
             --tac
