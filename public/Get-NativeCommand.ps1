@@ -47,7 +47,7 @@ function Get-NativeCommand {
     )
 
     process {
-        Write-Host -fore magenta 'move to markdown docs, then push'
+
         try {
             $query = Get-Command -Name $CommandName -All -CommandType Application -ea Stop
             | Sort-Object Name
