@@ -145,7 +145,7 @@ function NestedOrNot( [type]$TypeInfo ) {
 
 
 # Need to convert string type to typename when able
-Write-Warning @'
+Write-Debug @'
 changefix:
     always convert to [System.RuntimeType] if not already a [System.RuntimeType]
     require a manual  opt-out to not do it

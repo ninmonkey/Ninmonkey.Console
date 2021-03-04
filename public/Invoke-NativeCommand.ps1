@@ -19,6 +19,9 @@ function Invoke-NativeCommand {
         Get-NativeCommand
     .synopsis
         wrapper to both call 'Get-NativeCommand' and invoke an argument list
+    .description
+        for an alternate implementation that redirects STDOUT and STDERR, check out
+            [Indented-Automation: Invoke-NativeCommand](https://gist.github.com/indented-automation/fba795c43ef5a53483398cdc72ab7fa0)
     .example
         PS> # Use the first 'python' in path:
         Invoke-NativeCommand 'python' -Args '--version'

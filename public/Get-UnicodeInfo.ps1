@@ -17,7 +17,7 @@
     )
 
     begin {
-        Write-Warning 'todo: [1] props like categories, blocks, ranges [2] PSTypeName Custom View'
+        # 'todo: [1] props like categories, blocks, ranges [2] PSTypeName Custom View'
         # UnicodeCategory Enum
     }
     Process {
