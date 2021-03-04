@@ -73,6 +73,13 @@
                 "cwd": "${workspaceFolder}"
             },
             {
+                "name": "<temprun>.ps1",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/private/run_temp_test.ps1",
+                "cwd": "${file}"
+            },
+            {
                 "name": "🐒 cur.ps1 — ",
                 "type": "PowerShell",
                 "request": "launch",

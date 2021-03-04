@@ -8,7 +8,11 @@ function Get-NativeCommand {
         wrapper that returns Get-Item on a native command
     .description
         used as a wrapper to native commands, or conditional profile configuration
+
         like setting "$Env:Pager" to 'bat' or 'less' depending on which is installed
+        Automatically filters CommandType -- Application
+            (not hardcoding *.exe. Maybe this makes it portable?)
+            This is good for an accurate -OneOrNone
     .notes
         If it is not working correctly, check whether the target binary has 'LinkType' of AppExeCLink.
 
@@ -23,8 +27,24 @@ function Get-NativeCommand {
         $binPy = Get-NativeCommand python
         $cmdArgs = @('--version')
         & $binPy @cmdArgs
+
+    .example
+        # List NonUnique commands to resolve OneOrNone
+
+        Get-NativeCommand -List python
+            # list of paths here...
+
+        # Select Specific command
+
+        $uniquePath = Get-NativeCommand 'Python' -List
+        | % Source | Out-Fzf
+
+        # now it works
+        Get-NativeCommand -OneOrNone $uniquePath
+
     .example
         PS> # conditionally set profile if commands are available
+
         # if 'less' pager is installed, configure powershell to use it
         if(Get-NativeCommand less -ea ignore) {
             $Env:Pager = 'less'
@@ -34,16 +54,22 @@ function Get-NativeCommand {
             'both fd and fzf found!, setting Env Var'
             $ENV:FZF_DEFAULT_COMMAND = 'fd'
         }
-
     #>
     [cmdletbinding()]
+    [OutputType('bool', [System.Management.Automation.ApplicationInfo])] # null too?
     param(
         # base name or path of a Native .exe Application (passed to Get-Command -Name)
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$CommandName,
 
         # One or None: Raise errors when there are more than one match
-        [Parameter()][switch]$OneOrNone
+        [Parameter()][switch]$OneOrNone,
+
+        # Returns true if there are 1+ matches
+        [Parameter()][switch]$TestAny,
+
+        # List all matches, then quit
+        [Parameter()][switch]$List
     )
 
     process {
@@ -52,15 +78,24 @@ function Get-NativeCommand {
             $query = Get-Command -Name $CommandName -All -CommandType Application -ea Stop
             | Sort-Object Name
 
+            if ($TestAny) {
+                [bool]($query.count -gt 0)
+                return
+            }
+
         } catch [CommandNotFoundException] {
             Write-Error "ZeroResults: '$CommandName'"
             return
         }
 
+        if ($List) {
+            $query
+            return
+        }
+
+
         if ($OneOrNone -and $query.Count -gt 1) {
             $query | Format-Table -Wrap -AutoSize -Property Name, Version, Source | Out-String | Write-Debug
-            # $query | Format-Table -Wrap -AutoSize -Property Name, Version, Source | Out-String | Write-Host -ForegroundColor yellow
-
             $first = $query | Select-Object -First 1
             $first.Source
 

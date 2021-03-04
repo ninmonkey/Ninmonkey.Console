@@ -12,6 +12,7 @@ function ConvertTo-Base64String {
             <./test/public/ConvertTo-Base64String.tests.ps1>
     #>
     [Alias('Base64')]
+    [OutputType([System.String])]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(ValueFromPipeline, Position = 0)]
