@@ -46,17 +46,19 @@ function Get-NativeCommand {
         PS> # conditionally set profile if commands are available
 
         # if 'less' pager is installed, configure powershell to use it
-        if(Get-NativeCommand less -ea ignore) {
+        if(Get-NativeCommand -TestAny less) {
             $Env:Pager = 'less'
         }
 
-        if((Get-NativeCommand fd -ea ignore) -and (Get-NativeCommand fzf -ea ignore)) {
-            'both fd and fzf found!, setting Env Var'
+    .example
+        PS> Configure only if both 'fd' and 'fzf' exist, else skip the block
+
+        if ((Get-NativeCommand fd -TestAny) -and (Get-NativeCommand fzf -TestAny)) {
             $ENV:FZF_DEFAULT_COMMAND = 'fd'
         }
     #>
     [cmdletbinding()]
-    [OutputType('bool', [System.Management.Automation.ApplicationInfo])] # null too?
+    [OutputType([System.Boolean], [System.Management.Automation.ApplicationInfo])] # null too?
     param(
         # base name or path of a Native .exe Application (passed to Get-Command -Name)
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -65,26 +67,32 @@ function Get-NativeCommand {
         # One or None: Raise errors when there are more than one match
         [Parameter()][switch]$OneOrNone,
 
-        # Returns true if there are 1+ matches
+        # Returns true if there at least one, or more matches
         [Parameter()][switch]$TestAny,
 
-        # List all matches, then quit
+        # List all matches -- then quit, PassThru?
         [Parameter()][switch]$List
     )
 
     process {
-
         try {
-            $query = Get-Command -Name $CommandName -All -CommandType Application -ea Stop
-            | Sort-Object Name
-
-            if ($TestAny) {
-                [bool]($query.count -gt 0)
-                return
+            $splat_Gcm = @{
+                Name        = $CommandName
+                All         = $true
+                CommandType = 'Application'
+                ErrorAction = 'Stop'
             }
-
+            if ($TestAny) {
+                $splat_Gcm.ErrorAction = 'SilentlyContinue'
+            }
+            # $query = Get-Command -Name $CommandName -All -CommandType Application -ea Stop
+            $query = Get-Command @splat_Gcm | Sort-Object Name
         } catch [CommandNotFoundException] {
             Write-Error "ZeroResults: '$CommandName'"
+            return
+        }
+        if ($TestAny) {
+            [bool]($query.count -gt 0)
             return
         }
 
@@ -95,11 +103,10 @@ function Get-NativeCommand {
 
 
         if ($OneOrNone -and $query.Count -gt 1) {
-            $query | Format-Table -Wrap -AutoSize -Property Name, Version, Source | Out-String | Write-Debug
             $first = $query | Select-Object -First 1
             $first.Source
 
-            Write-Error "OneOrNone: Multiple results for '$CommandName'. -Debug for details). First was: '$($first.Source)'"
+            Write-Error "OneOrNone: Multiple results for '$CommandName'. -List for details). First was: '$($first.Source)'"
             return
         }
 
