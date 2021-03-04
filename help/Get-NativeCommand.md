@@ -1,6 +1,5 @@
 # About: Get-NativeCommand | Ninmonkey.Console
 - [About: Get-NativeCommand | Ninmonkey.Console](#about-get-nativecommand--ninmonkeyconsole)
-- [old](#old)
 - [Defaults Will Filter Non-Applications](#defaults-will-filter-non-applications)
 - [Test for Any Matches](#test-for-any-matches)
 - [Conditionally Change Configuration or Env Vars](#conditionally-change-configuration-or-env-vars)
@@ -10,45 +9,6 @@
 - [Invoking Commands with ArgList](#invoking-commands-with-arglist)
 - [List Duplicate Commands / Non Unique](#list-duplicate-commands--non-unique)
 - [Resolving Duplicates with `Fzf`](#resolving-duplicates-with-fzf)
-
-# old
-```ps1
-if ($false) {
-    $binPy = Get-NativeCommand python
-
-    $cmdArgs = @('--version', '-I')
-    & $binPy @cmdArgs
-
-    $bin = Get-NativeCommand 'python' -Debug
-    # no error
-
-    & $bin @('--version')
-    $x = Get-NativeCommand 'python' -OneOrNone -Debug
-    # error if there's more than one python found
-
-    $x = Get-NativeCommand 'python_does_not_exist' -OneOrNone
-    # errors: 0 results
-
-    # does not care whether aliases or functions have a name collision, like
-    # alias 'ls'
-    Get-ChildItem --all --color=always -1
-
-    New-Alias 'ls' -Value 'Get-ChildItem'
-    function ls { 'do nothing' }
-
-    Get-NativeCommand 'ls' -OneOrNone
-    # success!
-
-
-    # error: Get-ChildItem: A positional parameter cannot be found that accepts argument '-1'.
-
-    # but this works
-    Invoke-NativeCommand 'ls' -args '--all', '--color=always', '-1'
-    # and so does
-    Invoke-NativeCommand 'ls' -args '--all', '--color=always', '-1' -OneOrNone
-
-}
-```
 
 # Defaults Will Filter Non-Applications
 
@@ -60,11 +20,14 @@ Get-NativeCommand 'ping' -OneOrNone
 (Get-Command 'ping' -All).count -eq 1
 
 # Try to Break It
-New-Alias 'ping' -value 'Test-Connection'
+New-Alias 'ping' -value 'Test-Connection'    
+function ping { 'do nothing' }
+
+# Gcm matches unwanted commands (functions, aliases)
 (Get-Command 'ping' -All).count -eq 1 # returns False
 
-# successful, still finds only one application
-Get-NativeCommand ping -OneOrNone 
+# this is still successful, still finds only one application
+Get-NativeCommand 'ping' -OneOrNone
 ```
 
 # Test for Any Matches
