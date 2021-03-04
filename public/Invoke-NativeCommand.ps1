@@ -1,26 +1,18 @@
-if ($false) {
-    # examples
-
-    # will error on ambigious matches, like 'python' which has multiple versions in $Env:PATH
-    Invoke-NativeCommand 'python' -OneOrNone -Args '--version'
-
-    # runs first result
-    Invoke-NativeCommand 'python' -Args '--version'
-    # Python 3.7.3
-
-    Invoke-NativeCommand python -args '--version' -Debug
-    # DEBUG: Using Item: '$env:LOCALAPPDATA\Programs\Python\Python37-32\python.exe'
-    # Python 3.7.3
-}
 
 function Invoke-NativeCommand {
     <#
     .link
         Get-NativeCommand
+    .link
+        https://github.com/ninmonkey/Ninmonkey.Console/blob/master/help/Get-NativeCommand.md
     .synopsis
-        wrapper to both call 'Get-NativeCommand' and invoke an argument list
+        Wrapper to both call 'Get-NativeCommand' and invoke with an argument list.
     .description
-        for an alternate implementation that redirects STDOUT and STDERR, check out
+        This is about equivalent to
+            $binCommand = Get-NativeCommand $Name -OneOrNone
+            & $binCommand @ArgumentList
+
+        future: for an alternate implementation that redirects STDOUT and STDERR, check out
             [Indented-Automation: Invoke-NativeCommand](https://gist.github.com/indented-automation/fba795c43ef5a53483398cdc72ab7fa0)
     .example
         PS> # Use the first 'python' in path:
@@ -60,23 +52,6 @@ function Invoke-NativeCommand {
 
     $binCommand = Get-NativeCommand $CommandName -OneOrNone:$OneOrNone -ea Stop
 
-    # $meta = @{
-    #     binCommand   = $binCommand
-    #     ArgumentList = $ArgumentList | Join-String -sep ', ' -DoubleQuote
-    # }
-
-    # $meta | Format-HashTable | Join-String -sep "`n" | Write-Debug
-    # $meta | Format-HashTable -Title 'Invoke-NativeCommand' | Write-Debug
-
     & $binCommand @ArgumentList
 
 }
-
-# # works
-# code --help
-
-# # works
-# Invoke-NativeCommand 'pwsh' -Args @('--help')
-
-# # 'pops up black window, does not print the help file to console'
-# Invoke-NativeCommand 'code' -Args @('--help')

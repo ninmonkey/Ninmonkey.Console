@@ -38,10 +38,12 @@ function Invoke-Wget {
         VERBOSE: wget args: --limit-rate=200k --no-clobber --convert-links --random-wait --recursive --page-requisites --adjust-extension -e robots=off --user-agent=mozilla https://<some-url-with-cats>.com -P 'c:\export\cats'
 
         What if: Performing the operation "wget: https://<some-url-with-cats>.com" on target "c:\export\cats".
-
-
     .NOTES
     General notes
+    .link
+        Invoke-NativeCommand
+    .link
+        https://github.com/ninmonkey/Ninmonkey.Console/tree/master/docs
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
