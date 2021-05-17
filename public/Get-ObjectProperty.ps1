@@ -40,6 +40,8 @@ function Get-ObjectProperty {
     .notes
         now defaults to one output per typename
 
+    nyi: Currently does not find '$object.NoteProperty'
+
     example output:
         # example output:
 
@@ -69,7 +71,6 @@ function Get-ObjectProperty {
     [cmdletbinding()]
     [Alias('Prop', 'ObjectProperty')]
     param(
-
         # any object with properties to inspect
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject,
@@ -79,6 +80,32 @@ function Get-ObjectProperty {
     )
 
     begin {
+        <#
+        todo: to fix:
+
+        🐒> $profile | Prop
+
+
+      TypeOfInstance Name                 Value
+      -------------- ----                 -----
+               Int32 Length               68
+
+        [DBG]:
+        🐒> # noteproperties are there
+            $profile | gm -MemberType Properties
+
+
+        TypeName: System.String
+
+        Name                   MemberType   Definition
+        ----                   ----------   ----------
+        AllUsersAllHosts       NoteProperty string AllU
+        AllUsersCurrentHost    NoteProperty string AllU
+        CurrentUserAllHosts    NoteProperty string Curr
+        CurrentUserCurrentHost NoteProperty string Curr
+        Length                 Property     int Length
+#>
+
         $splat_FormatType = @{
             IgnorePrefix = 'System.Xml'
             # NoBrackets   = $false
@@ -95,8 +122,8 @@ function Get-ObjectProperty {
     end {
         # Write-Warning 'should not be a raw table'
         # Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
+        # | Get-Unique -OnType # ddon't force it,
         $inputList
-        | Get-Unique -OnType
         | ForEach-Object {
             $curObject = $_
             Write-Debug "Object: $($_.GetType().FullName)"

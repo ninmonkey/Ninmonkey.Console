@@ -22,11 +22,12 @@ if ($psEditor) {
 }
 foreach ($file in $private_seeminglySci) {
     # Write-Warning "file: seeminglySci -> : $File"
-    if (Test-Path ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
     }
-    . ("{0}\private\seeminglySci\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
 }
 
 <#
@@ -38,11 +39,12 @@ $private = @(
 )
 
 foreach ($file in $private) {
-    if (Test-Path ("{0}\private\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: private: failed: private: $File"
     }
-    . ("{0}\private\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
 }
 
 <#
@@ -54,11 +56,12 @@ $public_NativeWrapper = @(
     # 'Invoke-RipGrepChildItem'
 )
 foreach ($file in $public_NativeWrapper) {
-    if (Test-Path ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
-    . ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
 
 }
 
@@ -74,11 +77,12 @@ $completer = @(
 )
 
 foreach ($file in $completer) {
-    if (Test-Path ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: completer: $File"
     }
-    . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
 }
 
 Export-ModuleMember -Function $completer
@@ -88,6 +92,7 @@ $public = @(
     'Invoke-Wget'
     'Edit-GitConfig'
     'Get-NinAlias'
+    'Write-ConsoleHorizontalRule'
 
     # console formatting
     'Write-ConsoleLabel'
@@ -160,11 +165,12 @@ $public = @(
     section: public
 #>
 foreach ($file in $public) {
-    if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: public: $File"
     }
-    . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
 }
 
 $functionsToExport = @(
@@ -174,6 +180,7 @@ $functionsToExport = @(
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
     'Format-RelativePath'
+    'Write-ConsoleHorizontalRule'
 
     # unicode + encoding
     'Get-TextEncoding'
@@ -269,12 +276,13 @@ see also:
 
 foreach ($typeName in $formatData) {
 
-    $FileName = ("{0}\public\FormatData\{1}.Format.ps1xml" -f $psscriptroot, $typeName)
+    $FileName = ('{0}\public\FormatData\{1}.Format.ps1xml' -f $psscriptroot, $typeName)
     Get-Item $FileName -ea Continue
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    } else {
+    }
+    else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -296,6 +304,7 @@ if ($true) {
 
     $aliasesToExport = @(
         'H1'
+        'Hr'
         'Get-EnumInfo'
         'Goto' # [Alias()] seems to still require export
         'nLs' # Get-NinChildItem

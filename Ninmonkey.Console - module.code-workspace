@@ -9,6 +9,10 @@
         /*
         schema for Powershell Types.ps1xml and Format.ps1xml
     */
+
+
+        "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+
         "xml.fileAssociations": [
             {
                 "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Format.xsd",
@@ -29,7 +33,7 @@
             start
         */
         // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
-        "terminal.integrated.drawBoldTextInBrightColors": true,
+        "terminal.integrat ed.drawBoldTextInBrightColors": true,
         "terminal.integrated.fontSize": 14,
         "editor.fontSize": 16,
         "debug.console.fontSize": 14,
@@ -59,7 +63,8 @@
         "files.associations": {
             "*.ps1xml": "xml"
         },
-        "terminal.integrated.copyOnSelection": true
+        "terminal.integrated.copyOnSelection": true,
+        "powershell.codeFormatting.pipelineIndentationStyle": "None"
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387

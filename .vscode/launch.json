@@ -17,6 +17,38 @@
             "request": "launch",
             "script": "C:\\Users\\cppmo_000\\Documents\\2020\\powershell\\MyModules_Github\\Ninmonkey.Console\\test\\FormatData-manual.ps1",
             "cwd": "${file}"
-        }
+        },
+        {
+            "name": "Test-Gh.ps1",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/RegEx/Github/Test-Gh.ps1",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "cur.ps1",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${file}",
+            "cwd": "${file}"
+        },
+        {
+            "name": "🐛 : [Details]",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "Invoke-Pester",
+            "args": [
+                "-Output",
+                "Detailed"
+            ],
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "name": "🐛 : default",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "Invoke-Pester",
+            "cwd": "${workspaceFolder}",
+        },
     ]
 }

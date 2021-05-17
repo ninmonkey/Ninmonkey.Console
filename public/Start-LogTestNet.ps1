@@ -28,12 +28,14 @@ function Start-LogTestNet {
     $BasePath = "$Env:UserProfile\Documents\2020\powershell\dump\log"
     $LogPath = Join-Path $BasePath -ChildPath $FileName
     [int]$NumLoops = 0
-    if ( [string]::IsNullOrEmpty( $TargetName ) ) {
+    if ( [string]::IsNullOrWhiteSpace( $TargetName ) ) {
         [string[]]$TargetName = 'google.com', '8.8.8.8', '1.1.1.1'
     }
 
     if ($GetLogPath) {
-        return $LogPath
+        $LogPath
+        Label 'See also' "(wip script) <$Env:UserProfile\Documents\2021\Powershell\My_Github\Misc\TestNet-Log\fetch_logs.ps1>" | Write-Host
+        return
     }
     if (! $Silent) {
         Write-Host "Logging to: '$LogPath'" -ForegroundColor Green

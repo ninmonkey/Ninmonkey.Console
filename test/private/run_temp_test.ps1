@@ -1,19 +1,19 @@
 Import-Module Ninmonkey.Console -Force | Out-Null
-h1 'quick test'
+H1 'quick test'
 
 
 Get-NativeCommand -List 'python'
 | Select-Object Name, Source | ForEach-Object Source
 hr
 
-h1 'expect OneOrNone: "bat"'
+H1 'expect OneOrNone: "bat"'
 Get-NativeCommand bat -OneOrNone
 
 
-h1 'expect multiple: "python"'
+H1 'expect multiple: "python"'
 Get-NativeCommand python -OneOrNone
 
-h1 'test lookup'
+H1 'test "Out-Fzf" lookup'
 
 Label 'expect multiple'
 Get-NativeCommand -List python
@@ -26,7 +26,7 @@ Label 'Now -OneOrNone'
 Get-NativeCommand $fzf_selection -OneOrNone
 
 $DoNotMutate = $true
-h1 'Test for Less'
+H1 'Test for Less'
 if (Get-NativeCommand -Test 'less') {
     if (! $DoNotMutate) {
         $Env:Pager = 'less'
@@ -39,7 +39,7 @@ if (Get-NativeCommand -Test 'less') {
 
 }
 
-h1 'Test: require both "Fd" and "Fzf"'
+H1 'Test: require both "Fd" and "Fzf"'
 
 hr
 # if ((Get-NativeCommand fd -TestAny -ea ignore) -and (Get-NativeCommand fzf -TestAny -ea ignore)) {
