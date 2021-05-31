@@ -8,6 +8,9 @@ function Invoke-IPython {
 
         make position 0 = value from remaining args, profile is by name only.
         pass the rest to ipython.
+
+    Can I invoke like 'py -3 -m ipython' ?
+        (other modules like pip support that)
     future:
         [ ] json configures default profile
     .example
@@ -43,15 +46,19 @@ function Invoke-IPython {
         $cmdArgList = @()
         $cmdArgList += $ArgumentList
         $cmdArgList += "--profile=${ProfileName}"
+        # Args        = @('--version')
 
         $splatInvokeCommand = @{
-            CommandName = 'ipython'
-            Args        = @('--version')
+            CommandName = 'ipython3'  #'ipython'
+            Args        = $cmdArgList
             OneOrNone   = $OneOrNone
         }
-        Invoke-NativeCommand @splatInvokeCommand
-
+        Remove-Module PSReadLine
         $splatInvokeCommand | Format-HashTable | Write-Debug
+        Invoke-NativeCommand @splatInvokeCommand
+        Import-Module PSReadLine
+
+
         # 'aa'
         # $splatInvokeCommand | Format-HashTable
         # 'aa'
@@ -73,11 +80,11 @@ if ( $false ) {
     Invoke-IPython -Verbose --version
     # Invoke-IPython -verbose --version
     Invoke-IPython -Verbose -ProfileName ninmonkey --version
-    & $binPy @("--profile=ninmonkey", '--version')
+    & $binPy @('--profile=ninmonkey', '--version')
 }
 
 if ($false) {
-    $binPy = Get-NativeCommand ipython
+    $binPy = Get-NativeCommand ipython3
 
     $cmdArgs = @('--version')
     & $binPy @cmdArgs

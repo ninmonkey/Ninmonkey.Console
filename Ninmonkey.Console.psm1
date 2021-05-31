@@ -92,6 +92,7 @@ $public = @(
     'Invoke-Wget'
     'Edit-GitConfig'
     'Get-NinAlias'
+    'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 
     # console formatting
@@ -180,6 +181,7 @@ $functionsToExport = @(
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
     'Format-RelativePath'
+    'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 
     # unicode + encoding
@@ -306,8 +308,9 @@ if ($true) {
         'H1'
         'Hr'
         'Get-EnumInfo'
-        'Goto' # [Alias()] seems to still require export
-        'nLs' # Get-NinChildItem
+        'Goto'
+        'nLs'       # Get-NinChildItem
+        'LsGit'     # Find-GitRepo
         # 'Cd'
         'Docs'
         'Here'
