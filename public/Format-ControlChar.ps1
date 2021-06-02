@@ -4,31 +4,59 @@
 function Format-ControlChar {
     <#
     .synopsis
-        Converts unsafe control chars to their symbols (which are safe to print and pipe)
+        Converts unsafe control chars to their symbols, making it safe to display
     .description
         Replaces C0-control codes with their unicode-symbol replacents at u+2400+
+
+        - Currently doesn't handle raw bytes, it assumes it's a string.
+        - Could it be faster? Yes. But if you're printing to the term, that's the main bottleneck.
+
+        future:
+            - use [Rune] categories, or unicode regex classes instead of hard coded ranges.
+            - test it as a custom [RipGrep Preprocessor](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#preprocessor)
+
+        References:
+            - <https://en.wikipedia.org/wiki/C0_and_C1_control_codes>
+
+        Official charts:
+            - 2400–243F = [Control Pictures](https://www.unicode.org/charts/PDF/U2400.pdf)
+            - 0000-007f = [C0 Controls and Basic Latin.pdf](https://www.unicode.org/charts/PDF/U0000.pdf)
+            - 007f-0080  = [C1 Controls and Latin-1 Suppliment.pdf](https://www.unicode.org/charts/PDF/U0080.pdf)
+
     .example
         PS> "`u{00}" | Format-ControlCharSymbol
         # output: ␀
     #>
     param(
-        # Input text to map
-        # allowing null makes it easier for the user to pipe, like 'gc' without -raw
+        <#
+        format unicode strings, making them safe.
+            Null is allowed for the user's conveinence.
+            allowing null makes it easier for the user to pipe, like:
+            'gc' without -raw or '-split' on newlines
+        #>
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
-        [string[]]$InputObject
+        [string[]]$InputText
 
     )
     begin {
+        # these are inclusive ranges, ie: [x, y]
+        $Filters = @{
+
+            'ControlChars_C0' = @{
+                min = 0x0
+                max = 0x1f
+            }
+        }
         $controlMin = 0x0
         $controlMax = 0x1f
         $bufferSB = [StringBuilder]::new()
     }
 
     process {
-        $InputObject | ForEach-Object {
+        $InputText | ForEach-Object {
             $CurrentLine = $_
             $CurrentLine.EnumerateRunes() | ForEach-Object {
                 $RuneInfo = $_ # is a [Text.Rune]

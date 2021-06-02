@@ -9,10 +9,7 @@
         /*
         schema for Powershell Types.ps1xml and Format.ps1xml
     */
-
-
         "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
-
         "xml.fileAssociations": [
             {
                 "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Format.xsd",
@@ -82,20 +79,35 @@
                 "type": "PowerShell",
                 "request": "launch",
                 "script": "${workspaceFolder}/test/private/run_temp_test.ps1",
+                "cwd": "${file}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 3
+                },
+            },
+            {
+                "name": "🐒 visual test.ps1",
+                "type": "PowerShell",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 1
+                },
+                "request": "launch",
+                "script": "${workspaceFolder}\\test\\public\\Write-ConsoleLabel.visual_tests.ps1",
                 "cwd": "${file}"
             },
             {
                 "name": "🐒 cur.ps1 — ",
                 "type": "PowerShell",
                 "request": "launch",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 2
+                },
                 "script": "${file}",
-                "cwd": "${file}"
-            },
-            {
-                "name": "🐒 visual test.ps1",
-                "type": "PowerShell",
-                "request": "launch",
-                "script": "${workspaceFolder}\\test\\public\\Write-ConsoleLabel.visual_tests.ps1",
                 "cwd": "${file}"
             },
             {
@@ -109,6 +121,11 @@
                     "Detailed"
                 ],
                 "cwd": "${workspaceFolder}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    "order": 1
+                },
             },
             {
                 "name": "🐛 : | default | — ", // [nin.PowerShell]",
@@ -117,6 +134,11 @@
                 "script": "Invoke-Pester",
                 // "args": [],
                 "cwd": "${workspaceFolder}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
             },
             {
                 "name": "🐛 | 🏃 | #currentFilter |",
@@ -132,6 +154,11 @@
                     // "wip"
                     // "wip-hash"
                 ],
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
             },
             {
                 "name": "🐛 | 🏃 | #WIP |",
@@ -147,6 +174,11 @@
                     // "wip"
                     // "wip-hash"
                 ],
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
             },
             /* pester example snippets
         1.

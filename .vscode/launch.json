@@ -9,28 +9,48 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${file}",
-            "cwd": "${file}"
+            "cwd": "${file}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
         {
             "name": "FormatData - test .ps1xml",
             "type": "PowerShell",
             "request": "launch",
             "script": "C:\\Users\\cppmo_000\\Documents\\2020\\powershell\\MyModules_Github\\Ninmonkey.Console\\test\\FormatData-manual.ps1",
-            "cwd": "${file}"
+            "cwd": "${file}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
         {
             "name": "Test-Gh.ps1",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/RegEx/Github/Test-Gh.ps1",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
         {
             "name": "cur.ps1",
             "type": "PowerShell",
             "request": "launch",
             "script": "${file}",
-            "cwd": "${file}"
+            "cwd": "${file}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
         {
             "name": "🐛 : [Details]",
@@ -42,6 +62,11 @@
                 "Detailed"
             ],
             "cwd": "${workspaceFolder}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
         {
             "name": "🐛 : default",
@@ -49,6 +74,11 @@
             "request": "launch",
             "script": "Invoke-Pester",
             "cwd": "${workspaceFolder}",
+            "presentation": {
+                "hidden": false,
+                "group": "WorkspaceTest",
+                // "order": 2
+            },
         },
     ]
 }
