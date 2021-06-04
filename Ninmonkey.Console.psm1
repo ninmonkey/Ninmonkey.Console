@@ -89,6 +89,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     # misc
+    'ConvertTo-Timespan'
     'Invoke-Wget'
     'Edit-GitConfig'
     'Get-NinAlias'
@@ -175,6 +176,9 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    # misc
+    'ConvertTo-Timespan'
+
     # console formatting
     'Invoke-Wget'
     'Write-ConsoleLabel'
@@ -324,6 +328,7 @@ if ($true) {
 
         # misc
         'DiffDir'
+        'RelativeTs' # ConvertTo-Timespan
 
         # which alias for 'Write-ConsoleText'?
         # 'Text' # warning: pansi uses alias 'text'

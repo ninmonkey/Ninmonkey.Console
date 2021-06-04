@@ -18,8 +18,18 @@ function ConvertTo-PropertyList {
             ----                                                 ------
             2020-10 showing breakpoints.ps1                         219
             auto run commands list and log -- iter 2 cleanup.ps1   1586
+    .example
+        $hashList = ls . -file | ConvertTo-PropertyList 'name', 'length'
+        $hashList | %{
+            $curHash = $_
+            $curHash['SizeHuman'] = $curHash['Length'] | Format-FileSize
+            [pscustomobject]$curHash
+        } | ft -AutoSize
 
     .example
+
+        (ls . -file)[0] | ConvertTo-PropertyList 'name', 'length'
+        $hash['SizeHuman'] = $hash['Length'] | Format-FileSize
 
         > ls . -File | Get-PropertyList Name, Length -AsHashTable
         | Select-First 1

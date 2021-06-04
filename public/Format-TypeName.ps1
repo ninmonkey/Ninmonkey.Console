@@ -15,11 +15,11 @@
     #>
     param(
         # list of types as strings
-        [Parameter(ParameterSetName = "paramTypeAsString", Mandatory, ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'paramTypeAsString', Mandatory, ValueFromPipeline)]
         [string]$TypeName,
 
         # list of types / type instances
-        [Parameter(ParameterSetName = "paramTypeAsInstance", ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'paramTypeAsInstance', ValueFromPipeline)]
         [System.Reflection.TypeInfo]$TypeInstance,
 
         # A List of Namespaces or prefixes to ignore: -IgnoreNamespace
@@ -50,6 +50,7 @@
             'System.Text'
             'System'
         )
+
         # Sorting by longest regex simplifies namespace collisions when handling  removal
         $DefaultIgnorePrefix | Join-String -sep ', ' | Label 'IgnoreDefault' | Write-Debug
         $IgnorePrefix | Join-String -sep ', ' | Label 'IgnorePrefix' | Write-Debug
@@ -62,10 +63,10 @@
         # Write-Warning 'Ignore prefix is not working?'
 
         if ( $IncludePrefix.Count -gt 0) {
-            throw "Prefix include list NYI"
+            throw 'Prefix include list NYI'
         }
         if ($Colorize) {
-            throw "Format.ps1xml Ansi Escape NYI"
+            throw 'Format.ps1xml Ansi Escape NYI'
         }
     }
 
@@ -105,7 +106,8 @@
         }
         if (! $WithBrackets) {
             $filteredName
-        } else {
+        }
+        else {
             '[', $filteredName, ']' -join ''
         }
     }
@@ -130,7 +132,13 @@ function NestedOrNot( [type]$TypeInfo ) {
     }
 
 }
+Write-Warning @'
+1]
+    [string](([system.collections.generic.list[hashtable]]@()).GetType())
 
+thread: <https://discord.com/channels/180528040881815552/447476117629304853/849489347564666910>
+
+    '@
 & {
     if ($false -or 'quick test') {
         $typeName = 'System.Collections.Generic.Dictionary`2+KeyCollection[[System.String],[System.Management.Automation.ParameterMetadata]]'
