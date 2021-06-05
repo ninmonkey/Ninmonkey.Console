@@ -6,6 +6,9 @@ function ConvertTo-PropertyList {
     .description
         name? ConvertTo-PropertyList ?
         attempt at safer dynamic properties list
+
+        see also:
+            PS> gcm EZOut\ConvertTo-PropertySet
     .notes
         often you can instead use:
             Select-Object or *-Csv or *-Json commands
@@ -45,6 +48,8 @@ function ConvertTo-PropertyList {
         | select -First 2
         | % GetEnumerator
         | Join-String -sep "`n" -Property { '{0} = {1}' -f ($_.Key, $_.Value) }
+    .link
+        EZOut\ConvertTo-PropertySet
     #>
     [alias('Select-ObjectProperty-HashTable')]
     param (

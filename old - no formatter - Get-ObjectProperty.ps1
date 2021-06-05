@@ -1,4 +1,4 @@
-﻿using namespace System.Collections.Generic
+using namespace System.Collections.Generic
 
 function Get-ObjectProperty {
     <#
@@ -38,29 +38,7 @@ function Get-ObjectProperty {
         [XmlNode] [␀]            NextSibling
 
     .notes
-    future checklist
-        - [ ] -FilterByProp: Name
-        - [ ] -FilterByValue
-        - [ ] -FilterByType : or just a generic script block?
-        - [ ] auto-truncate long typenames past a max length limit
-        - [ ] only show TypeOfInstance when it doesn't match Type, easier to read
-        - [ ] or use
-            PS> $name | Format-TypeName -MaxLength 50
-        -
-        - [ ] Filter Property Names[]
-        - [ ] only grab the first item
-        - [ ] get metadata like
-            - ClassExplorer\Find-Type
-            - ClassExplorer\Get-Parameter
-            - PSScriptTools\Get-ParameterInfo
         now defaults to one output per typename
-
-        - [ ] performance
-            - profile it, but it's really fast to just run:
-                "$InputObject.psobject.properties"
-
-
-    nyi: Currently does not find '$object.NoteProperty'
 
     example output:
         # example output:
@@ -91,6 +69,7 @@ function Get-ObjectProperty {
     [cmdletbinding()]
     [Alias('Prop', 'ObjectProperty')]
     param(
+
         # any object with properties to inspect
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject,
@@ -100,32 +79,6 @@ function Get-ObjectProperty {
     )
 
     begin {
-        <#
-        todo: to fix:
-
-        🐒> $profile | Prop
-
-
-      TypeOfInstance Name                 Value
-      -------------- ----                 -----
-               Int32 Length               68
-
-        [DBG]:
-        🐒> # noteproperties are there
-            $profile | gm -MemberType Properties
-
-
-        TypeName: System.String
-
-        Name                   MemberType   Definition
-        ----                   ----------   ----------
-        AllUsersAllHosts       NoteProperty string AllU
-        AllUsersCurrentHost    NoteProperty string AllU
-        CurrentUserAllHosts    NoteProperty string Curr
-        CurrentUserCurrentHost NoteProperty string Curr
-        Length                 Property     int Length
-#>
-
         $splat_FormatType = @{
             IgnorePrefix = 'System.Xml'
             # NoBrackets   = $false
@@ -142,8 +95,8 @@ function Get-ObjectProperty {
     end {
         # Write-Warning 'should not be a raw table'
         # Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
-        # | Get-Unique -OnType # ddon't force it,
         $inputList
+        | Get-Unique -OnType
         | ForEach-Object {
             $curObject = $_
             Write-Debug "Object: $($_.GetType().FullName)"
@@ -155,8 +108,7 @@ function Get-ObjectProperty {
                 $ValueIsNull = $null -eq $curProp.Value
                 if ($ValueIsNull) {
                     $DisplayedValueType = $Config.SymbolNull
-                }
-                else {
+                } else {
                     $DisplayedValueType = $curProp.Value.GetType()  | Format-TypeName @splat_FormatType
                 }
 
@@ -193,5 +145,61 @@ function Get-ObjectProperty {
         }
         #>
     }
+}
+
+
+if ($false) {
+    H1 'Prop output:'
+    Get-ChildItem . | Get-Unique -OnType | Select-Object -First 1 | Prop | Format-Table
+
+    (Get-Date) | Prop | Format-Table
+
+    Write-Warning 'bug:'
+
+
+    <#
+# is not returning properties on itself:
+> @(34) | prop
+
+> (34) | Prop | ExpectedToBe Blank
+
+> @(34) | Prop | ExpectedToBe List
+
+# Should be:
+> $x.psobject.properties'
+#>
+}
+
+if ($false -and $DebugTestMode) {
+
+    $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
+    $catObj = [pscustomobject]$catHash
+
+    H1 'Test1] Param'
+    $gcm = Get-Command Select-Object
+    $gcm.Parameters | Prop | Format-Table
+
+    H1 'Test2] Basic Objects'
+    $catHash | Prop | Format-Table
+    $catObj | Prop | Format-Table
+}
+
+if ($false -and $DebugTestMode) {
+
+    $catHash = @{'a' = 'cat'; age = 9; children = (0..4) }
+    $catObj = [pscustomobject]$catHash
+
+    Label 'hash'
+    $catHash | Prop # Get-ObjectProperty
+
+    Label 'Obj'
+    $catObj | Prop # Get-ObjectProperty
+    hr
+
+    $gcm = Get-Command Select-Object
+    $gcm.Parameters | Prop | Format-List
+    $gcm.Parameters | Prop | Format-Table
+    $prop = $gcm.psobject.properties | Where-Object  Name -EQ Parameters # | % TypeNameOfValue
+    $prop.TypeNameOfValue -as 'type' | Format-TypeName
 }
 
