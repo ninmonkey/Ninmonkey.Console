@@ -1,13 +1,30 @@
-Import-Module Ninmonkey.Console -Force | Out-Null
+Import-Module Ninmonkey.Console -Force #| Out-Null
 H1 'quick test'
 $ConfigTest = @{
-    'Temp'          = $true
+    'MaxInput'      = $true
+    'NinCommand'    = $false
+    'Temp'          = $false
     'CustomObject'  = $false
     'CustomObject2' = $false
     'GetCommand'    = $false
 }
 
 $ConfigTest | Format-HashTable -Title 'Config'
+
+if ( $ConfigTest.MaxInput ) {
+    0..4 | ForEach-Object { [string]$_ }
+    | Prop
+
+    hr
+    0..4 | ForEach-Object { [string]$_ }
+    | Prop -Limit 2
+
+}
+if ( $ConfigTest.NinCommand ) {
+    Get-NinCommand
+    _Format-Command
+}
+
 
 if ( $ConfigTest.Temp ) {
     # H1 'Prop output:'

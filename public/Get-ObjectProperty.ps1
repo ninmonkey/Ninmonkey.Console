@@ -39,16 +39,18 @@ function Get-ObjectProperty {
 
     .notes
     future checklist
-        - [ ] -FilterByProp: Name
-        - [ ] -FilterByValue
-        - [ ] -FilterByType : or just a generic script block?
+        - [ ] -PropertyName[]: list of properties to Select / include
+        - [ ] -ExcludePropertyName[]: list of properties to exclude
+
         - [ ] auto-truncate long typenames past a max length limit
         - [ ] only show TypeOfInstance when it doesn't match Type, easier to read
         - [ ] or use
             PS> $name | Format-TypeName -MaxLength 50
         -
-        - [ ] Filter Property Names[]
-        - [ ] only grab the first item
+        - [ ] -FilterByProp: Name
+        - [ ] -FilterByValue
+        - [ ] -FilterByType : or just a generic script block?
+        - [x] only grab the firstN items
         - [ ] get metadata like
             - ClassExplorer\Find-Type
             - ClassExplorer\Get-Parameter
@@ -89,14 +91,19 @@ function Get-ObjectProperty {
 
     #>
     [cmdletbinding()]
-    [Alias('Prop', 'ObjectProperty')]
+    [Alias('Prop')]
     param(
         # any object with properties to inspect
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject,
 
         # Return extra information?
-        [Parameter()][switch]$Detailed
+        [Parameter()][switch]$Detailed,
+
+        # max number of input-objects
+        [alias('Max')]
+        [Parameter()]
+        [uint]$Limit
     )
 
     begin {
@@ -130,6 +137,7 @@ function Get-ObjectProperty {
             IgnorePrefix = 'System.Xml'
             # NoBrackets   = $false
         }
+        $_curInputCount = 0
 
         $Config = @{
             SymbolNull = "[`u{2400}]" # [Null]
@@ -137,6 +145,10 @@ function Get-ObjectProperty {
         $inputList = [list[object]]::new()
     }
     process {
+        $_curInputCount++
+        if ($Limit -and ($_curInputCount -gt $Limit)) {
+            return
+        }
         $inputList.Add( $InputObject )
     }
     end {
@@ -147,6 +159,7 @@ function Get-ObjectProperty {
         | ForEach-Object {
             $curObject = $_
             Write-Debug "Object: $($_.GetType().FullName)"
+            $curObject.psobject.properties.count | Label '.properties count' | Write-Debug
             $curObject.psobject.properties | ForEach-Object {
                 $curProp = $_
                 Write-Debug "Property: $($curProp.Name)"

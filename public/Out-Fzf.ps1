@@ -6,8 +6,12 @@ function Out-Fzf {
         uses commandline app 'fzf' similar to 'out-gridview'
     .description
         a simple multi-item selection for the console without the extra features of 'Out-ConsoleGridView'
+    .example
+        PS> $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
+        PS> ls . -recurse | Out-Fzf
     .notes
         selected items are returned **in-order** that they are selected in 'fzf'
+
 
         'fzf' is documented here:
 
@@ -39,11 +43,6 @@ function Out-Fzf {
             FZF_CTRL_R_OPTS
             FZF_CTRL_T_COMMAND
             FZF_CTRL_T_OPTS
-
-    .example
-        PS>
-    .notes
-        .
     #>
     param (
         # show help
@@ -74,7 +73,7 @@ function Out-Fzf {
         [Parameter()]
         [AllowNull()]
         [ValidateRange(0, 100)]
-        [int]$Height = 30,
+        [int]$Height = 70,
 
         # --min-height=HEIGHT   Minimum height when --height is given in percent
         #   (default: 10)
@@ -87,23 +86,37 @@ function Out-Fzf {
         # Exact Match  --exact
         [Parameter()][switch]$ExactMatch,
         [Alias('LoopForever')]
-        [Parameter()][switch]$Cycle
+        [Parameter()][switch]$Cycle,
 
+
+        <#
+        relative path selection for user's readability.
+        Strips path's prefix on input, prefix it back on for output.
+        Make distinct values easier to use
+            currently it always uses path: '.'
+
+        future:
+            enable when either:
+                - [1] this switch is set -UseRelativePath, or
+                - [2] -BaseResolvePath is not set
+
+            add optional, path like 'Resolve-Path -Relative' without performance loss
+        #>
+        [Alias('StripPathPrefix')]
+        [Parameter()][switch]$UseRelativePath
 
         # Optional args as raw text as the final parameter
         # [Parameter()]
         # [string]$FinalArgs
-
         # [1] Future: param -Property
         # [2] future: support PSObjects with property '.Name' or ToString
-
-
         # future: Maximum selection: --multi[=max]
         # [Parameter()][int]$MaxMultiSelect
     )
 
     begin {
         $debugMeta = @{}
+
 
 
         if ($Help) {
@@ -139,7 +152,7 @@ function Out-Fzf {
         if ($false) {
             if ($NotExtended) {
                 # default is on
-                $fzfArgs.Add("--no-extended")
+                $fzfArgs.Add('--no-extended')
             }
             @'
             --tac
@@ -171,8 +184,36 @@ function Out-Fzf {
     }
 
     end {
-        $Selection = $inputList | & $binFzf @fzfArgs
-        $Selection
+
+        if (! $relativePath) {
+            $Selection = $inputList | & $binFzf @fzfArgs
+            $Selection
+        }
+        else {
+            $prefixPattern = '^{0}' -f @(
+                [regex]::escape( ( Get-Item '.' | ForEach-Object FullName  ) )
+            )
+            $strippedPrefixList = $inputList | ForEach-Object {
+                $curItem = $_
+                $test_IsFileInfo = (Get-Item -ea ignore 'System.IO.FileSystemInfo') -or (
+                    $curItem -is 'System.IO.FileSystemInfo'
+                )
+                "'$curItem'"
+                | Label "isFilesystemInfo? $test_IsFileInfo"
+                | Write-Debug
+
+                $strip = $curItem -replace $prefixPattern, ''
+                Label '->' $curItem | Write-Host
+                Label '--->' $Strip | Write-Host
+                $curItem
+            }
+
+            $Selection = $strippedPrefixList | & $binFzf @fzfArgs
+            $Selection
+        }
+        # if (! $UseRelativePath ) {
+        # } else {
+        # }
 
         # style 1]
         # $debugMeta.InputListCount = $inputList.Count

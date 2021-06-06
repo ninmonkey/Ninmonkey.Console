@@ -121,6 +121,7 @@ $public = @(
 
     # the rest
     'Compare-Directory'
+    'Get-NinCommand'
 
 
     'Export-PlatformFolderPath'
@@ -192,6 +193,7 @@ $functionsToExport = @(
     'Get-TextEncoding'
     'Get-UnicodeInfo'
     'Compare-Directory'
+    'Get-NinCommand'
 
     # converters
     'ConvertTo-Number'

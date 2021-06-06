@@ -49,6 +49,7 @@ function _FormatExportedCommands {
                     Version     = $Command.Version
                     Source      = $Command.Source
                     Name        = $Command.Name
+                    FullName    = $Command.Source, $Command.Name -join '\'
                 }
                 $x = 3
             }
@@ -109,7 +110,12 @@ function Get-NinModule {
         Switch ($OutputMode) {
             'Commands' {
                 $result = _FormatExportedCommands $ModuleInfo
-                | Select-Object -Property Command
+                # | Select-Object -Property Command
+                | Join-String -sep "`n" {
+                    @(
+                        'dsfds'
+                    )
+                }
                 $result
                 break
             }
