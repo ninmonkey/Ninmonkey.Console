@@ -11,7 +11,38 @@ if ($true) {
 }
 #>
 
-Describe "Format-TypeName" -Tag 'wip' {
+Describe 'Format-TypeName' -Tag 'wip' {
+
+    It 'ComplexType DataDriven Test' {
+        $Expected = 'Func`2[String, Object]'
+        (Get-PSReadLineOption).AddToHistoryHandler | Format-TypeName
+        | Should -Be $Expected
+
+        (Get-PSReadLineOption).AddToHistoryHandler.GetType() | Format-TypeName
+        | Should -Be $Expected
+
+        (Get-PSReadLineOption).AddToHistoryHandler.GetType().FullName | Format-TypeName
+        | Should -Be $Expected
+    }
+
+    <#
+        a simple..ToString() returns:
+
+            System.Func`2[System.String,System.Object]
+
+        or (Get-PSReadLineOption).AddToHistoryHandler.GetType().ToString() -as 'type' | Format-TypeName
+
+            Func`2[String, Object]
+        #>
+    It 'ads' {
+        $Sample = 'System.Func`2[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'
+
+
+        $Sample | Format-TypeName
+        | Should -Be 'Func`2[String, Object]'
+        # or verbosely: 'System.Func`2[System.String,System.Object]'
+    }
+
     It 'String: FileInfo' {
         'System.IO.FileInfo' | Format-TypeName
         | Should -Be '[IO.FileInfo]'
@@ -30,13 +61,13 @@ Describe "Format-TypeName" -Tag 'wip' {
     It 'TypeInfo instance: FileInfo' {
         $file = (Get-ChildItem . -Directory | Select-Object -First 1)
         $file.GetType() | Format-TypeName
-        | Should -be '[IO.DirectoryInfo]'
+        | Should -Be '[IO.DirectoryInfo]'
     }
 
     It 'TypeInfo instance: FileInfo' {
         $file = (Get-ChildItem . -Directory | Select-Object -First 1)
         $file.GetType() | Format-TypeName
-        | Should -be '[IO.DirectoryInfo]'
+        | Should -Be '[IO.DirectoryInfo]'
     }
 
     It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {

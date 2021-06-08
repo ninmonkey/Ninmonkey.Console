@@ -6,7 +6,7 @@
 
     Tracing Errors:
         <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7.1#tracing-formatps1xml-file-use>
-    
+
     -->
     <ViewDefinitions>
         <View>
@@ -17,10 +17,10 @@
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Width>20</Width>
+                        <Width>50</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>20</Width>
+                        <Width>40</Width>
 
                     </TableColumnHeader>
                     <TableColumnHeader />
@@ -33,13 +33,13 @@
                                     $_.TypeOfInstance ?? "`u{2400}"
                                     # $_.TypeOfInstance
                                 </ScriptBlock> -->
-                                
-                                <PropertyName>TypeOfInstance</PropertyName>
+
+                                <PropertyName>TypeAbbr</PropertyName>
                                 <Alignment>Right</Alignment>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Name</PropertyName>
-                                
+
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Value</PropertyName>

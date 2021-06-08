@@ -173,11 +173,28 @@ function Get-ObjectProperty {
                     $DisplayedValueType = $curProp.Value.GetType()  | Format-TypeName @splat_FormatType
                 }
 
+                $abbr_TypeNameOfValue = $curProp.TypeNameOfValue -as 'type' | Format-TypeName # temp hack until refactor of Format-TypeName
+
+                # /// -----
+                $curType = $abbr_TypeNameOfValue
+                $curTypeInstance = $DisplayedValueType
+                if ($curType -eq $curTypeInstance) {
+                    $typeAbbrString = $curType
+                }
+                else {
+                    $typeAbbrString = '{0} ⇾  {1}' -f @(
+                        $curType
+                        $curTypeInstance
+                    )
+                }
+
                 $meta = [ordered]@{
-                    Type           = $curProp.TypeNameOfValue | Format-TypeName @splat_FormatType
+                    Type           = $abbr_TypeNameOfValue
+                    # Type           = $curProp.TypeNameOfValue #| Format-TypeName @splat_FormatType
                     TypeOfInstance = $DisplayedValueType
                     Name           = $curProp.Name
                     Value          = $curProp.Value
+                    TypeAbbr       = $typeAbbrString
                     PsTypeName     = 'Nin.PropertyList'
                 }
                 [pscustomobject]$meta

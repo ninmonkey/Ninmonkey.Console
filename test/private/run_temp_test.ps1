@@ -4,17 +4,57 @@ Import-Module Ninmonkey.Console -Force #| Out-Null
 
 # H1 'quick test'
 $ConfigTest = @{
-    'LabelWithPropParam'       = $true
-    'LabelFromPropAndPipeline' = $false
-    'MaxInput'                 = $false
-    'NinCommand'               = $false
-    'Temp'                     = $false
-    'CustomObject'             = $false
-    'CustomObject2'            = $false
-    'GetCommand'               = $false
+    'PropertyList.Format.ps1xml' = $True
+    'PropShortTypeName'          = $false
+    'PropShortTypeName_Coerce'   = $false
+    'LabelWithPropParam'         = $false
+    'LabelFromPropAndPipeline'   = $false
+    'MaxInput'                   = $false
+    'NinCommand'                 = $false
+    'Temp'                       = $false
+    'CustomObject'               = $false
+    'CustomObject2'              = $false
+    'GetCommand'                 = $false
+}
+$ConfigTest | Format-HashTable -Title 'Config'
+
+if ( $ConfigTest.'PropertyList.Format.ps1xml' ) {
+    Get-PSReadLineOption | Prop
 }
 
-$ConfigTest | Format-HashTable -Title 'Config'
+if ( $ConfigTest.'PropShortTypeName' ) {
+    # Get-PSReadLineOption | Prop | Format-Table -AutoSize
+    # Hr 3
+    Get-PSReadLineOption | Prop | Format-Table -AutoSize *
+    Hr 2
+    Get-PSReadLineOption | Prop | Select-Object Type, Name
+    H1 'compare'
+    Get-PSReadLineOption | Prop | Format-Table -AutoSize Value, Type, TypeOfInstance, Name
+}
+
+if ( $ConfigTest.'PropShortTypeName_Coerce' ) {
+
+
+    (Get-PSReadLineOption).AddToHistoryHandler.GetType() | Format-TypeName
+    | Label 'Format-TypeName 1'
+
+    (Get-PSReadLineOption).AddToHistoryHandler | Format-TypeName | Label 'Format-Typename 2'
+
+    (Get-PSReadLineOption).AddToHistoryHandler | Format-TypeName | ForEach-Object { $_ -as 'type' } | Format-TypeName
+    | Label 'Format-TypeName -> type -> FormatTypename'
+
+    <#
+        a simple..ToString() returns:
+
+            System.Func`2[System.String,System.Object]
+
+        or (Get-PSReadLineOption).AddToHistoryHandler.GetType().ToString() -as 'type' | Format-TypeName
+
+            Func`2[String, Object]
+        #>
+}
+
+
 if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
     Write-Warning '-Property not fully implemented'
     'foo', 'bar' | Label 'string' -PropertyName Length
@@ -100,4 +140,4 @@ if ( $ConfigTest.GetCommand ) {
     $prop.TypeNameOfValue -as 'type' | Format-TypeName
 }
 
-$ConfigTest | Format-HashTable -Title 'Config'
+# $ConfigTest | Format-HashTable -Title 'Config'
