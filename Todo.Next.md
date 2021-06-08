@@ -1,2 +1,4 @@
+- [ ] `Get-NinHelp`
+  - [ ] lists important info, like `PSReadline` custom keybindings that are loaded like `alt+(`, `alt+%`
 - [ ] `Get-NinCommand` - `proxy`
 - [ ] `Get-NinModule` - `proxy`

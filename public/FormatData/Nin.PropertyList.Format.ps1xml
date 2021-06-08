@@ -17,7 +17,7 @@
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Width>50</Width>
+                        <Width>45</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Width>40</Width>
@@ -39,10 +39,12 @@
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Name</PropertyName>
+                                <Alignment>Left</Alignment>
 
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Value</PropertyName>
+                                <Alignment>Left</Alignment>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>
