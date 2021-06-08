@@ -1,21 +1,40 @@
 Import-Module Ninmonkey.Console -Force #| Out-Null
-H1 'quick test'
+# Some tests are visual, or not Pester worthy
+# This file is a scratchboard
+
+# H1 'quick test'
 $ConfigTest = @{
-    'MaxInput'      = $true
-    'NinCommand'    = $false
-    'Temp'          = $false
-    'CustomObject'  = $false
-    'CustomObject2' = $false
-    'GetCommand'    = $false
+    'LabelWithPropParam'       = $true
+    'LabelFromPropAndPipeline' = $false
+    'MaxInput'                 = $false
+    'NinCommand'               = $false
+    'Temp'                     = $false
+    'CustomObject'             = $false
+    'CustomObject2'            = $false
+    'GetCommand'               = $false
 }
 
 $ConfigTest | Format-HashTable -Title 'Config'
+if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
+    Write-Warning '-Property not fully implemented'
+    'foo', 'bar' | Label 'string' -PropertyName Length
+    Label 'string' 'value' -PropertyName Length
+}
+if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
+    Label 'greeting' 'woof' -Debug -Verbose -InformationAction continue
+
+    $colors = Get-ChildItem fg:
+    function randColor { $colors | Get-Random }
+    'sdf' | Label 3 length
+    0..4 | Label 'nums' -fg (randColor) -fg2 (randColor)
+    0..4 | JoinStr | Label 'nums2' -fg orange -ea Break
+}
 
 if ( $ConfigTest.MaxInput ) {
     0..4 | ForEach-Object { [string]$_ }
     | Prop
 
-    hr
+    Hr
     0..4 | ForEach-Object { [string]$_ }
     | Prop -Limit 2
 

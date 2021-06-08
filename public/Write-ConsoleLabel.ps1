@@ -1,13 +1,17 @@
 ﻿# New-Alias 'Label' -Value 'Write-NinLabel' -Description 'visual break using colors' -ErrorAction Ignore
 
 function Write-ConsoleLabel {
-    [cmdletbinding(DefaultParameterSetName = 'TextFromPipe')]
-    [Alias('Label')] #, 'Write-NinLabel')] #, 'Write-Label')]
+
     <#
     .synopsis
         visual break on output, similar to h1 with spacing and indentation removed.
     .description
         Command does not explicily write, so it can be piped to Write-Debug or write host
+
+        future:
+            - [ ] needs a pass over, this was written a long time ago, only for a profile
+            - [ ] param -Property will auto-complete using 'psobject.properties'
+                - [ ] even better, only if there's not already one, like 'enum'
     .example
         PS> Label 'started' 'processname'
     .example
@@ -22,8 +26,26 @@ function Write-ConsoleLabel {
         }
         # output env vars with colord names
     .notes
-        some examples at 'test\public\Write-ConsoleLabel.visual_tests.ps1'
+        some examples in:
+            'test\public\Write-ConsoleLabel.visual_tests.ps1'
+
+        case1:
+            Label 'Size:' $file -Prop Length
+        param:
+            -Label -Object -Prop
+
+        case2:
+            $File | Label 'Size:' -Prop Length
+            # or
+            $File | Label 'Size:' Length
+
+            -Label -Prop
     #>
+    [cmdletbinding(
+        PositionalBinding = $false,
+        DefaultParameterSetName = 'TextFromParam')]
+    # DefaultParameterSetName = 'TextFromPipe')]
+    [Alias('Label')] #, 'Write-NinLabel')] #, 'Write-Label')]
     param(
         # Label or Heading
         [Parameter(Mandatory, Position = 0)]
@@ -31,13 +53,33 @@ function Write-ConsoleLabel {
         [string]$Label,
 
         # Text / content
-        [Parameter(ParameterSetName = 'TextFromPipe', Mandatory = $false, ValueFromPipeline)]
+        [Alias('Text')]
+        [Parameter(
+            ParameterSetName = 'TextFromPipe',
+            Mandatory = $false, ValueFromPipeline)]
         # Text is not required. defaults to no color.
-        [Parameter(ParameterSetName = 'TextFromParam', Mandatory = $false, Position = 1)]
-        [string[]]$Text,
+        [Parameter(
+            ParameterSetName = 'TextFromParam',
+            Mandatory = $false, Position = 1)]
+        # [string[]]$Text, # previously was
+        # [object[]]$InputObject, # changed to to allow -Property Name
+        [object]$InputObject, # changed to to allow -Property Name
 
-        # todo: properties instead of needing % ProP to run
+        # Property to use, on a list of objects
+        # future: calculated property that accepts scriptblocks
+        # which set follows the same (offsets+1) pattern on param "-Text"
+        # todo: properties instead of needing % Prop to run
         # Property <Microsoft.PowerShell.Commands.PSPropertyExpression>
+
+        [Parameter(
+            ParameterSetName = 'TextFromParam',
+            Position = 3
+        )]
+        # [Parameter(
+        #     ParameterSetName = 'TextFromPipe',
+        #     Position = 1
+        # )]
+        [string]$PropertyName,
 
         # Seperator between Label and Text, default is ": "
         [Parameter()]
@@ -80,6 +122,9 @@ function Write-ConsoleLabel {
     )
 
     begin {
+        $strConst = @{
+            Null = '[␀]' # U+2400 null symbol
+        }
         $newTextSplat_Label = @{
             ForegroundColor = $ForegroundColor ?? 'green'
             BackgroundColor = $BackgroundColor
@@ -94,7 +139,7 @@ function Write-ConsoleLabel {
             # Separator = 'x'
             LeaveColor      = $LeaveColor
             IgnoreEntities  = $true
-            Object          = $Text # both are set later anyway
+            # Object          = $Text # both are set later anyway
         }
 
         # how do I set
@@ -121,11 +166,33 @@ function Write-ConsoleLabel {
 
         Br -Count $LinesBefore
 
-        if ($Text) {
-            $newTextSplat_Text['Object'] = $Text
-            $StrText = New-Text @newTextSplat_Text
+
+        # tofix: It's actually type object unless no property param
+        if ($PropertyName) {
+            # $newTextSplat_Text['Object'] = $Text.psobject.properties.$PropertyName
+            $newTextSplat_Text['Object'] = $Text.$PropertyName
+            if ($null -eq $Text.PropertyName) {
+                # allow the user the option to continue with null value
+                # future: test if property exist, then if null,
+                #       then only error when propery name doesn't exist at all.
+                Write-Error "Property '$PropertyName' is invalid or = $null"
+                $newTextSplat_Text['Object'] = $strConst.Null
+            }
+        }
+        else {
+            $newTextSplat_Text['Object'] = $InputObject
         }
 
+        #      = $Text
+        #         $StrText = New-Text @newTextSplat_Text
+        #     }
+        #     else {
+
+        #     }
+        # }
+        # $InputObject ??= $strConst.Null
+
+        $StrText = New-Text @newTextSplat_Text
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
         Br -Count $LinesAfter

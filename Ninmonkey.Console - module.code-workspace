@@ -61,7 +61,8 @@
             "*.ps1xml": "xml"
         },
         "terminal.integrated.copyOnSelection": true,
-        "powershell.codeFormatting.pipelineIndentationStyle": "None"
+        "powershell.codeFormatting.pipelineIndentationStyle": "None",
+        "powershell.codeFormatting.addWhitespaceAroundPipe": true
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387

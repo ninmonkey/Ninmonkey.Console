@@ -1,4 +1,10 @@
-﻿<#
+﻿<# init
+    todo: better config system, than copying my profile
+#>
+$PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
+7FB2C1'
+
+<#
     section: seeminglyScience Private
 #>
 

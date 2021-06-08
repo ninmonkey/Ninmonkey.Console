@@ -30,6 +30,8 @@ function Format-HashTable {
         Currently only formats a depth of 1
 
         future:
+            - [ ] optionally .PadRight() the on the format mode 'Pairs'
+
             Should some logic be moved to formatters?
 
             display abbreviation for nested values
@@ -64,16 +66,16 @@ function Format-HashTable {
                     app  = pip
 
     #>
-    [CmdletBinding(DefaultParameterSetName = "FromPipe")]
+    [CmdletBinding(DefaultParameterSetName = 'FromPipe')]
     param (
         # Format Mode: SingleLine, Table, Pair. ( Default is 'pair' )
         [Alias('Format-Hash')]
-        [Parameter(ParameterSetName = "FromPipe", Position = 0)]
+        [Parameter(ParameterSetName = 'FromPipe', Position = 0)]
         [ValidateSet('SingleLine', 'Table', 'Pair')]
         [string]$FormatMode = 'Pair',
 
         # Input hash
-        [Parameter(ParameterSetName = "FromPipe", Mandatory, ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'FromPipe', Mandatory, ValueFromPipeline)]
         [hashtable]$InputHash,
 
         # optional title name
@@ -105,10 +107,12 @@ function Format-HashTable {
         if ($InputHash -is 'System.Collections.Specialized.OrderedDictionary' ) {
             Label 'isOrderedDictionary' 'true' | Write-Debug
             $SortedHash = $InputHash
-        } else {
+        }
+        else {
             if ($NoSortKeys) {
                 $SortedHash = $InputHash
-            } else {
+            }
+            else {
                 $SortedHash = $InputHash | Sort-Hashtable
             }
         }
@@ -145,7 +149,8 @@ function Format-HashTable {
                 | Format-Table -Wrap -AutoSize
                 if ($Force) {
                     $formatted | Out-String -Width 9999
-                } else {
+                }
+                else {
                     $formatted
                 }
                 break

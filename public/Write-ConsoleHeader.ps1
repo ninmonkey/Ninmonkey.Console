@@ -61,7 +61,8 @@ function Write-ConsoleHeader {
         $FinalName = if ($Depth -gt 0 -and ! $NoPadding) {
             #was:  -and -le 6) {
             "$PaddingPrefix $Name"
-        } else {
+        }
+        else {
             $Name
         }
 
@@ -76,7 +77,7 @@ function Write-ConsoleHeader {
             LinesAfter      = $LinesAfter
         }
 
-        Label @HeadingSplat
+        Write-ConsoleLabel @HeadingSplat
     }
     end {}
 
