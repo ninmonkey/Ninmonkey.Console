@@ -1,0 +1,195 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "Ninmonkey.Console | powershell"
+        }
+    ],
+    "settings": {
+        /*
+        schema for Powershell Types.ps1xml and Format.ps1xml
+    */
+        "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+        "xml.fileAssociations": [
+            {
+                "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Format.xsd",
+                "pattern": "**/*.Format.ps1xml"
+            },
+            {
+                "systemId": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/src/Schemas/Types.xsd",
+                "pattern": "**/*.Types.ps1xml"
+            }
+        ],
+        // /*
+        //     self color test
+        // */
+        // "workbench.colorCustomizations": {
+        //     "window.activeBorder": "#eba714"
+        // },
+        /*
+            start
+        */
+        // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+        "terminal.integrat ed.drawBoldTextInBrightColors": true,
+        "terminal.integrated.fontSize": 14,
+        "editor.fontSize": 16,
+        "debug.console.fontSize": 14,
+        "editor.suggestFontSize": 14,
+        "markdown.preview.fontSize": 12,
+        // "screencastMode.fontSize": 56,
+        // "window.zoomLevel": 0,
+        "[powershell]": {
+            // "editor.formatOnSave": true,
+            // "editor.formatOnPaste": true,
+            // "editor.autoIndent": "advanced",
+            // "files.encoding": "utf8bom",
+            // "files.autoGuessEncoding": true
+        },
+        "powershell.codeFormatting.autoCorrectAliases": true,
+        "powershell.codeFormatting.useCorrectCasing": true,
+        "files.defaultLanguage": "${activeEditorLanguage}",
+        // to fix current formatting bug
+        "powershell.codeFormatting.whitespaceBetweenParameters": false,
+        "files.exclude": {
+            "*.zip": true,
+            "*.lnk": true,
+            "*.exe": true,
+            "LICENSE": true,
+            "C:\\Users\\cppmo_000\\Documents\\2020\\powershell\\MyModules_Github\\Ninmonkey.Console-dotsource\\*": true, // warning: doesn't seem to affect <ctrl+p>
+        },
+        "files.associations": {
+            "*.ps1xml": "xml"
+        },
+        "terminal.integrated.copyOnSelection": true,
+        "powershell.codeFormatting.pipelineIndentationStyle": "None",
+        "powershell.codeFormatting.addWhitespaceAroundPipe": true
+    },
+    "launch": {
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "🐒 Test Format.ps1xml",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/test_Format.ps1xml.ps1",
+                "cwd": "${workspaceFolder}"
+            },
+            {
+                "name": "<temprun>.ps1",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/private/run_temp_test.ps1",
+                "cwd": "${file}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 3
+                },
+            },
+            {
+                "name": "🐒 visual test.ps1",
+                "type": "PowerShell",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 1
+                },
+                "request": "launch",
+                "script": "${workspaceFolder}\\test\\public\\Write-ConsoleLabel.visual_tests.ps1",
+                "cwd": "${file}"
+            },
+            {
+                "name": "🐒 cur.ps1 — ",
+                "type": "PowerShell",
+                "request": "launch",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 2
+                },
+                "script": "${file}",
+                "cwd": "${file}"
+            },
+            {
+                // slower, and verbose
+                "name": "🐛 : [Details] — ",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "args": [
+                    "-Output",
+                    "Detailed"
+                ],
+                "cwd": "${workspaceFolder}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    "order": 1
+                },
+            },
+            {
+                "name": "🐛 : | default | — ", // [nin.PowerShell]",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                // "args": [],
+                "cwd": "${workspaceFolder}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
+            },
+            {
+                "name": "🐛 | 🏃 | #currentFilter |",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "cwd": "${workspaceFolder}",
+                "args": [
+                    // "-Output",
+                    // "Detailed",
+                    "-TagFilter",
+                    "ConvertTo"
+                    // "wip"
+                    // "wip-hash"
+                ],
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
+            },
+            {
+                "name": "🐛 | 🏃 | #WIP |",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "Invoke-Pester",
+                "cwd": "${workspaceFolder}",
+                "args": [
+                    "-Output",
+                    "Detailed",
+                    "-TagFilter",
+                    "ConvertTo"
+                    // "wip"
+                    // "wip-hash"
+                ],
+                "presentation": {
+                    "hidden": false,
+                    "group": "Pester",
+                    // "order": 1
+                },
+            },
+            /* pester example snippets
+        1.
+            Invoke-Pester -Output Detailed
+        1.
+            -Path './Ninmonkey.Console/test/*'",
+        1.
+            "cwd": "${workspaceFolder}/Ninmonkey.Console",
+
+        */
+        ]
+    }
+}
