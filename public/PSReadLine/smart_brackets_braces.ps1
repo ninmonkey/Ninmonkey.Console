@@ -16,7 +16,7 @@ about:
 
 Set-PSReadLineKeyHandler -Key '"', "'" `
     -BriefDescription SmartInsertQuote `
-    -LongDescription 'Insert paired quotes if not already on a quote' `
+    -LongDescription 'Warning: Can act strange if combined with "Toggle Qoute Argument". Insert paired quotes if not already on a quote' `
     -ScriptBlock {
     param($key, $arg)
 

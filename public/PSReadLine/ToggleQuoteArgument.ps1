@@ -6,7 +6,7 @@ using namespace System.Management.Automation.Language
 # no quotes each time it is invoked.
 Set-PSReadLineKeyHandler -Key "Alt+'" `
     -BriefDescription ToggleQuoteArgument `
-    -LongDescription 'Toggle quotes on the argument under the cursor' `
+    -LongDescription 'Warning: Can act strange if combined with "Smart Brackets Braces Parens.ps1". Toggle quotes on the argument under the cursor' `
     -ScriptBlock {
     param($key, $arg)
 
