@@ -22,9 +22,6 @@ function Find-GitRepo {
         # Max depth
         [parameter(Position = 1)]
         [uint]$Depth
-
-
-
     )
 
     $RootPath = Get-Item -ea stop $Path
@@ -45,16 +42,14 @@ function Find-GitRepo {
     Write-Warning '
     ask
         1] why does path "c:" and "c:\" give different results
-
         2] why does filter allow broken on ".git", dot should not allow the match
-
         3] ***solution** just compare "name" -eq ".git" for a working hack, not worth filter.
     '
 }
 
-Find-GitRepo 'C:' -Depth 2
 
 if ($false) {
+    Find-GitRepo 'C:' -Depth 2
     h1 '..\..'
     Find-GitRepo '..\..'
     h1 'c:\'

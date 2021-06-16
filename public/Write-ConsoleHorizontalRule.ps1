@@ -15,9 +15,14 @@ function Write-ConsoleHorizontalRule {
         [Parameter()]
         [int]$ExtraLines = 0,
 
-        # disable color
-        [Parameter()][switch]$NoColor
-
+        
+        # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
+        [Parameter()]
+        [alias('Fg')]
+        [PoshCode.Pansies.RgbColor]$ForegroundColor = 'gray60'
+        
+        # # disable color
+        # [Parameter()][switch]$NoColor, 
         # # number of blank lines before Label
         # [Parameter()]
         # [Alias('Before')]
@@ -43,7 +48,7 @@ function Write-ConsoleHorizontalRule {
         $output
     }
     else {
-        New-Text $output -fg 'gray40' | ForEach-Object ToString
+        New-Text $output -fg $ForegroundColor | ForEach-Object ToString
     }
 
     # & {

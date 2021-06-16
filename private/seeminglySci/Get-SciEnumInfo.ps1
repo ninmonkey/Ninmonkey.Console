@@ -5,6 +5,7 @@
     .example
         PS> [IO.Compression.CompressionMode] | Get-EnumInfo
     #>
+    [Alias('EnumInfo')]
     [CmdletBinding()]
     param(
         [Parameter(ValueFromPipeline)]

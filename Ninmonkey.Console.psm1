@@ -3,6 +3,10 @@
 #>
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
 7FB2C1'
+Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
+Set-PSReadLineOption -Colors @{
+    Comment = '#E58BEB' # " e[38;2;229;139;235m"
+}
 
 <#
     section: seeminglyScience Private
@@ -12,6 +16,27 @@ $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
 
 $__Config = @{
     includeAliasesUnicode = $true
+    includePSReadline     = $true
+}
+
+$psreadline_extensions = @(
+    'smart_brackets_braces'     # auto add/close quotes and braces
+    'ParenthesizeSelection'     # type alt+( to surround existing expression in parenthesis
+    'ToggleQuoteArgument'       # cycles between qoute types, and none.
+    'ExpandAliases'             # expands aliases.
+    'IndentSelections_Jaykul'   # indent/dedent selected text:  alt+[ or ]
+)
+
+if ($__Config.includePSReadline) {
+    foreach ($extension in $psreadline_extensions) {
+        $src = Join-Path $PSScriptRoot "public\PSReadLine\${extension}.ps1"
+        if (Test-Path $src) {
+            . $src
+        }
+        else {
+            Write-Error "Import failed: '$src'"
+        }
+    }
 }
 
 $private_seeminglySci = @(
@@ -102,6 +127,7 @@ $public = @(
     'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 
+
     # console formatting
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
@@ -124,6 +150,9 @@ $public = @(
     'ConvertTo-Base64String'
     'ConvertTo-BitString'
     'ConvertTo-PropertyList'
+
+    # misc
+    'Get-NinHelp'
 
     # the rest
     'Compare-Directory'
@@ -185,6 +214,7 @@ foreach ($file in $public) {
 $functionsToExport = @(
     # misc
     'ConvertTo-Timespan'
+    'Get-NinHelp'
 
     # console formatting
     'Invoke-Wget'
@@ -320,6 +350,7 @@ if ($true) {
         'H1'
         'Hr'
         'Get-EnumInfo'
+        'EnumInfo'  # Get-EnumInfo
         'Goto'
         'nLs'       # Get-NinChildItem
         'LsGit'     # Find-GitRepo
@@ -327,6 +358,7 @@ if ($true) {
         'Docs'
         'Here'
         'IPython'
+        'ninHelp'
 
         # console formatting
         'Format-Indent'
