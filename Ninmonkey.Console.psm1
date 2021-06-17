@@ -371,7 +371,7 @@ if ($true) {
         ## Select-NinProperty
         'SelectProp'        # Select-NinProperty:
         'Select-Property'   # Select-NinProperty:
-        'PropList'          # Select-NinProperty: smart alias
+        'ListProp'          # Select-NinProperty: smart alias
 
         # console formatting
         'Format-Indent'

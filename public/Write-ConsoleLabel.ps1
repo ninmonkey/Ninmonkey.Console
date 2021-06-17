@@ -72,8 +72,7 @@ function Write-ConsoleLabel {
         # Property <Microsoft.PowerShell.Commands.PSPropertyExpression>
 
         [Parameter(
-            ParameterSetName = 'TextFromParam',
-            Position = 3
+            ParameterSetName = 'TextFromParam'
         )]
         # [Parameter(
         #     ParameterSetName = 'TextFromPipe',
