@@ -7,7 +7,12 @@ Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
 }
+<#
+future:
+    - [ ] use package
 
+
+#>
 <#
     section: seeminglyScience Private
 #>
@@ -153,6 +158,7 @@ $public = @(
 
     # misc
     'Get-NinHelp'
+    'Select-NinProperty'
 
     # the rest
     'Compare-Directory'
@@ -215,6 +221,7 @@ $functionsToExport = @(
     # misc
     'ConvertTo-Timespan'
     'Get-NinHelp'
+    'Select-NinProperty'
 
     # console formatting
     'Invoke-Wget'
@@ -359,6 +366,12 @@ if ($true) {
         'Here'
         'IPython'
         'ninHelp'
+
+        # smart alias
+        ## Select-NinProperty
+        'SelectProp'        # Select-NinProperty:
+        'Select-Property'   # Select-NinProperty:
+        'PropList'          # Select-NinProperty: smart alias
 
         # console formatting
         'Format-Indent'

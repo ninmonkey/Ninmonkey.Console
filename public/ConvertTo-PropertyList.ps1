@@ -2,10 +2,15 @@
 function ConvertTo-PropertyList {
     <#
     .synopsis
-        Returns a hashtable of specific properties
+        Converts an objects to a hashtable, while selecting properties
     .description
-        name? ConvertTo-PropertyList ?
-        attempt at safer dynamic properties list
+        I forgot what this was supposed to be used for.
+
+        See 'Select-NinProperty' , it's better.
+
+        attempt at safer dynamic properties list.
+        often you can instead use:
+            Select-Object or *-Csv or *-Json commands
 
         see also:
             PS> gcm EZOut\ConvertTo-PropertySet
@@ -54,7 +59,8 @@ function ConvertTo-PropertyList {
     [alias('Select-ObjectProperty-HashTable')]
     param (
         # InputObject
-        [Parameter(Mandatory, ValueFromPipeline)][object]$InputObject,
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object]$InputObject,
 
         # properties to include, uses Select-Object's wildcards syntax
         [Parameter(Mandatory, Position = 0)][string[]]$Property,
