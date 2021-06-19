@@ -1,6 +1,7 @@
 ﻿<# init
     todo: better config system, than copying my profile
 #>
+$PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
 7FB2C1'
 Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
@@ -27,7 +28,7 @@ $__Config = @{
 $psreadline_extensions = @(
     'smart_brackets_braces'     # auto add/close quotes and braces
     'ParenthesizeSelection'     # type alt+( to surround existing expression in parenthesis
-    'ToggleQuoteArgument'       # cycles between qoute types, and none.
+    # 'ToggleQuoteArgument'       # cycles between qoute types, and none.
     'ExpandAliases'             # expands aliases.
     'IndentSelections_Jaykul'   # indent/dedent selected text:  alt+[ or ]
 )

@@ -17,6 +17,7 @@ function Write-ConsoleHeader {
     #>
     param(
         # Header text
+        [ValidateNotNull()]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$Name,
 
@@ -68,7 +69,7 @@ function Write-ConsoleHeader {
 
         $HeadingSplat = @{
             # Label           = $Name
-            Label           = $FinalName
+            InputObject     = $FinalName
             Separator       = ''
             Text            = ''
             ForegroundColor = $ForegroundColor

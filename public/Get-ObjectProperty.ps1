@@ -39,12 +39,12 @@ function Get-ObjectProperty {
 
     .notes
     future checklist
-        - [ ] bugfix: tofix: Performance is really slow. Maybe it's version patching, but verify speed else goto dotnet 
+        - [ ] bugfix: tofix: Performance is really slow. Maybe it's version patching, but verify speed else goto dotnet
         - [ ] Performance: Profile if different 'properties' are super slow, return graph/metrics
 
         - [ ] -PropertyName[]: list of properties to Select / include
         - [ ] -ExcludePropertyName[]: list of properties to exclude
-        
+
         - [ ] super slow on some instances like 'Get-PSReadLineOption | prop'
         - [ ] only int returned for: '$profile | Prop'
 
@@ -97,7 +97,7 @@ function Get-ObjectProperty {
                     String __NounName           Process
 
     #>
-    [cmdletbinding()]
+    [cmdletbinding(PositionalBinding = $false)]
     [Alias('Prop')]
     param(
         # any object with properties to inspect
@@ -110,7 +110,7 @@ function Get-ObjectProperty {
         # max number of input-objects
         [alias('Max')]
         [Parameter()]
-        [uint]$Limit
+        [int]$Limit # Sci said that type has unecessary casts/additional coercion
     )
 
     begin {
@@ -144,7 +144,7 @@ function Get-ObjectProperty {
             IgnorePrefix = 'System.Xml'
             # NoBrackets   = $false
         }
-        $_curInputCount = 0
+        $_curInputCount = 1
 
         $Config = @{
             SymbolNull = "[`u{2400}]" # [Null]
@@ -154,6 +154,12 @@ function Get-ObjectProperty {
     process {
         $_curInputCount++
         if ($Limit -and ($_curInputCount -gt $Limit)) {
+            # maybe I can halt the pipeline, is it processing extra?
+            # It's timing out somewhere.
+
+
+            # Oh, I wonder if  Write-Label $null, is throwing an exception
+            # causing it to stall ?
             return
         }
         $inputList.Add( $InputObject )
@@ -194,7 +200,7 @@ function Get-ObjectProperty {
                         $curTypeInstance
                     )
                 }
-$profile | Prop
+                $profile | Prop
                 $meta = [ordered]@{
                     Type           = $abbr_TypeNameOfValue
                     # Type           = $curProp.TypeNameOfValue #| Format-TypeName @splat_FormatType

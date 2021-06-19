@@ -49,7 +49,7 @@ function Write-ConsoleLabel {
     param(
         # Label or Heading
         [Parameter(Mandatory, Position = 0)]
-        [AllowEmptyString()]
+        [AllowEmptyString()] # simplifies users errors?
         [string]$Label,
 
         # Text / content
@@ -190,8 +190,15 @@ function Write-ConsoleLabel {
         #     }
         # }
         # $InputObject ??= $strConst.Null
-
-        $StrText = New-Text @newTextSplat_Text
+        # if ($null -eq $newTextSplat_Text.Object) {
+        if (
+            [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
+            $StrText = New-Text @newTextSplat_Text
+        }
+        else {
+            $StrText = ''
+            Write-Error "-Object was $null"
+        }
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
         Br -Count $LinesAfter
@@ -202,7 +209,14 @@ function Write-ConsoleLabel {
 
     }
     end {
-        Write-Debug 'todo: rewrite to call Write-ConsoleText'
+        # Write-Debug 'todo: rewrite to call Write-ConsoleText'
     }
 
 }
+
+@'
+Label missing fail case:
+
+    Label 'Final Query' $joinedQuery | Write-Information
+
+'@

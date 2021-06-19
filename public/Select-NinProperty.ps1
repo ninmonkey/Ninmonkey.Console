@@ -3,24 +3,18 @@ using namespace System.Collections.Generic
 function Select-NinProperty {
     <#
     .synopsis
-        Takes a list of objects, distinct sort passed to Fzf for selection
+        Takes a list of objects, distinct sorted values are piped to Fzf for selection
     .description
         Uncertain on aliases. the goal is to have one that defaults
         to calling Fzf, and one that does not. ( ie: default invert of -PassThru)
     .notes
-        SelectProp:     interactive
-            You choose a value using out-fzf
-
-        ListProp        non-interactive
-            Get the sorted distinct list as a result.
-
         future:
             - [ ] -NoSort, -NoDistinct: params
             - [ ] -UseCache param: so additional calls don't invoke Fzf
     .example
-        PS> Get-Command -Module Ninmonkey.Console, Dev.Nin | SelectProp -PassThru Source
+        PS>
     #>
-    [Alias('SelectProp', 'Select-Property', 'ListProp')]
+    [Alias('SelectProp', 'Select-Property', 'PropList')]
     [CmdletBinding(  PositionalBinding = $false)]
     param (
         # source objects
@@ -33,9 +27,6 @@ function Select-NinProperty {
 
         # Returns a list directly, list, skipping Fzf
         [Parameter()][switch]$PassThru,
-
-        # NotDistinct: return values that are repeated
-        [Parameter()][switch]$NotDistinct,
 
         # Make errors fatal. Otherwise default behavior is to return nothing
         # You may opt-in to returning the value: '[␀]' instead of nothing
@@ -62,7 +53,7 @@ function Select-NinProperty {
                     Write-Error "`$null value, '$PropertyName' exists?: $propExists"
                     # Is it preferable to use an error, and exit, or throw an exception?
                     # The latter would break the entire pipeline, forcing the user to use ignore?
-                    # The user expects  behavior is
+                    # The user expects  behavior isl
                     return
                 }
                 else {
@@ -90,10 +81,8 @@ function Select-NinProperty {
             }
         }
 
-        $kwargs_Sort = @{
-            'Unique' = ! $NotDistinct
-        }
-        $distinct_props = $all_properties | Sort-Object $kwargs_Sort
+
+        $distinct_props = $all_properties | Sort-Object -Unique
         if ($PassThru) {
             $distinct_props
             return
@@ -117,35 +106,10 @@ function Select-NinProperty {
     }
 }
 
-<#
-
-        switch($distinct_props.Count) {
-            1 {
-                $distinct_props
-                break
-            }
-            { $_ -gt 1 } {
-                $distinct_props
-                | Out-Fzf -PromptText "Select $PropertyName"
-
-            }
-        }
-        #>
 
 if ($InteractiveTest) {
-    h1 'files'
-    Get-ChildItem .
-    | Select-Property -PropertyName Length  -PassThru
-    | Select-Object -First 3
-
-    h1 'cmd'
-    Get-ChildItem .
-    | Select-Property -PropertyName Length  -PassThru
-    | Select-Object -First 3
-
-    h1 '3'
-    # Get-Command -CommandType Cmdlet
-    Get-Command -CommandType Cmdlet
-    | Select-Property -PropertyName ModuleName  -PassThru
-    #| Select-Object -First 3
+    # with Fzf
+    Get-Module | Select-NinProperty -PropertyName Name
+    # Without Fzf
+    Get-Module | Select-NinProperty -PropertyName Name -PassThru
 }
