@@ -52,9 +52,9 @@ function Find-GitRepo {
     '
 }
 
-Find-GitRepo 'C:' -Depth 2
 
 if ($false) {
+# Find-GitRepo 'C:' -Depth 2
     h1 '..\..'
     Find-GitRepo '..\..'
     h1 'c:\'
