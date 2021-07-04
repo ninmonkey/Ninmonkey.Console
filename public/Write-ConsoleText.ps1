@@ -1,5 +1,4 @@
 ﻿function Write-ConsoleText {
-    # [Alias('Text', 'Write-Color')] # maybe: Write-Text ?
     <#
     .synopsis
         Writes a colored, ANSI escaped string.
@@ -13,11 +12,12 @@
         New-Text ('a'..'z') -sep $sep | % tostring
     .notes
     #>
+    # [Alias('Text', 'Write-Color')] # maybe: Write-Text ?
+    [Alias('Write-Text')]
     [cmdletbinding(
         # DefaultParameterSetName =
         PositionalBinding = $false
     )]
-    [Alias('Write-Text')]
     param(
         # String to write
         # New-Text supports [object].
@@ -66,12 +66,12 @@
 
         # New-Text supports [object].
         # Should I allow that here?
-        $Text_splat.remove( 'Object' )
+        [void]$Text_splat.remove( 'Object' )
         $Obj = $prefix, $Object, $Suffix -join ''
-        $Text_splat.add( 'Object', $Obj )
+        [void]$Text_splat.add( 'Object', $Obj )
 
-        $Text_splat.Remove('LinesBefore')
-        $Text_splat.Remove('LinesAfter')
+        [void]$Text_splat.Remove('LinesBefore')
+        [void]$Text_splat.Remove('LinesAfter')
 
 
 

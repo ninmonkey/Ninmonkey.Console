@@ -121,6 +121,7 @@ $public = @(
     'Edit-GitConfig'
     'Get-NinAlias'
     'Find-GitRepo'
+    'Write-ConsoleText'
     'Write-ConsoleHorizontalRule'
     'Import-NinPSReadLineKeyHandler'
 
@@ -221,6 +222,7 @@ $functionsToExport = @(
     'Select-NinProperty'
 
     # console formatting
+    'Write-ConsoleText'
     'Invoke-Wget'
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
