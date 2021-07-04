@@ -8,6 +8,7 @@ Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
 }
+
 <#
 future:
     - [ ] use package
@@ -22,7 +23,7 @@ future:
 
 $__Config = @{
     includeAliasesUnicode = $true
-    includePSReadline     = $true
+    includePSReadline     = $false
 }
 
 $psreadline_extensions = @(
@@ -33,17 +34,6 @@ $psreadline_extensions = @(
     'IndentSelections_Jaykul'   # indent/dedent selected text:  alt+[ or ]
 )
 
-if ($__Config.includePSReadline) {
-    foreach ($extension in $psreadline_extensions) {
-        $src = Join-Path $PSScriptRoot "public\PSReadLine\${extension}.ps1"
-        if (Test-Path $src) {
-            . $src
-        }
-        else {
-            Write-Error "Import failed: '$src'"
-        }
-    }
-}
 
 $private_seeminglySci = @(
     'seeminglySci_import'
@@ -132,6 +122,7 @@ $public = @(
     'Get-NinAlias'
     'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
+    'Import-NinPSReadLineKeyHandler'
 
 
     # console formatting
@@ -167,6 +158,10 @@ $public = @(
 
 
     'Export-PlatformFolderPath'
+    # history
+    'Find-HelpFromHistory'
+
+
     'Format-History'
     'Format-MeasureCommand'
     'Format-TestConnection'
@@ -220,6 +215,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     # misc
+    'Import-NinPSReadLineKeyHandler'
     'ConvertTo-Timespan'
     'Get-NinHelp'
     'Select-NinProperty'
@@ -255,6 +251,9 @@ $functionsToExport = @(
     'Format-Hashtable'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
+
+    # history
+    'Find-HelpFromHistory'
 
 
     'Get-NinAlias'
@@ -357,7 +356,6 @@ if ($true) {
     $aliasesToExport = @(
         'H1'
         'Hr'
-        'Get-EnumInfo'
         'EnumInfo'  # Get-EnumInfo
         'Goto'
         'nLs'       # Get-NinChildItem
@@ -374,15 +372,21 @@ if ($true) {
         'Select-Property'   # Select-NinProperty:
         'ListProp'          # Select-NinProperty: smart alias
 
+        'HelpHistory' # Find-HelpFromHistory
+
         # console formatting
         'Format-Indent'
         'Label'
         'Br'
         'Br'
 
+        'Import-NinKeys' # Import-NinPSReadLineKeyHandler
+
         # misc
         'DiffDir'
         'RelativeTs' # ConvertTo-Timespan
+
+        # history
 
         # which alias for 'Write-ConsoleText'?
         # 'Text' # warning: pansi uses alias 'text'

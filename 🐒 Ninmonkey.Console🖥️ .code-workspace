@@ -76,6 +76,18 @@
                 "cwd": "${workspaceFolder}"
             },
             {
+                "name": "<temprun-write-color>.ps1",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/private/run_temp_color_test.ps1",
+                "cwd": "${file}",
+                "presentation": {
+                    "hidden": false,
+                    "group": "TempScript",
+                    "order": 3
+                },
+            },
+            {
                 "name": "<temprun>.ps1",
                 "type": "PowerShell",
                 "request": "launch",

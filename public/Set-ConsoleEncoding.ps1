@@ -77,7 +77,7 @@ function Set-ConsoleEncoding {
         }
     }
 
-    Label 'Set Encoding' $EncodingName
+    Label 'Set Encoding' $EncodingName | Write-Information
     Get-ConsoleEncoding
     #  'See also: Autocomplete [enum]' '[Microsoft.PowerShell.Commands.TextEncodingType]'
 }
