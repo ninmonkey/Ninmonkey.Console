@@ -1,33 +1,43 @@
-﻿# New-Alias 'Label' -Value 'Write-NinLabel' -Description 'visual break using colors' -ErrorAction Ignore
-
-function Write-ConsoleText {
-    [cmdletbinding(DefaultParameterSetName = 'TextFromPipe')]
-    # Pansi lib uses alias 'text', maybe cText or color
-    [Alias('Write-Text', 'Write-Color')] # mabye: Write-Text ?
+﻿function Write-ConsoleText {
     # [Alias('Text', 'Write-Color')] # maybe: Write-Text ?
     <#
     .synopsis
-        Return a colorized string
+        Writes a colored, ANSI escaped string.
     .description
+        Optionally padding as with newlines
         Base function used by other commands like Write-ConsoleHeader, Write-ConsoleLabel
-
-        - Unlike [PoshCode.Pansies.Text], this returns a regular [String] immediately
-        - Unlike [Write-ConsoleLabel], it does not default to key-value pair
-        - Unlike [Write-ConsoleHeader], it does not default to adding padding or any newline
     .example
+
+        # Pansies Sep is an object
+        $sep = new-text -fg 'orange' '--'
+        New-Text ('a'..'z') -sep $sep | % tostring
     .notes
     #>
+    [cmdletbinding(
+        # DefaultParameterSetName =
+        PositionalBinding = $false
+    )]
+    [Alias('Write-Text')]
     param(
-        # Header text
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string]$Name,
+        # String to write
+        # New-Text supports [object].
+        # Should I allow that here?
+        [Alias('Text')]
+        [Parameter(Mandatory, Position = 0)]
+        # [string]$Text, # Object text?
+        [object]$Object, # Object text?
 
-        # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
+        # New-Text supports [object]$Separator.
+        # Should I allow that here?
         [Parameter()]
-        [alias('Fg')]
-        [PoshCode.Pansies.RgbColor]$ForegroundColor = 'Orange',
+        [object]$Separator, # Object text?
 
-        # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
+        # Foregorund Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
+        [Parameter(Mandatory, Position = 1)]
+        [alias('Fg')]
+        [PoshCode.Pansies.RgbColor]$ForegroundColor,
+
+        # Background Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
         [Parameter()]
         [alias('Bg')]
         [PoshCode.Pansies.RgbColor]$BackgroundColor,
@@ -35,41 +45,41 @@ function Write-ConsoleText {
         # number of blank lines before Label
         [Parameter()]
         [Alias('Before')]
-        [uint]$LinesBefore = 1,
+        [uint]$LinesBefore = 0,
 
         # number of blank lines after Label
         [Parameter()]
         [Alias('After')]
-        [uint]$LinesAfter = 0,
+        [uint]$LinesAfter = 0
 
-        # how deep, h1 to h6
-        [Parameter()]
-        [uint]$Depth = 1,
-
-        # No padding
-        [Parameter()][switch]$NoPadding
-
+        # # how deep, h1 to h6
+        # [Parameter()]
+        # [uint]$Depth = 1
     )
 
-    begin {
-        # $Template = @{
-        #     PaddingString = '#'
-        # }
-        throw "$PSScriptRoot : WIP"
-    }
+    begin {}
     Process {
-        $HeadingSplat = @{
-            # Label           = $Name
-            Label           = $FinalName
-            Separator       = ''
-            Text            = ''
-            ForegroundColor = $ForegroundColor
-            BackgroundColor = $BackgroundColor
-            LinesBefore     = $LinesBefore
-            LinesAfter      = $LinesAfter
-        }
+        $Prefix = "`n" * $LinesBefore
+        $Suffix = "`n" * $LinesAfter
 
-        Label @HeadingSplat
+        $Text_splat = $pscmdlet.MyInvocation.BoundParameters
+
+        # New-Text supports [object].
+        # Should I allow that here?
+        $Text_splat.remove( 'Object' )
+        $Obj = $prefix, $Object, $Suffix -join ''
+        $Text_splat.add( 'Object', $Obj )
+
+        $Text_splat.Remove('LinesBefore')
+        $Text_splat.Remove('LinesAfter')
+
+
+
+        # 'TextSplat = {0}' -f $Text_splat
+        # "textSplat = $([pscustomobject]$Text_splat)"
+        # "textSplat = $([pscustomobject]$Text_splat)"
+        $Text_splat | Format-Table | Out-String -Width 999 | Write-Debug
+        New-Text @Text_splat
     }
     end {}
 

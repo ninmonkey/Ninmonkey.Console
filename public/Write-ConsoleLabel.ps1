@@ -154,6 +154,9 @@ function Write-ConsoleLabel {
         # | Write-Debug
     }
     Process {
+        Write-Debug 'rewrite'
+        Write-Verbose 'rewrite'
+        return
         # foreach ($Line in $Text) {
         $newTextSplat_Label['Object'] = $Label
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
