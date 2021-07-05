@@ -1,4 +1,4 @@
-﻿function Get-SciEnumInfo {
+﻿function Get-EnumInfo {
     <#
     .description
         Displays name mappings to values
@@ -39,9 +39,9 @@
         $names = [enum]::GetNames($enumType)
         $values = [enum]::GetValues($enumType)
 
-        $lastBits = bits -InputObject $values[-1]
+        $lastBits = Bits -InputObject $values[-1]
         $bitsPadding = ($lastBits -replace '[\. ]').Length / 8
-        $hexPadding = (hex -InputObject $values[-1]).Length - 2
+        $hexPadding = (Hex -InputObject $values[-1]).Length - 2
         for ($i = 0; $i -lt $names.Length; $i++) {
             $value = $values[$i].value__
             $info = [PSCustomObject]@{
@@ -49,8 +49,8 @@
                 EnumType   = $enumType
                 Name       = $names[$i]
                 Value      = $value
-                Hex        = hex -InputObject $value -Padding $hexPadding
-                Bits       = bits -InputObject $value -Padding $bitsPadding
+                Hex        = Hex -InputObject $value -Padding $hexPadding
+                Bits       = Bits -InputObject $value -Padding $bitsPadding
             }
 
             $info.psobject.Members.Add(

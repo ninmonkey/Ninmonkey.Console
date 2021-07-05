@@ -38,7 +38,7 @@ $psreadline_extensions = @(
 $private_seeminglySci = @(
     'seeminglySci_import'
     'NamespaceAwareCompletion'
-    'Get-SciEnumInfo'
+    # 'Get-EnumInfo'
     # 'EncodingCompletion'
 )
 if ($psEditor) {
@@ -180,7 +180,7 @@ $public = @(
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
     'Test-Net'
-    # 'Get-EnumInfo'
+    'Get-EnumInfo'
     'Format-FileSize'
     'Format-NullText'
     # 'ConvertTo-PropertyList'
@@ -287,7 +287,7 @@ $functionsToExport = @(
     'Format-TestConnection'
     'Get-ConsoleEncoding'
     'Get-Docs'
-    'Get-SciEnumInfo'
+    'Get-EnumInfo'
     # 'Get-EnumInfo'
     'Get-NinModule'
     'Invoke-IPython'
@@ -353,7 +353,7 @@ if ($true) {
 
     # class-explorer
     New-Alias -ea 'Ignore' 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
-    New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-SciEnumInfo'
+    New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-EnumInfo'
 
     $aliasesToExport = @(
         'H1'

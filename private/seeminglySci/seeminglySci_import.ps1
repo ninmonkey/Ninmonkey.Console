@@ -270,7 +270,7 @@ function Get-SciElementName {
     }
 }
 
-# function Get-SciEnumInfo {
+# function Get-EnumInfo {
 #     <#
 #     .description
 #         Displays name mappings to values
