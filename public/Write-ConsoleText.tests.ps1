@@ -1,13 +1,10 @@
+    # Import-Module Ninmonkey.console -Force
 BeforeAll {
-    Import-Module Ninmonkey.console -Force
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 
 }
 
 Describe 'Write-ConsoleText' -Tag 'ConvertTo' {
-    It 'something' {
-        $true | Should -Be $true
-    }
     It 'Text -Foreground as Hex Color #feaabb' {
         Write-ConsoleText 'foo' -fg '#feaabb'
         | ForEach-Object tostring
@@ -20,6 +17,16 @@ Describe 'Write-ConsoleText' -Tag 'ConvertTo' {
         | Should -Be $Expected -Because 'Ansi Escaped FG Color "blue"'
     }
 
+    Context 'Text with -Foreground' {
+        It 'Text -Foreground <expected> (<text> <fg>)' -ForEach @(
+            @{ Text = 'foo'; Fg = '#feaabb'; Expected = '[38;2;254;170;187mfoo[39m' }
+            @{ Text = 'foo'; Fg = 'blue'; Expected = '[38;2;0;0;255mfoo[39m' }
+
+        ) {
+            Write-ConsoleText -Object $Text -ForegroundColor $fg
+        }
+    }
+}
     #     It 'Joining Basic Text' {
     #         $expected = '
     # [38;2;254;170;187mfoo[39m
@@ -31,4 +38,3 @@ Describe 'Write-ConsoleText' -Tag 'ConvertTo' {
     #         ) | ForEach-Object tostring
     #         | Should -Be $expected -Because 'AnsiEscape merged by defaults'
     #     }
-}
