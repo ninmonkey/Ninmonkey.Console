@@ -1,4 +1,6 @@
-﻿function Get-EnumInfo {
+﻿using namespace System.Management.Automation
+
+function Get-EnumInfo {
     <#
     .description
         Displays name mappings to values

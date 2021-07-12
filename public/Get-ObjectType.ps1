@@ -196,13 +196,15 @@ function old_Get-ObjectType {
         if ($InputObject -is 'type') {
             $curTypeInfo = $InputObject
             $curTypeObj = $InputObject
-        } elseif ($InputObject -is [string]) {
+        }
+        elseif ($InputObject -is [string]) {
             $curTypeInfo = $InputObject -as [type]
             if ($null -eq $curTypeInfo) {
                 throw "Failed on typeName: '$curTypeInfo'"
             }
             $curTypeObj = $null
-        } else {
+        }
+        else {
             $curTypeInfo = $InputObject.GetType()
             $curTypeObj = $InputObject
         }
@@ -229,7 +231,7 @@ function old_Get-ObjectType {
             # foreach($item in $InputObject) {}
             $splat_JoinPSTypeName = @{
                 Separator    = "`n- "
-                OutputPrefix = "- "
+                OutputPrefix = '- '
                 Property     = { $curTypeObj.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
             }
 
@@ -309,11 +311,11 @@ if ($false) {
     H1 'mod'
     $items.mod | TypeOf
     H1 'sdf'
-    hr
+    Hr
     234, 'sdf' | TypeOf
-    hr
+    Hr
     TypeOf -InputObject 'dog' | Format-Table
-    hr
+    Hr
     TypeOf -InputObject 'dog' -Detail | Format-Table
 
     # # final
