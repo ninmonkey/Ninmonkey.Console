@@ -114,7 +114,7 @@ foreach ($file in $completer) {
 
 Export-ModuleMember -Function $completer
 
-$public = @(
+$public_toDotSource = @(
     # misc
     'ConvertTo-Timespan'
     'Invoke-Wget'
@@ -148,6 +148,10 @@ $public = @(
     'ConvertTo-Base64String'
     'ConvertTo-BitString'
     'ConvertTo-PropertyList'
+
+    # inspection
+    'Get-StaticProperty'
+
 
     # misc
     'Get-NinHelp'
@@ -205,7 +209,7 @@ $public = @(
 <#
     section: public
 #>
-foreach ($file in $public) {
+foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
     }
     else {
@@ -257,6 +261,9 @@ $functionsToExport = @(
     # history
     'Find-HelpFromHistory'
 
+
+    # inspection
+    'Get-StaticProperty'
 
     'Get-NinAlias'
     # 'Get-NinNewestItem'
@@ -402,12 +409,16 @@ if ($true) {
         ## seemingly sci
         'Default'
         'Convert'
+
         # 'NameOf'
         'Base64'
         'Hex'
         'Number'
         'Bits'
         'Format-HashTable'
+
+        # inspection
+        'StaticMemberProp' # <-- Get-StaticProperty
     )
     Export-ModuleMember -Alias $aliasesToExport
     if ($__Config.includeAliasesUnicode) {
