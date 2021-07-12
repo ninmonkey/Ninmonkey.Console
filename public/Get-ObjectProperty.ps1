@@ -200,7 +200,7 @@ function Get-ObjectProperty {
                         $curTypeInstance
                     )
                 }
-                $profile | Prop
+                # $profile | Prop
                 $meta = [ordered]@{
                     Type           = $abbr_TypeNameOfValue
                     # Type           = $curProp.TypeNameOfValue #| Format-TypeName @splat_FormatType
