@@ -20,6 +20,12 @@ if ( $ConfigTest.'write-color' ) {
     @(
         Write-ConsoleText -Object 'hi world' -ForegroundColor red
 
+        @(
+            Write-ConsoleText -Object 'blue' -ForegroundColor red
+
+        )
+
+
     ) | ForEach-Object ToString
     # # Write-ConsoleText -
     # @(

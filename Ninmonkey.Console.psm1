@@ -38,6 +38,7 @@ $psreadline_extensions = @(
 $private_seeminglySci = @(
     'seeminglySci_import'
     'NamespaceAwareCompletion'
+
     # 'Get-EnumInfo'
     # 'EncodingCompletion'
 )
@@ -63,6 +64,7 @@ foreach ($file in $private_seeminglySci) {
 $private = @(
     'Toast-LogTestNetResult'
     'pester/Test-PesterLinesAreEqual'
+    '_enumerateMyModule'
 )
 
 foreach ($file in $private) {
@@ -116,6 +118,8 @@ Export-ModuleMember -Function $completer
 
 $public_toDotSource = @(
     # misc
+    'Get-NinModule'
+    'Import-NinModule'
     'ConvertTo-Timespan'
     'Invoke-Wget'
     'Edit-GitConfig'
@@ -174,7 +178,7 @@ $public_toDotSource = @(
     'Get-Docs'
     'Test-UserIsAdmin'
     'Write-AnsiHyperlink'
-    'Get-NinModule'
+
     'Trace-NinCommand'
     'Format-Predent'
     'Sort-Hashtable'
@@ -220,6 +224,8 @@ foreach ($file in $public_toDotSource) {
 
 $functionsToExport = @(
     # misc
+    'Get-NinModule'
+    'Import-NinModule'
     'Import-NinPSReadLineKeyHandler'
     'ConvertTo-Timespan'
     'Get-NinHelp'
@@ -296,7 +302,7 @@ $functionsToExport = @(
     'Get-Docs'
     'Get-EnumInfo'
     # 'Get-EnumInfo'
-    'Get-NinModule'
+
     'Invoke-IPython'
     'Invoke-RipGrepChildItem'
     'Set-ConsoleEncoding'

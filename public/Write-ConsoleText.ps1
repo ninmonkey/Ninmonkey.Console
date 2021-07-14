@@ -5,6 +5,11 @@
     .description
         Optionally padding as with newlines
         Base function used by other commands like Write-ConsoleHeader, Write-ConsoleLabel
+
+        The verb 'write' may not be right, but I wanted to avoid a direct collision
+            with Pansies\Text and Pansies\New-Text
+    .example
+        Write-Text 'hi' -ForegroundColor green
     .example
 
         # Pansies Sep is an object
@@ -50,7 +55,11 @@
         # number of blank lines after Label
         [Parameter()]
         [Alias('After')]
-        [uint]$LinesAfter = 0
+        [uint]$LinesAfter = 0,
+
+        # Force coercion to string immediately
+        [Alias('Force')]
+        [Parameter()][switch]$AsString
 
         # # how deep, h1 to h6
         # [Parameter()]
@@ -62,24 +71,24 @@
         $Prefix = "`n" * $LinesBefore
         $Suffix = "`n" * $LinesAfter
 
+        # might use smart aliases here
         $Text_splat = $pscmdlet.MyInvocation.BoundParameters
 
-        # New-Text supports [object].
-        # Should I allow that here?
+        # Looks akward. I was planning for dynamic aliases
         [void]$Text_splat.remove( 'Object' )
         $Obj = $prefix, $Object, $Suffix -join ''
         [void]$Text_splat.add( 'Object', $Obj )
-
         [void]$Text_splat.Remove('LinesBefore')
         [void]$Text_splat.Remove('LinesAfter')
 
-
-
-        # 'TextSplat = {0}' -f $Text_splat
-        # "textSplat = $([pscustomobject]$Text_splat)"
-        # "textSplat = $([pscustomobject]$Text_splat)"
         $Text_splat | Format-Table | Out-String -Width 999 | Write-Debug
-        New-Text @Text_splat
+        $textObj = New-Text @Text_splat
+
+        if ($AsString) {
+            $textObj.ToString()
+            return
+        }
+        $textObj
     }
     end {}
 
