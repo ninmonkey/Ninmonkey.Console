@@ -1,4 +1,4 @@
-if ($false) {
+if ($True) {
     Import-Module Ninmonkey.Console -Force *>&1 | Out-Null
 }
 else {
@@ -17,8 +17,10 @@ $ConfigTest = @{
 
 if ( $ConfigTest.'write-color' ) {
     # Write-ConsoleText 'green' -fg green
+    @(
+        Write-ConsoleText -Object 'hi world' -ForegroundColor red
 
-
+    ) | ForEach-Object ToString
     # # Write-ConsoleText -
     # @(
     #     Write-ConsoleText 'green' -fg green

@@ -67,11 +67,13 @@ function Write-ConsoleHeader {
             $Name
         }
 
+        # todo: Label-Rewrite: refactor, should be calling a shared, non-field function
+        # for now fake it with empty
         $HeadingSplat = @{
             # Label           = $Name
-            InputObject     = $FinalName
+            InputObject     = ''
             Separator       = ''
-            Text            = ''
+            Label            = $FinalName
             ForegroundColor = $ForegroundColor
             BackgroundColor = $BackgroundColor
             LinesBefore     = $LinesBefore
