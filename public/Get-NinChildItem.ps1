@@ -1,24 +1,45 @@
 ﻿function Get-NinChildItem {
     <#
     .synopsis
-        Less output for a nicer console experience, with useful defaults
+        (NOT OPTIMIZED) Less output for a nicer console experience, with useful defaults
     .description
         Defaults to showing less output, with emphasis on important information.
-
     .notes
-    future todo:
-        - [ ] pipe to 'public\Format-NinChildItemDirectory.ps1'
+        future todo:
+            - [ ] soften / gradient files based on recency
+            # - [ ] count remaining instead of
+
+            - [ ] pipe to 'public\Format-NinChildItemDirectory.ps1'
     #>
     [Alias('nLs')]
+    [CmdletBinding(PositionalBinding = $false)]
     param (
         # Show all?
-        [Parameter()][switch]$All
+        [Parameter()][switch]$All,
+
+        # # Exclude Like-Patterns
+        # [Parameter()]
+        # [string[]]$ExcludeName,
+
+        # MaxFiles
+        [Parameter()]
+        [int]$MaxFiles = 7,
+
+        # MaxDirectories
+        [Parameter()]
+        [int]$MaxDirectories = 7,
+
+        # Path (NOT OPTIMIZED)
+        [Parameter(Position = 0)]
+        [string]$Path
     )
 
     begin {
         $Config = @{
-            MaxFiles       = [int32]10
-            MaxDirectories = [int32]10
+            MaxFiles              = $MaxFiles ?? 15
+            MaxDirectories        = $MaxFiles ?? 15
+            AlwaysIgnoreExtension = '.lnk'
+            AlwaysIgnoreDirNameLike      = '.git', '.env', '.venv', 'node_modules'
         }
 
 
@@ -52,6 +73,12 @@
 
     }
     process {
+
+        if (Test-Path $Path) {
+            # temp hack, because existing code assumed cwd
+            # code needs a clean rewrite from scratch
+            Push-Location $Path
+        }
         if ($All) {
             $Config.MaxFiles = [int32]::MaxValue
             $Config.MaxDirectories = [int32]::MaxValue
@@ -93,40 +120,57 @@
             # ) -join ''
         }
 
-        $dirList = Get-ChildItem @splatLs_Dirs
-        $fileList = Get-ChildItem @splatLs_Files
-
+        $dirList = Get-ChildItem @splatLs_Dirs | Where-Object {
+            $curFile = $_
+            $isKept = $true
+            $Config.AlwaysIgnoreDirNameLike | ForEach-Object {
+                if ($curFile.Name -like $_) {
+                    $isKept = $false
+                }
+            }
+            $isKept
+        }
+        $fileList = Get-ChildItem @splatLs_Files | Where-Object {
+            $_.Extension -notin $Config.AlwaysIgnoreExtension
+        }
+        $remaining_count = $dirList.Count - $Config.MaxDirectories
         $splatJoinString_Dir.OutputSuffix = @(
             New-Text -Object (
-                ' .. [ {0} Dirs ]' -f $dirList.Count
+                ' .. [ {0} more Dirs ]' -f @(
+                    $remaining_count  # this is counts after filter
+                )
             ) -ForegroundColor 'ffffff' #$ManualColors.BrightWhite
-
             "`n"
-
         ) | Join-String
 
+
+
+        $remaining_count_files =  $fileList.Count - $Config.MaxFiles
         $splatJoinString_File.OutputSuffix = @(
             New-Text -Object (
-                ' .. [ {0} Files ]' -f $fileList.Count
+                ' .. [ {0} more Files ]' -f @(
+                    $remaining_count_files # this is counts after filter
+                )
             ) -ForegroundColor 'ffffff' #$ManualColors.BrightWhite
 
             "`n"
 
         ) | Join-String
 
+        Pop-Location
 
     }
     end {
-        $splatSortNewest = @{
+        $splat_SortParam = @{
             Descending = $true
             Property   = 'LastWriteTime'
         }
         $sortedFiles = $fileList
-        | Sort-Object @splatSortNewest
+        | Sort-Object @splat_SortParam
         | Select-Object -First $Config.MaxFiles
 
         $sortedDirs = $dirList
-        | Sort-Object @splatSortNewest
+        | Sort-Object @splat_SortParam
         | Select-Object -First $Config.MaxDirectories
 
 
@@ -136,18 +180,7 @@
 
         $sortedFiles
         | Join-String @splatJoinString_File
-
-
-
-        # 'List' {
-        #     $sorted = $dirList | Sort-Object @splatSortNewest
-        #     $sorted | Join-String -sep "`n- " -Property Name -OutputPrefix "- "
-        #     break
-        # }
-
-
     }
-
-
-    # //System.IO.FileInfo
 }
+
+nls
