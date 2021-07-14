@@ -7,8 +7,11 @@
     .notes
         future todo:
             - [ ] soften / gradient files based on recency
-            # - [ ] count remaining instead of
-
+            - [ ] count remaining hidden instead of total found
+            - [ ] files of attribute == hidden are displayed faded/lighter (relative cur color)
+            - [ ] use '📁'
+            - [ ] based on filetype, change icon: '📄'
+                - [ ] optionally use icon
             - [ ] pipe to 'public\Format-NinChildItemDirectory.ps1'
     #>
     [Alias('nLs')]
@@ -133,11 +136,11 @@
         $fileList = Get-ChildItem @splatLs_Files | Where-Object {
             $_.Extension -notin $Config.AlwaysIgnoreExtension
         }
-        $remaining_count = $dirList.Count - $Config.MaxDirectories
+        # $remaining_count = $dirList.Count - $Config.MaxDirectories
         $splatJoinString_Dir.OutputSuffix = @(
             New-Text -Object (
-                ' .. [ {0} more Dirs ]' -f @(
-                    $remaining_count  # this is counts after filter
+                ' .. [ {0} Dirs ]' -f @(
+                    $dirList.count  # this is counts after filter
                 )
             ) -ForegroundColor 'ffffff' #$ManualColors.BrightWhite
             "`n"
@@ -145,11 +148,12 @@
 
 
 
-        $remaining_count_files =  $fileList.Count - $Config.MaxFiles
+        # $remaining_count_files =  $fileList.Count - $Config.MaxFiles
         $splatJoinString_File.OutputSuffix = @(
             New-Text -Object (
-                ' .. [ {0} more Files ]' -f @(
-                    $remaining_count_files # this is counts after filter
+                ' .. [ {0} Files ]' -f @(
+                    $fileList.count
+                    # $remaining_count_files # this is counts after filter
                 )
             ) -ForegroundColor 'ffffff' #$ManualColors.BrightWhite
 
