@@ -1,115 +1,223 @@
-﻿function Edit-FunctionSource {
+
+function Get-NinModule {
     <#
     .synopsis
-        open script that declares funnction
+        Get-module all my modules, one easy command.
     .description
-        currently only opens .ps1 scripts.
-        see [Indented] for automatically viewing assemblies
-    .notes
-        .
-    .example
-        PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
-        PS> Alias 'Br' | Edit-FunctionSource
-        PS> 'Br', 'ls' | Edit-FunctionSource
+
+    .outputs
+    .link
+        Get-NinCommand
+    .link
+        Get-NinCommandSyntax
+
     #>
-
-    # Function Name
+    [CmdletBinding(PositionalBinding = $false)]
     param(
-        # Function or Alias name
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string]$FunctionName,
+        # List of modules groups
+        [ValidateSet('Mine', 'Fav', 'Util', 'Native')]
+        [Parameter(Position = 0)]
+        [string[]]$GroupNames = 'Mine'
+    )
 
-        # Return paths only
+    begin {
+        [hashtable]$groupDict = @{}
+
+        $groupDict['Mine'] = _enumerateMyModules
+
+        $groupDict['Fav'] = @(
+            'ClassExplorer'
+            'Pansies'
+            'posh-git'
+            'PSFzf'
+            'PSReadLine'
+        ) | Sort-Object -Unique
+
+        $groupDict['Util'] = @(
+            'ClassExplorer'
+            'Configuration'
+            'posh-git'
+            'PSFzf'
+            'Pansies'
+            'PSReadLine'
+            'PSScriptTools'
+            'chocolateyProfile'
+        ) | Sort-Object -Unique
+    }
+    process {
+        $keyNames = $groupDict.Keys | Where-Object { $_ -in $moduleNames }
+        $selectedModules = $groupDict.GetEnumerator() | Where-Object { $_.Key -in $moduleNames }
+        | ForEach-Object Value | Sort-Object -Unique
+
+        $selectedModules | Join-String -sep ', ' -SingleQuote  -op 'SelectedModules: '
+        | Write-Debug
+
+        $selectedModules ??= $groupDict['Mine']
+        Get-Module -Name $selectedModules
+        | Sort-Object -Unique Name
+
+    }
+    end {}
+}
+
+<#
+# todo: filter when multiple modules have the same names
+# to force the newest version of the same module:
+Get-Module pester -ListAvailable
+| Sort-Object -Property Version -Descending | Sort-Object -Unique -Property Name
+| Format-Table Name, Version
+
+#>
+
+# Write-Warning 'these actually module wide scoped at run time: Ex: Get-NinModule.ps1'
+# $SortBy = @{}
+
+# $SortBy.ModuleName_CommandName = @(
+#     @{ e = 'Module'; Descending = $False }
+#     @{ e = 'Command'; Descending = $False }
+# )
+# $SortBy_Module_Command = $SortBy.ModuleName_CommandName
+
+
+
+function _FormatExportedCommands {
+    <#
+    .synopsis
+    should be cleaned up/refactored
+    #>
+    param(
+        # Input object
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [ValidateNotNull()]
+        [psmoduleinfo[]]$ModuleInfo
+    )
+
+    process {
+        $sort_CommandOrder = @{ # default sort order if converted to custom type
+            Property = (
+                @{Expression = 'Module'; Descending = $false },
+                @{Expression = 'Command'; Descending = $false }
+            )
+        }
+
+        $ModuleInfo | ForEach-Object {
+            $CurModuleInfo = $_
+            foreach ($Command in $CurModuleInfo.ExportedCommands.Values) {
+                [pscustomobject]@{
+                    Module      = $CurModuleInfo.Name
+                    Command     = $Command
+                    CommandType = $Command.CommandType
+                    Version     = $Command.Version
+                    Source      = $Command.Source
+                    Name        = $Command.Name
+                    FullName    = $Command.Source, $Command.Name -join '\'
+                }
+                $x = 3
+            }
+        }
+        | Sort-Object @sort_CommandOrder
+        #| Sort-Object -Property $SortBy.ModuleName_CommandName
+    }
+
+    # end {}
+}
+
+#  tests
+# _FormatExportedCommands (Get-Module 'Ninmonkey.Console' -ListAvailable )
+$ft_ExportedCommands = @{
+    GroupBy  = 'Module'
+    Property = 'Command'
+}
+
+_FormatExportedCommands (Get-Module 'Ninmonkey.*' -ListAvailable )
+| Format-Table -Wrap -AutoSize
+# | Format-Table *
+# | Format-Table @ft_ExportedCommands
+
+function Get-NinModule {
+    param(
+        # Module name
+        [Parameter(Position = 0)]
+        [string[]]$Name,
+
+        # Output mode
+        # later it might make sense to maek this [string[]]
+        # if they are not exclusive
+        [Parameter(Position = 1)]
+        [ValidateSet('Commands', 'Summary', 'Uri', 'All')]
+        [string]$OutputMode = 'Summary',
+
+        # return an object
         [Parameter()][switch]$PassThru
     )
 
-    Process {
-        $maybeFunc = $FunctionName
-        $functionQuery = $FunctionName | ForEach-Object {
-            $isAlias = (Get-Command $maybeFunc -ea SilentlyContinue).CommandType -eq 'alias'
-            if ($isAlias) {
-                $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
-                $resolvedAlias
+    begin {
+        $Prop = @{}
+        # Sorting here only guarantees order when not using wildcards
+        $Prop.SummaryList = 'Name', 'Description', 'Version', 'ModuleType', 'Author', 'Path', 'ImplementingAssembly', 'HelpInfoUri', 'ModuleBase', 'Tags', 'ProjectUri'
+        | Sort-Object
+        $Prop.SummaryTable = 'Name', 'Description', 'Version', 'Author', 'Tags', 'ProjectUri'
+        | Sort-Object
+        $Prop.UriList = '*Uri*'
+        | Sort-Object
+    }
+
+
+
+    process {
+        $ModuleInfo = Get-Module #-Name:$Name   #$Name #-ListAvailable
+        | Sort-Object Name
+
+        Switch ($OutputMode) {
+            'Commands' {
+                $result = _FormatExportedCommands $ModuleInfo
+                # | Select-Object -Property Command
+                | Join-String -sep "`n" {
+                    @(
+                        #>                        'dsfds'
+                    )
+                }
+                $result
+                break
             }
-            else {
-                Get-Command $FunctionName -ea SilentlyContinue
+            'Uri' {
+                $result = $ModuleInfo | Select-Object -Property $Prop.UriList
+                $result
+                break
             }
-        }
-
-        # $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
-        Write-ConsoleLabel 'Matches: ' $functionQuery.count | Write-Information
-
-        if (! $functionQuery ) {
-            Write-Error "FunctionNotFound: No matches for query: '$FunctionName'"
-            return
-        }
-
-        $numResults = $functionQuery.count
-        if ($numResults -le 3) {
-            $autoOpen = $true
-        }
-        if ($PassThru) {
-            $autoOpen = $false
-        }
-        # Get-ChildItem function
-        $functionQuery | ForEach-Object {
-            $curCommand = $_
-            $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
-            $Path = $meta.File | Get-Item -ea continue
-            # $StartLine = $curCommand.ScriptBlock.Ast.Extent.StartLineNumber
-            # $StartCol = $curCommand.ScriptBlock.Ast.Extent.StartColumnNumber
-            # $EndLine = $curCommand.ScriptBlock.Ast.Extent.EndLineNumber
-            # $EndCol = $curCommand.ScriptBlock.Ast.Extent.EndLineNumber
-            if ($Path) {
-                $meta | ConvertTo-Json | Write-Debug
+            'Summary' {
+                # 'LicenseUri'
+                $result = $ModuleInfo | Select-Object -Property $Prop.SummaryTable
                 if ($PassThru) {
-                    $Path | Write-Information
-                    return
+                    $result
                 }
 
-                if ($autoOpen) {
-                    Write-Debug "code '$Path'"
-                    code (Get-Item -ea stop $Path)
-                }
-                else {
-                    '<', $Path, '>' -join ''
-                }
+                # removed -passthrough because: format-table does not fit some/all packages#
+                # $result | Format-Table -Wrap -AutoSize
+                break
+
             }
-            else {
-                Write-Error "shouldNeverReachException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly"
-                return # continues
-
+            default {
+                $ModuleInfo
+                break
             }
         }
     }
     end {
-        # Write-Verbose 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
+        Write-Warning 'WIP'
     }
+
 }
+<#
+visual tests:
 
-if ($TempDebugTest) {
-    $q = Edit-FunctionSource lsFd -InformationAction continue -ea break
+if ($false) {
+    # Import-Module Ninmonkey.Console -Force
+    Get-NinModule pansies Uri
+    | Format-List
+
+    $x = (Get-NinModule pansies Uri  -PassThru)
+    $x | Sort-Object
+    | Format-List *
 }
-# Edit-FunctionSource Edit-FunctionSource -Verbose -InformationAction Continue -Debug
-
-# Edit-FunctionSource 'Write-Conso'
-if ($TempDebugTest) {
-    # Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes'
-
-    H1 'test1: as param'
-    Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes1' -PassThru
-
-    H1 'test2: as pipe'$FuncSourceRes | Join-String -SingleQuote -sep ', ' Name
-    'ls', 'hr', 'Write-ConsoleHeader', 'Find-Type'
-    | Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes2' -PassThru
-
-    H1 'Test Results:'
-    $FuncSourceRes1 | Join-String -SingleQuote -sep ', ' Name -OutputPrefix 'As Param = '
-    $FuncSourceRes2 | Join-String -SingleQuote -sep ', ' Name -OutputPrefix 'As Pipe = '
-    # $res[0]
-    # Edit-FunctionSource 'Write-ConsoleLabefl'
-    # Edit-FunctionSource 'hr'
-    'Write-ConsoleLabel' | Edit-FunctionSource -PassThru
-    'Label' | Edit-FunctionSource -PassThru
-    'label', 'fm', 'goto' | Edit-FunctionSource -PassThru
-}
+#>
