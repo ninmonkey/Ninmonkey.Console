@@ -1,10 +1,16 @@
-﻿<# init
+﻿using namespace System.Collections.Generic
+<# init
     todo: better config system, than copying my profile
 #>
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
 7FB2C1'
-Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
+try {
+    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
+}
+catch {
+    Write-Error "PSReadline: Missing function 'ShowCommandHelp'"
+}
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
 }

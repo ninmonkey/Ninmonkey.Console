@@ -4,8 +4,12 @@ function Get-NinModule {
     .synopsis
         Get-module all my modules, one easy command.
     .description
-
+        todo: wip:
     .outputs
+    .link
+        Import-NinModule
+    .link
+        Get-NinAlias
     .link
         Get-NinCommand
     .link

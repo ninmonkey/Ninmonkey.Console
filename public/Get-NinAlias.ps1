@@ -7,6 +7,9 @@ function Get-NinAlias {
     .synopsis
         quickly find aliases declared from a list of modules
     .description
+        todo: rewrite docs
+
+
         PS> Get-NinAlias Microsoft.PowerShell.Management
 
             CommandType Name                    Version Source
@@ -20,22 +23,8 @@ function Get-NinAlias {
     .example
         PS> Get-NinAlias 'Ninmonkey' # will find partial matches
     .example
-        # Show modules that contain any aliases
         PS> Get-NinAlias -List
 
-            Count Name
-            ----- ----
-            138
-            44 PSScriptTools
-            28 Ninmonkey.Console
-            12 Dev.Nin
-            5 Microsoft.PowerShell.Management
-            3 Configuration
-            2 Pansies
-            1 chocolateyProfile
-            1 EditorServicesCommandSuite
-            1 Microsoft.PowerShell.Utility
-            1 PowerShellEditorServices.Commands
     .notes
 
     future:
@@ -55,12 +44,23 @@ function Get-NinAlias {
 
         # List current modules with aliases
         [Parameter(ParameterSetName = 'ListOnly')]
-        [switch]$List
+        [switch]$List,
+
+        # FOrce
+        [Parameter(Mandatory, Position = 0)]
+        [object]$ParameterName
     )
     begin {
 
     }
     process {
+        $meta = @{
+            MyModule = @()
+            NoSource = Get-Alias * | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source  ) }
+        }
+        $myModuleNames = _enumerateMyModules
+        $noModuleAlias = Get-Alias | Group-Object Source -NoElement | Where-Object { [string]::IsNullOrWhiteSpace( $_.Name ) } | Sort-Object Name
+        $modules_noSource = Get-Alias | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source ) }
         if ($list) {
             _listModulesWithAlias
             return
@@ -77,7 +77,11 @@ function Get-NinAlias {
     end {}
 }
 
+
 if ($DebugTestMode) {
+    $AliasZ = Get-NinAlias *
+}
+if ($false -and $DebugTestMode) {
     Get-Alias * | Where-Object Source -Match 'Ninmonkey.Console'
     | Measure-Object
 
