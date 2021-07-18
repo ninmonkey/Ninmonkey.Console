@@ -3,16 +3,32 @@ function ConvertTo-Timespan {
     <#
     .synopsis
         converts fuzzy dates to a [datetime]
+    .description
+        minimal error detection.
+        future:
+            decent deterministic error dectection is
+                1] attempt to grab matches in the orignal string:
+                    "[day]? [hour]? [minute]? [second]?"
+                2] strip those matches from the original string
+                3] if orignal string.length > 0,
+                    throw error
+
+            that covers the majority of error cases,
+            without complex logic or edge cases
+
     .example
         1d3h4s -> #duration(1, 3, 4)'
     .outputs
         [timespan] or null
     .notes
-        better verb? better name, timespan?
-        ConvertTo ?
+        futrue:
+        - [ ] better verb?
+            better name, timespan? ConvertTo ?
+            'New-RelativeTimespan' or 'ConvertTo-Timespan' ?
+
     #>
     [cmdletbinding()]
-    [Alias('RelativeTs')]
+    [Alias('RelativeTs')] # 'New-RelativeTimespan' ?
     param(
         # relative string, ex: 1d3h4s
         [Parameter(Position = 0, Mandatory)]
@@ -65,11 +81,7 @@ function ConvertTo-Timespan {
         }
         catch {
             Write-Error "Failed parsing string '$RelativeText'"
-
             # throw [System.MissingFieldException]::new('Could not access field', $_.Exception)
         }
     }
 }
-
-# ConvertTo-Timespan '3asf'
-# ConvertTo-Timespan '3h1ms'

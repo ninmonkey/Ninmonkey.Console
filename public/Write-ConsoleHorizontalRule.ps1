@@ -10,19 +10,22 @@ function Write-ConsoleHorizontalRule {
 
     #>
     [alias('Hr')]
+    [cmdletbinding(PositionalBinding = $false
+        #,  DefaultParameterSetName = 'NoPipelineInput'
+    )]
     param(
         # Number of lines to pad
-        [Parameter()]
+        [Parameter(Position = 0)]
         [int]$ExtraLines = 0,
 
-        
+
         # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
         [Parameter()]
         [alias('Fg')]
         [PoshCode.Pansies.RgbColor]$ForegroundColor = 'gray60'
-        
+
         # # disable color
-        # [Parameter()][switch]$NoColor, 
+        # [Parameter()][switch]$NoColor,
         # # number of blank lines before Label
         # [Parameter()]
         # [Alias('Before')]
@@ -34,34 +37,38 @@ function Write-ConsoleHorizontalRule {
         # [uint]$LinesAfter = 0,
     )
     # $suffix = $prefix = "`n" * $ExtraLines
+    begin {}
+    process {
+        $w = $host.ui.RawUI.WindowSize.Width
+        $chars = '-' * $w -join ''
+        $padding = "`n" * $ExtraLines
 
+        $output = @(
+            $padding, $chars, $padding
+        ) -join ''
 
-    $w = $host.ui.RawUI.WindowSize.Width
-    $chars = '-' * $w -join ''
-    $padding = "`n" * $ExtraLines
-
-    $output = @(
-        $padding, $chars, $padding
-    ) -join ''
-
-    if ($NoColor) {
-        $output
+        if ($NoColor) {
+            $output
+        }
+        else {
+            New-Text $output -fg $ForegroundColor
+            | ForEach-Object ToString # Do I want to force string here?
+        }
     }
-    else {
-        New-Text $output -fg $ForegroundColor | ForEach-Object ToString
-    }
-
-    # & {
-    #     $w = $host.ui.RawUI.WindowSize.Width
-    #     $chars = '-' * $w -join ''
-    #     if ($ExtraLines -gt 0) {
-    #         @("`n" * $ExtraLines), $chars, ("`n" * $ExtraLines) -join ''
-    #     }
-    #     else {
-    #         $chars
-    #     }
-    # } | New-Text -fg 'gray50' | ForEach-Object tostring
+    end {}
 }
+
+
+# & {
+#     $w = $host.ui.RawUI.WindowSize.Width
+#     $chars = '-' * $w -join ''
+#     if ($ExtraLines -gt 0) {
+#         @("`n" * $ExtraLines), $chars, ("`n" * $ExtraLines) -join ''
+#     }
+#     else {
+#         $chars
+#     }
+# } | New-Text -fg 'gray50' | ForEach-Object tostring
 
 # New-Alias 'Label' -Value 'Write-NinLabel' -Description 'visual break using colors' -ErrorAction Ignore
 

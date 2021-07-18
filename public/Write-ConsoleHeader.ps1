@@ -73,7 +73,7 @@ function Write-ConsoleHeader {
             # Label           = $Name
             InputObject     = ''
             Separator       = ''
-            Label            = $FinalName
+            Label           = $FinalName
             ForegroundColor = $ForegroundColor
             BackgroundColor = $BackgroundColor
             LinesBefore     = $LinesBefore
@@ -85,3 +85,5 @@ function Write-ConsoleHeader {
     end {}
 
 }
+
+Write-Warning 'Label-Rewrite: refactor, should be calling a shared, non-field function'

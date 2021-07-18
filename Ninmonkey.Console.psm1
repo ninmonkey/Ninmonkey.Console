@@ -68,9 +68,9 @@ foreach ($file in $private_seeminglySci) {
     section: Private
 #>
 $private = @(
+    '_enumerateMyModule'
     'Toast-LogTestNetResult'
     'pester/Test-PesterLinesAreEqual'
-    '_enumerateMyModule'
 )
 
 foreach ($file in $private) {

@@ -18,6 +18,7 @@ function Get-NinCommand {
     )
 
     begin {
+        Write-Warning 'kinda nyi / needs refactor. finds non-nin commands'
         $userFavModules = @(
             'ClassExplorer'
             'Dev.Nin'

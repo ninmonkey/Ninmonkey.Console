@@ -187,4 +187,6 @@
     }
 }
 
-nls
+if ($debug) {
+    nls
+}

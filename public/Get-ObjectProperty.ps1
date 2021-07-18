@@ -95,7 +95,9 @@ function Get-ObjectProperty {
                         [␀] Description
                         [␀] Product
                     String __NounName           Process
-
+    .example
+        ,(1..4) | prop -IncludeTypeTitle
+        1..4 | prop -IncludeTypeTitle
     #>
     [cmdletbinding(PositionalBinding = $false)]
     [Alias('Prop')]
@@ -110,7 +112,11 @@ function Get-ObjectProperty {
         # max number of input-objects
         [alias('Max')]
         [Parameter()]
-        [int]$Limit # Sci said that type has unecessary casts/additional coercion
+        [int]$Limit, # Sci said that [uint] type has unecessary casts/additional coercion,
+
+        # TypeName of the InputObject you are enumerating
+        [Alias('TitleHeader')]
+        [Parameter()][switch]$IncludeTypeTitle
     )
 
     begin {
@@ -171,6 +177,11 @@ function Get-ObjectProperty {
         $inputList
         | ForEach-Object {
             $curObject = $_
+
+            if ($IncludeTypeTitle) {
+                $curObject.GetType() | Format-TypeName -Brackets | Join-String -op  "`nTypeName: "
+                # | Label 'TypeName' # todo: once label is fixed
+            }
             Write-Debug "Object: $($_.GetType().FullName)"
             $curObject.psobject.properties.count | Label '.properties count' | Write-Debug
             $curObject.psobject.properties | ForEach-Object {
@@ -183,7 +194,7 @@ function Get-ObjectProperty {
                     $DisplayedValueType = $Config.SymbolNull
                 }
                 else {
-                    $DisplayedValueType = $curProp.Value.GetType()  | Format-TypeName @splat_FormatType
+                    $DisplayedValueType = $curProp.Value.GetType() | Format-TypeName @splat_FormatType
                 }
 
                 $abbr_TypeNameOfValue = $curProp.TypeNameOfValue -as 'type' | Format-TypeName # temp hack until refactor of Format-TypeName
@@ -237,4 +248,3 @@ function Get-ObjectProperty {
         #>
     }
 }
-
