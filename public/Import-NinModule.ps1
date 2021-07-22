@@ -26,5 +26,7 @@ function Import-NinModule {
         Import-Module -Name $ModuleNames -Force -ea SilentlyContinue
 
     }
-    end {}
+    end {
+        write-warning 'the problem reloading scoping, not enumerating'
+    }
 }
