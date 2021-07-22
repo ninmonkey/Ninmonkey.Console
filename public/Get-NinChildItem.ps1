@@ -1,11 +1,38 @@
-﻿function Get-NinChildItem {
+﻿
+function Get-NinChildItem {
     <#
     .synopsis
         (NOT OPTIMIZED) Less output for a nicer console experience, with useful defaults
     .description
         Defaults to showing less output, with emphasis on important information.
+        One I real format types, benchmark it
     .notes
         future todo:
+            - [ ] relative separator
+                - [ ] FormatMode: Inline / basic:
+                    📄 Dev.Nin.psm1 -- 📄 TestExplorerResults.xml -- 📄 Todo.AggressiveAliasesForRepl.md -- 📄 todo.snippets.md
+
+                - [ ] FormatMode: Time:
+                        [today] 📄 Dev.Nin.psm1 -- 📄 TestExplorerResults.xml - [this week] - 📄 Todo.AggressiveAliasesForRepl.md -[this month]- 📄 todo.snippets.md
+
+                    - [ ] or
+                        [today]
+                            📄 Dev.Nin.psm1 -- 📄 TestExplorerResults.xml
+                        [this week]
+                            📄 Todo.AggressiveAliasesForRepl.md
+                        [this month] ... [5 files]
+
+                    - [ ] or regular LS
+                        [today]
+                            📄 Dev.Nin.psm1
+                            📄 TestExplorerResults.xml
+                        [this week]
+                            📄 Todo.AggressiveAliasesForRepl.md
+                        [this month]
+                            ... [5 files]
+
+
+            - [ ] relative separator
             - [ ] soften / gradient files based on recency
             - [ ] count remaining hidden instead of total found
             - [ ] files of attribute == hidden are displayed faded/lighter (relative cur color)
@@ -39,10 +66,10 @@
 
     begin {
         $Config = @{
-            MaxFiles              = $MaxFiles ?? 15
-            MaxDirectories        = $MaxFiles ?? 15
-            AlwaysIgnoreExtension = '.lnk'
-            AlwaysIgnoreDirNameLike      = '.git', '.env', '.venv', 'node_modules'
+            MaxFiles                = $MaxFiles ?? 15
+            MaxDirectories          = $MaxFiles ?? 15
+            AlwaysIgnoreExtension   = '.lnk'
+            AlwaysIgnoreDirNameLike = '.git', '.env', '.venv', 'node_modules'
         }
 
 
@@ -122,6 +149,13 @@
             #     "`n"
             # ) -join ''
         }
+        $sb_RenderFilename = {
+            '📄', $_.Name -join ' '
+        }
+
+        if ($true) {
+            $splatJoinString_File.Property = $sb_RenderFilename
+        }
 
         $dirList = Get-ChildItem @splatLs_Dirs | Where-Object {
             $curFile = $_
@@ -172,6 +206,7 @@
         $sortedFiles = $fileList
         | Sort-Object @splat_SortParam
         | Select-Object -First $Config.MaxFiles
+        # | Join-String -Property Name -sep '    ;  '
 
         $sortedDirs = $dirList
         | Sort-Object @splat_SortParam
