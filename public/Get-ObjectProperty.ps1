@@ -110,13 +110,13 @@ function Get-ObjectProperty {
         [Parameter()][switch]$Detailed,
 
         # max number of input-objects
-        [alias('Max')]
+        [alias('Limit')]
         [Parameter()]
-        [int]$Limit, # Sci said that [uint] type has unecessary casts/additional coercion,
+        [int]$MaxItem, # Sci said that [uint] type has unecessary casts/additional coercion,
 
         # TypeName of the InputObject you are enumerating
         [Alias('TitleHeader')]
-        [Parameter()][switch]$IncludeTypeTitle
+        [Parameter()][switch]$IncludeTypeTitle = $true
     )
 
     begin {
@@ -150,7 +150,7 @@ function Get-ObjectProperty {
             IgnorePrefix = 'System.Xml'
             # NoBrackets   = $false
         }
-        $_curInputCount = 1
+        $_curInputCount = 0
 
         $Config = @{
             SymbolNull = "[`u{2400}]" # [Null]
@@ -158,15 +158,12 @@ function Get-ObjectProperty {
         $inputList = [list[object]]::new()
     }
     process {
-        $_curInputCount++
-        if ($Limit -and ($_curInputCount -gt $Limit)) {
-            # maybe I can halt the pipeline, is it processing extra?
-            # It's timing out somewhere.
+        if ($null -ne $MaxItem) {
+            $_curInputCount++
+            if ($_curInputCount -gt $MaxItem) {
+                return
+            }
 
-
-            # Oh, I wonder if  Write-Label $null, is throwing an exception
-            # causing it to stall ?
-            return
         }
         $inputList.Add( $InputObject )
     }

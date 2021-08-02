@@ -76,6 +76,13 @@
                 "cwd": "${workspaceFolder}"
             },
             {
+                "name": "🐜 Test basic Import",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/test/test_basic_import.ps1",
+                "cwd": "${workspaceFolder}"
+            },
+            {
                 "name": "<temprun-write-color>.ps1",
                 "type": "PowerShell",
                 "request": "launch",

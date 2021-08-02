@@ -43,14 +43,19 @@
 
     }
     process {
+        Write-Error 'rewrite from scratch'
         $typeList.Add( $InputObject )
     }
     end {
+        Write-Error 'rewrite from scratch'
         # $
 
         switch ($Format) {
 
             'GetType' {
+                if ($Null -eq $curObject) {
+                    Write-Error "`$CurObject is $null"
+                }
                 $typeInstance = $curObject.GetType()
                 if ($PassThru) {
                     $typeInstance
@@ -129,6 +134,7 @@ function old_Get-ObjectType {
         "
         #>
     # [Alias('TypeOf')]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # InputObject[s] to get type[s] of
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -232,7 +238,7 @@ function old_Get-ObjectType {
             $splat_JoinPSTypeName = @{
                 Separator    = "`n- "
                 OutputPrefix = '- '
-                Property     = { $curTypeObj.PSTypeNames | Format-TypeName -WithBrackets |  Join-String -sep ', ' }
+                Property     = { $curTypeObj.PSTypeNames | Format-TypeName -WithBrackets | Join-String -sep ', ' }
             }
 
             $InputObject | Join-String @splat_JoinPSTypeName

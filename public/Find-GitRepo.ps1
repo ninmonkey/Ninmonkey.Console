@@ -7,10 +7,15 @@ function Find-GitRepo {
         or should it be named like get-childitem?
         future:
             a custom attribute for (filepath must exist) vs (filepath optionally exists) logic?
+
+        future
+            - [ ] return record with a custom view?
+
     .example
-        PS> LsGit
+        PS> Find-GitRepo ~/documents/2021
     .example
         PS> LsGit 'c:\' -Depth 1
+        | out-fzf | Goto
 
     #>
     [Alias('LsGit')]
@@ -21,7 +26,10 @@ function Find-GitRepo {
 
         # Max depth
         [parameter(Position = 1)]
-        [uint]$Depth
+        [uint]$Depth,
+
+        # Max depth
+        [parameter()][switch]$Detailed
     )
 
     $RootPath = Get-Item -ea stop $Path
@@ -37,22 +45,25 @@ function Find-GitRepo {
         $split_gciRepo['Depth'] = $Depth
     }
 
-    Get-ChildItem @split_gciRepo -ov 'cache' | ForEach-Object Parent
+    $dirs = Get-ChildItem @split_gciRepo
+    # | Where-Object '.git'
+    | ForEach-Object Parent
+    | Sort-Object LastWriteTime -Descending
 
-    Write-Warning '
-    ask
-        1] why does path "c:" and "c:\" give different results
-        2] why does filter allow broken on ".git", dot should not allow the match
-        3] ***solution** just compare "name" -eq ".git" for a working hack, not worth filter.
-    '
-}
+    if (!$Detailed) {
+        $dirs
+        return
+    }
 
-
-if ($false) {
-    Find-GitRepo 'C:' -Depth 2
-    h1 '..\..'
-    Find-GitRepo '..\..'
-    h1 'c:\'
-    Find-GitRepo 'C:'
-    # | Join-Path -ChildPath '.git' #| ? Test-Path
+    $dirs | ForEach-Object {
+        $meta = @{
+            Name          = $_.Name
+            Parent        = $_.Parent.Name
+            FullName      = $_ # .FullName
+            LastWriteTime = $_.LastWriteTime
+            CreationTime  = $_.CreationTime
+            # "OtherInfoFrom"  = 'Git-Posh'
+        }
+        [pscustomobject]$meta
+    }
 }
