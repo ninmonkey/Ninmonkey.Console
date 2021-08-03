@@ -45,7 +45,7 @@ try {
         # run completers.
 
         # optionally add autocomplete for 'ripgrep',
-        $PathBin.GetEnumerator() | ForEach-Object {
+        $PathCompleter.GetEnumerator() | ForEach-Object {
             Write-Debug "[v] completer ⟹ loading: $($_.Key)" #//⟹
             try {
                 . $_.Value

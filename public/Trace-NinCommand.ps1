@@ -122,7 +122,7 @@
 
         #     }
         # }
-    }  | Set-Content -Path $Paths.ExportFilter
+    } | Set-Content -Path $Paths.ExportFilter
 
     if (! $Silent ) {
         if (! $NoColor) {
@@ -132,7 +132,8 @@
             | ForEach-Object { $_ -replace $RegexQuote, "''" }
             | pygmentize.exe -l ps1
 
-        } else {
+        }
+        else {
             Get-Content $Paths.ExportFilter
         }
     }
@@ -144,7 +145,7 @@
     }
 
 
-    Write-Information "Wrote to files: "
+    Write-Information 'Wrote to files: '
     Write-Information $Paths.ExportPath.FullName
     Write-Information $Paths.ExportFilter.FullName
 

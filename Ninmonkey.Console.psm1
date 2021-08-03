@@ -102,38 +102,6 @@ foreach ($file in $public_NativeWrapper) {
 
 Export-ModuleMember -Function $public_NativeWrapper
 
-& {
-    Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
-    $Src = Join-Path $psscriptroot 'public\completer\Completer-Loader.ps1' | Get-Item -ea Continue
-    if ($Src) {
-        . $Src
-    }
-    # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
-    # public\completer\Completer-Loader.ps1
-    # "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
-    # . $Src
-} |
-
-<#
-    section: Completers
-#>
-# $completer = @(
-#     'Completer-dotnet'
-#     'Completer-RipGrep'
-#     'Completer-gh'
-# )
-
-# foreach ($file in $completer) {
-#     if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
-#     }
-#     else {
-#         Write-Error "Import: failed: completer: $File"
-#     }
-#     . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
-# }
-
-Export-ModuleMember -Function $completer
-
 $public_toDotSource = @(
     # misc
     'Get-NinModule'
@@ -456,3 +424,17 @@ if ($true) {
 
 }
 # Import-Module Ninmonkey.Console -Force -ea Break
+
+
+& {
+    Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
+    $Src = Join-Path $psscriptroot 'public\completer\Completer-Loader.ps1'
+    | Get-Item -ea ignore
+    if ($Src) {
+        . $Src
+    }
+    # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
+    # public\completer\Completer-Loader.ps1
+    # "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
+    # . $Src
+}
