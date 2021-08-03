@@ -422,20 +422,23 @@ if ($true) {
 
 
 }
-# Import-Module Ninmonkey.Console -Force -ea Break
-
 
 # & {
-#     Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
-#     $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
-#     if ($Src) {
-#         . $Src
-#     }
-#     else {
-#         Write-Error '[v] root ⟹ ShouldNeverFailPath'
-#     }
-#     # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
-#     # public\completer\Completer-Loader.ps1
-#     # "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
-#     # . $Src
+if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
+    Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
+}
+else {
+    Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
+    $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
+    if ($Src) {
+        . $Src
+    }
+    else {
+        Write-Error '[v] root ⟹ ShouldNeverFailPath'
+    }
+}
+# # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
+# public\completer\Completer-Loader.ps1
+# "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
+# . $Src
 # }
