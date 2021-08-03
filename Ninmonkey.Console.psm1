@@ -426,18 +426,32 @@ if ($true) {
 }
 
 # & {
+$FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1')
+. $FileName
+
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
 }
 else {
-    Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
-    $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
-    if ($Src) {
-        . $Src
+
+    $curSplat = @{
+        # Verbose = -Verbose
+        # Debug   = -Debug
+        # infa    = 'Continue'
+        # ea      = 'Continue'
     }
-    else {
-        Write-Error '[v] root ⟹ ShouldNeverFailPath'
-    }
+
+    Build-CustomCompleter @curSplat
+    Import-CustomCompleter @curSplat
+    Import-GeneratedCompleter @curSplat
+    # Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
+    # $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
+    # if ($Src) {
+    #     . $Src
+    # }
+    # else {
+    #     Write-Error '[v] root ⟹ ShouldNeverFailPath'
+    # }
 }
 # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
 # public\completer\Completer-Loader.ps1

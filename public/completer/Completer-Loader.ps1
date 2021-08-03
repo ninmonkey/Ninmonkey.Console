@@ -1,11 +1,29 @@
-﻿$CompleterPath = @{
+﻿# This is the entry point for auto completers
+$CompleterPath = @{
     # todo: convert to module loader with metadata
     'gh'     = '~/.ninmonkey/completers/gh.ps1'
     'rg'     = '~/.ninmonkey/completers/rg.ps1'
-    'dotnet' = '~/.ninmonkey/completers/dotnet.ps1'
+    # 'dotnet' = '~/.ninmonkey/completers/dotnet.ps1' # there is no automatic one
     'rustup' = '~/.ninmonkey/completers/rustup.ps1'
 }
-function _completer-Generate {
+function Build-CustomCompleter {
+    <#
+    .synopsis
+        internal. This Imports native commands that have powershell completers
+    .description
+        Generate (maybe cached)
+    .example
+        PS> Build-CustomCompleter
+    .link
+        Import-CustomCompleter
+    .link
+        Import-GeneratedCompleter
+
+    #>
+
+    [cmdletbinding()]
+    param()
+    # internal use
     # try {
     # run cached generated ones?
 
@@ -22,15 +40,17 @@ function _completer-Generate {
     }
     if (Get-NativeCommand -TestAny 'rustup') {
         Write-Debug '[v] completer ⟹ generate: rustup' #//⟹
-        & rustup @(
+        Invoke-NativeCommand -ea stop 'rustup' -ArgumentList @(
             'completions'
             'powershell'
-        ) | Set-Content -Path $CompleterPath.rustup -Encoding utf8
+        ) | Set-Content  -Path $CompleterPath.rustup -Encoding utf8
+        # & rustup @(
+        # ) | Set-Content -Path $CompleterPath.rustup -Encoding utf8
     }
 
     if (Get-NativeCommand -TestAny 'gh') {
         Write-Debug '[v] completer ⟹ generate: gh' #//⟹
-        & gh @(
+        Invoke-NativeCommand -ea stop 'gh' -ArgumentList @(
             'completion'
             '--shell'
             'powershell'
@@ -44,21 +64,76 @@ function _completer-Generate {
 # }
 # & {
 # run completers.
-function _completer-Dotsource {
-
+function Import-GeneratedCompleter {
+    <#
+    .synopsis
+        generate latest completers for supported commands
+    .example
+        PS> Build-CustomCompleter
+    .link
+        Import-CustomCompleter
+    .link
+        Build-CustomCompleter
+    #>
+    [cmdletbinding()]
+    param()
     # optionally add autocomplete for 'ripgrep',
     $CompleterPath.GetEnumerator() | ForEach-Object {
-        Write-Debug "[v] completer ⟹ loading: $($_.Key)" #//⟹
-        try {
-            . $_.Value
+        $Cmd = $_.Key
+        $Src = $_.Value
+        Write-Debug "[v] GeneratedCompleter ⟹ loading: $($Cmd)" #//⟹
+        if (Test-Path $Src) {
+            . $Src
         }
-        catch {
-            Write-Error $_
+        else {
+            Write-Error "[e] GeneratedCompleter ⟹ Not Found: $Cmd [ $Src ]"
         }
+        # # try {
+        # @(
+        #     Hr
+        #     $_.Key
+        #     Test-Path $_.Value
+        #     $_.Value
+        # ) | Write-Warning
+        # }
+        # catch {
+        #     Write-Error $_
+        # }
     }
 
 }
-_completer-Generate
+
+function Import-CustomCompleter {
+    <#
+    .synopsis
+        internal. imports manually created completers
+    .synopsis
+        generate latest completers for supported commands
+    .example
+        PS> Import-CustomCompleter
+    .link
+        Build-CustomCompleter
+    .link
+        Import-GeneratedCompleter
+    #>
+
+    [cmdletbinding()]
+    param()
+
+    $hardCodedList = @(
+        'dotnet'
+    )
+    foreach ($name in $hardCodedList) {
+        $Path = Join-Path $PSScriptRoot "${name}.ps1"
+        Write-Debug "[v] CustomCompleter ⟹ loading: $Cmd [ $Path ]"
+        if (Test-Path $Path) {
+            . $Path
+        }
+        else {
+            Write-Error "[e] GeneratedCompleter ⟹ Not Found: $Cmd [ $Src ]"
+        }
+    }
+}
 
 # if ($rg_completer) {
 #     Write-Debug '🐒completer ⟹ load: ripgrep' #//⟹
