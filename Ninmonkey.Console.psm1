@@ -425,7 +425,6 @@ if ($true) {
 
 }
 
-# & {
 $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1')
 . $FileName
 
@@ -444,17 +443,4 @@ else {
     Build-CustomCompleter @curSplat
     Import-CustomCompleter @curSplat
     Import-GeneratedCompleter @curSplat
-    # Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
-    # $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
-    # if ($Src) {
-    #     . $Src
-    # }
-    # else {
-    #     Write-Error '[v] root ⟹ ShouldNeverFailPath'
-    # }
 }
-# # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
-# public\completer\Completer-Loader.ps1
-# "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
-# . $Src
-# }

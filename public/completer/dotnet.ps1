@@ -10,9 +10,7 @@ see:
     - [docs: Automation.CompletionResult ](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.completionresult?view=powershellsdk-7.0.0)
 
 #>
-# function Add-NativeAutoCompleterDotnet {
 
-# $temp_old_Debug = $DebugPreference
 function New-CompletionResult {
     <#
     .synopsis
@@ -87,7 +85,6 @@ Register-ArgumentCompleter -Native -CommandName 'dotnet' -ScriptBlock {
             }
         })
 
-    $completions.Where{ $_.CompletionText -like "$wordToComplete*" } |
-    Sort-Object -Property ListItemText
-    Write-Debug 'loaded completer: dotnet.exe'
+    $completions.Where{ $_.CompletionText -like "$wordToComplete*" }
+    | Sort-Object -Property ListItemText
 }
