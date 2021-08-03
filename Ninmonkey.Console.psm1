@@ -3,8 +3,7 @@
     todo: better config system, than copying my profile
 #>
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
-$PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '
-7FB2C1'
+$PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 try {
     Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
 }
@@ -426,15 +425,17 @@ if ($true) {
 # Import-Module Ninmonkey.Console -Force -ea Break
 
 
-& {
-    Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
-    $Src = Join-Path $psscriptroot 'public\completer\Completer-Loader.ps1'
-    | Get-Item -ea ignore
-    if ($Src) {
-        . $Src
-    }
-    # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
-    # public\completer\Completer-Loader.ps1
-    # "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
-    # . $Src
-}
+# & {
+#     Write-Debug '[v] root ⟹ Completer-Loader: Start' #//⟹
+#     $Src = 'public\completer\Completer-Loader.ps1' | Get-Item -ea ignore
+#     if ($Src) {
+#         . $Src
+#     }
+#     else {
+#         Write-Error '[v] root ⟹ ShouldNeverFailPath'
+#     }
+#     # # $Src = Get-Item 'C:\Users\cppmo_000\Documents\2021\Powershell\public\completer\Completer-Loader.ps'
+#     # public\completer\Completer-Loader.ps1
+#     # "${Env:UserProfile}\Documents\2021\Powershell\public\completer\Completer-Loader.ps1"
+#     # . $Src
+# }
