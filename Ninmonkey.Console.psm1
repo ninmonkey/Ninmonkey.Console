@@ -103,6 +103,7 @@ Export-ModuleMember -Function $public_NativeWrapper
 
 $public_toDotSource = @(
     # misc
+    'Test-UserIsAdmin'
     'Get-NinModule'
     'Import-NinModule'
     'ConvertTo-Timespan'
@@ -161,7 +162,7 @@ $public_toDotSource = @(
     'Format-TestConnection'
     'Get-ConsoleEncoding'
     'Get-Docs'
-    'Test-UserIsAdmin'
+
     'Write-AnsiHyperlink'
 
     'Trace-NinCommand'
@@ -209,6 +210,7 @@ foreach ($file in $public_toDotSource) {
 
 $functionsToExport = @(
     # misc
+    'Test-UserIsAdmin'
     'Get-NinModule'
     'Import-NinModule'
     'Import-NinPSReadLineKeyHandler'
@@ -259,7 +261,7 @@ $functionsToExport = @(
     'Get-NinAlias'
     # 'Get-NinNewestItem'
     'Format-Predent'
-    'Test-UserIsAdmin'
+
     'Sort-Hashtable'
     'Invoke-Explorer'
     'Get-NinAppxPackage'
