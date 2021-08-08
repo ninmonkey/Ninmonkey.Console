@@ -110,6 +110,7 @@ Export-ModuleMember -Function $public_NativeWrapper
 
 $public_toDotSource = @(
     # misc
+    'Join-Regex'
     'Resolve-CommandName'
     'Test-UserIsAdmin'
     'Get-NinModule'
@@ -217,6 +218,8 @@ foreach ($file in $public_toDotSource) {
 
 $functionsToExport = @(
     # misc
+    '_enumerateMyModule'
+    'Join-Regex'
     'Resolve-CommandName'
     'Test-UserIsAdmin'
     'Get-NinModule'
@@ -225,7 +228,6 @@ $functionsToExport = @(
     'ConvertTo-Timespan'
     'Get-NinHelp'
     'Select-NinProperty'
-    '_enumerateMyModule'
 
     # console formatting
     'Write-ConsoleText'

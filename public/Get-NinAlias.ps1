@@ -58,7 +58,7 @@ function Get-NinAlias {
             MyModule = @()
             NoSource = Get-Alias * | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source  ) }
         }
-        $myModuleNames = _enumerateMyModules
+        $myModuleNames = _enumerateMyModule
         $noModuleAlias = Get-Alias | Group-Object Source -NoElement | Where-Object { [string]::IsNullOrWhiteSpace( $_.Name ) } | Sort-Object Name
         $modules_noSource = Get-Alias | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source ) }
         if ($list) {

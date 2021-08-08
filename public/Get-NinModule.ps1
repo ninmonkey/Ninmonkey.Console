@@ -26,7 +26,7 @@ function Get-NinModule {
     begin {
         [hashtable]$groupDict = @{}
 
-        $groupDict['Mine'] = _enumerateMyModules
+        $groupDict['Mine'] = _enumerateMyModule # this func should already be loaded
 
         $groupDict['Fav'] = @(
             'ClassExplorer'
@@ -48,18 +48,35 @@ function Get-NinModule {
             'PSScriptTools'
             'chocolateyProfile'
         ) | Sort-Object -Unique
+        $groupDict['Mine'] ??= _enumerateMyModule
     }
     process {
-        $keyNames = $groupDict.Keys | Where-Object { $_ -in $moduleNames }
-        $selectedModules = $groupDict.GetEnumerator() | Where-Object { $_.Key -in $moduleNames }
-        | ForEach-Object Value | Sort-Object -Unique
+        $selectedModuleNames = $GroupNames | ForEach-Object {
+            if ($groupDict.ContainsKey($_)) {
+                $groupDict[$_]
+            }
+        }
 
-        $selectedModules | Join-String -sep ', ' -SingleQuote  -op 'SelectedModules: '
-        | Write-Debug
+        $selectedModuleNames | Join-String -sep ', ' -op 'Selected: ' | Write-Debug
 
-        $selectedModules ??= $groupDict['Mine']
-        Get-Module -Name $selectedModules
-        | Sort-Object -Unique Name
+        if ($selectedModuleNames.count -eq 0) {
+            Write-Error 'No Matching Modules'
+            return
+        }
+
+        Get-Module -Name $selectedModuleNames
+        # $keyNames = $groupDict.Keys | Where-Object { $_ -in $GroupNames }
+        # $keyNames = $keyNames ??= $groupDict['Mine']
+        # $keyNames | Join-String -sep ', ' -SingleQuote -op 'keys: ' | Write-Debug
+
+        # $selectedModules =  %{
+        #     $groupDict.keyys
+        # }
+
+        # Get-Module -Name * | Where-Object { $_.Name -in $keyNames }
+
+        # Get-Module -Name $selectedModules
+        # | Sort-Object -Unique Name
 
     }
     end {}
