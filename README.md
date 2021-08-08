@@ -31,17 +31,17 @@ Tools for a better console experience
 | `Out-Code`     | .                                           |
 | `Goto`         | `cd` to directory, works on non-directories |
 | `Here`         | Open filemanager                            |
- 
+
 ## `Fzf` : Select Values like a simplified `Out-GridView -PassThru`
 
 ```powershell
 🐒> Get-ChildItem $Env:APPDATA -Directory | Out-Fzf | Format-RelativePath $Env:APPDATA
-.\Code           
+.\Code
 .\Code - Insiders
 ```
 ```powershell
 🐒> $Fzf
-C:\Users\monkey\AppData\Roaming\Code           
+C:\Users\monkey\AppData\Roaming\Code
 C:\Users\monkey\AppData\Roaming\Code - Insiders
 # $Fzf was set because it defaults to:
 $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
@@ -55,19 +55,21 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 | `Br`    | Add newlines                 |
 | `Hr`    | Horizontal Rule with padding |
 
+
+
 ## Conversions
 
 ```powershell
 🐒> $numbers = 0, 127, 0xffef
-  >> $numbers | Hex  
-0x0                 
-0x7f                
-0xffef              
-                    
-🐒> $numbers | Bits 
-0000.0000           
-0111.1111           
-1111.1111 1110.1111 
+  >> $numbers | Hex
+0x0
+0x7f
+0xffef
+
+🐒> $numbers | Bits
+0000.0000
+0111.1111
+1111.1111 1110.1111
 
 🐒> '0x34' | Number # returned type [Int32]
 
@@ -77,7 +79,7 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 # Console Encoding
 
 ```powershell
-🐒> Get-ConsoleEncoding      
+🐒> Get-ConsoleEncoding
 
 Name                      Encoding        CodePage isSingleByte
 ----                      --------        -------- ------------
@@ -95,7 +97,7 @@ This example has the package name `Dayton` even though the game is named `State 
 🐒> Get-AppXPackage *state*decay*
 # nothing found
 
-🐒> $results = Get-NinAppXPackage 'state.*decay' -PassThru 
+🐒> $results = Get-NinAppXPackage 'state.*decay' -PassThru
 🐒> $results | Format-List
 ```
 ```

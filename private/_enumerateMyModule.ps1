@@ -11,6 +11,8 @@ function _enumerateMyModule {
     .outputs
         [string[]] of Module names
     #>
+    [cmdletbinding()]
+    param()
     @(
         'Dev.Nin'
         '*ninmonkey*'
@@ -19,7 +21,7 @@ function _enumerateMyModule {
         Get-Module * | Where-Object CompanyName -Match 'corval.*group' | ForEach-Object Name
         Get-Module * | Where-Object Copyright -Match 'jake\s*bolton' | ForEach-Object Name
         Get-Module * | Where-Object Copyright -Match 'corval.*group' | ForEach-Object Name
-        Get-Module * | Where-Object Copyright -Match '*ninmonkey*' | ForEach-Object Name
+        Get-Module * | Where-Object Copyright -Match '.*ninmonkey.*' | ForEach-Object Name
         'Ninmonkey.Console'
         'Ninmonkey.Factorio'
         'Ninmonkey.Powershell'

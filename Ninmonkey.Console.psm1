@@ -6,8 +6,7 @@ $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 try {
     Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
-}
-catch {
+} catch {
     Write-Error "PSReadline: Missing function 'ShowCommandHelp'"
 }
 Set-PSReadLineOption -Colors @{
@@ -30,6 +29,17 @@ $__Config = @{
     includeAliasesUnicode = $true
     includePSReadline     = $false
 }
+
+try {
+    $FileName = ('{0}\public_autoloader\__init__.ps1' -f $psscriptroot)
+    if (Test-Path $FileName ) {
+        . $FileName
+    }
+} catch {
+    Write-Error 'Something Bad happened'
+    $_
+}
+
 
 $psreadline_extensions = @(
     'smart_brackets_braces'     # auto add/close quotes and braces
@@ -56,8 +66,7 @@ if ($psEditor) {
 foreach ($file in $private_seeminglySci) {
     # Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
     }
     . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
@@ -74,8 +83,7 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: private: failed: private: $File"
     }
     . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
@@ -91,8 +99,7 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
     . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
@@ -103,6 +110,7 @@ Export-ModuleMember -Function $public_NativeWrapper
 
 $public_toDotSource = @(
     # misc
+    'Resolve-CommandName'
     'Test-UserIsAdmin'
     'Get-NinModule'
     'Import-NinModule'
@@ -201,8 +209,7 @@ $public_toDotSource = @(
 #>
 foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public: $File"
     }
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
@@ -210,6 +217,7 @@ foreach ($file in $public_toDotSource) {
 
 $functionsToExport = @(
     # misc
+    'Resolve-CommandName'
     'Test-UserIsAdmin'
     'Get-NinModule'
     'Import-NinModule'
@@ -217,6 +225,7 @@ $functionsToExport = @(
     'ConvertTo-Timespan'
     'Get-NinHelp'
     'Select-NinProperty'
+    '_enumerateMyModule'
 
     # console formatting
     'Write-ConsoleText'
@@ -334,8 +343,7 @@ foreach ($typeName in $formatData) {
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    }
-    else {
+    } else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -430,8 +438,7 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
-}
-else {
+} else {
 
     $curSplat = @{
         # Verbose = -Verbose

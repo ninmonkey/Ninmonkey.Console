@@ -44,6 +44,9 @@ function Invoke-NativeCommand {
         # Force error if multiple  binaries are found
         [Parameter()][switch]$OneOrNone,
 
+        # Force error if multiple  binaries are found
+        [Parameter()][switch]$WhatIf,
+
         # native command argument list
         [Alias('Args')]
         [Parameter(Position = 1)]
@@ -51,6 +54,11 @@ function Invoke-NativeCommand {
     )
 
     $binCommand = Get-NativeCommand $CommandName -OneOrNone:$OneOrNone -ea Stop
+    if ($WhatIf) {
+        $ArgumentList
+        | Join-String -sep ' ' -op "$binCommand"
+        return
+    }
 
     & $binCommand @ArgumentList
 

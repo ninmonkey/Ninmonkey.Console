@@ -4,6 +4,7 @@ Import-Module Ninmonkey.Console -Force #| Out-Null
 
 # H1 'quick test'
 $ConfigTest = @{
+    'tryCommand'                 = $True
     'PropertyList.Format.ps1xml' = $True
     'PropShortTypeName'          = $false
     'PropShortTypeName_Coerce'   = $false
@@ -18,6 +19,18 @@ $ConfigTest = @{
 }
 $ConfigTest | Format-HashTable -Title 'Config'
 
+if ( $ConfigTest.'tryCommand' ) {
+    Import-Module Ninmonkey.Console -Force -DisableNameChecking
+    Resolve-CommandName 'ls'
+    return
+    # Get-CommandSummary Get-ChildItem
+    # Get-CommandSummary 'Get-ConsoleEncoding', 'Write-ConsoleHeader'
+    Get-CommandSummary 'Get-ChildItem', 'Write-ConsoleHeader'
+
+    Get-Command -Module ClassExplorer, Ninmonkey.Console
+    | Sort-Object Module, CommandType, Name
+    | Format-Table CommandType, Name, Version, Description  -AutoSize -GroupBy Source
+}
 if ( $ConfigTest.'PropertyList.Format.ps1xml' ) {
     Get-PSReadLineOption | Prop
 }
@@ -59,6 +72,7 @@ if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
     Write-Warning '-Property not fully implemented'
     'foo', 'bar' | Label 'string' -PropertyName Length
     Label 'string' 'value' -PropertyName Length
+
 }
 if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
     Label 'greeting' 'woof' -Debug -Verbose -InformationAction continue
