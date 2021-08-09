@@ -16,11 +16,14 @@ function Get-CommandSummary {
             [System.Management.Automation.FunctionInfo]
             [System.Management.Automation.ApplicationInfo]
         s#>
-        # Write-Warning 'doesn''t quite work. maybe do add type so commands have desc always?'
+        Write-Warning 'still WIP, unstable.'
         $query = Get-Command -Name $CommandName -Module $ModuleName -ea silentlycontinue
         # $commands 1= $query | Where-Object CommandType -NotIn 'AliasInfo', 'ApplicationInfo'
         $commands = $query | Where-Object { $_.CommandType -notin @('alias', 'application') }
-        $alias = Get-Command -Name $CommandName -Module $ModuleName -CommandType Alias -ea silentlycontinue
+        $alias = @(
+            Get-Command -Name $CommandName -CommandType Alias -ea silentlycontinue
+            Get-Command -Module $ModuleName -CommandType Alias -ea silentlycontinue
+        )
 
         $metaDebug = @{
             Commands = $commands | Join-String -Separator ', '
@@ -35,7 +38,8 @@ function Get-CommandSummary {
                 "`n"
                 $helpObj.Description.Text
             ) | Join-String
-            $helpObj.Description.Text | rg '`.+?`' --color=always
+            # $helpObj.Description.Text | rg '`.+?`' --color=always
+            $helpObj.Description.Text
             $DescriptionColor = @(
                 $Help.Synopsis
                 hr 1
@@ -50,7 +54,7 @@ function Get-CommandSummary {
 
 
         }
-        $helpObj | Join-String -Separator "`n" -Property { $_.description }
+        # $helpObj | Join-String -Separator "`n" -Property { $_.description }
 
         $final
         [pscustomobject]$metaDebug | Format-List | Out-String | Write-Information
