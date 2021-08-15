@@ -20,8 +20,7 @@ $fileList | ForEach-Object {
     try {
         . $src
 
-    }
-    catch {
+    } catch {
         # One nuance of $PSCmdlet.ThrowTerminatingError() is that it creates a terminating error within your Cmdlet but it turns into a non-terminating error after it leaves your Cmdlet.
         # $PSCmdlet.ThrowTerminatingError($PSItem)
         # $_.InvocationInfo, and inner exception: <https://powershellexplained.com/2017-04-10-Powershell-exceptions-everything-you-ever-wanted-to-know/#psiteminvocationinfo>
@@ -32,4 +31,4 @@ $fileList | ForEach-Object {
 
 # . (Join-Path $PSSCriptRoot 'Get-CommandSummary.ps1')
 # Export-ModuleMember 'Get-CommandSummary-OldMethod'
-# Export-ModuleMember 'Get-CommandSummary'
+Export-ModuleMember 'Get-CommandSummary'

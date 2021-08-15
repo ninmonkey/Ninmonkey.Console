@@ -1,3 +1,5 @@
+using namespace System.Collections.Generic
+
 function Resolve-CommandName {
     <#
         .synopsis
@@ -15,8 +17,16 @@ function Resolve-CommandName {
         [Alias('Strict')]
         [Parameter()][switch]$OneOrNone
     )
+    begin {
+        $NameList = [list[string]]::new()
+    }
     process {
-        $commands = Get-Command -Name $CommandName | ForEach-Object {
+        $CommandName | ForEach-Object {
+            $NameList.Add( $_ )
+        }
+    }
+    end {
+        $commands = Get-Command -Name $NameList | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
             if ($_.CommandType -eq 'Alias') {
                 $_.ResolvedCommand
@@ -25,6 +35,7 @@ function Resolve-CommandName {
             }
         }
         | Sort-Object -Unique -p { $_.ModuleName, $_.Name } # simple way to remove overlapping results
+
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
