@@ -34,26 +34,24 @@ function Join-Regex {
                     $env:path -split ';' -match ('^' + [regex]::escape($Env:USERPROFILE)) # expect true for several
 
                 It's probably best to just write a second regex generating command
+    # maybe related Exception names: 'ArgumentException', 'ParameterBindingException', 'PositionalParameterNotFound', 'PSArgumentException', 'ArgumentException'
     .outputs
         [string]
 
     #>
     [CmdletBinding(PositionalBinding = $false)]
     param(
-        # list of literal text to OR
+        # list of literal text values that are combined as a Logical OR
         [alias('LiteralText')]
-        [Parameter()]
-        [string[]]$Text,
+        [Parameter()][string[]]$Text,
 
-        # list of regex's to OR
-        [Parameter()]
-        [string[]]$Regex
+        # list of regex patterns that are combined as a Logical OR
+        [Parameter()][string[]]$Regex
     )
 
     begin {
-        # maybe related Exception names: 'ArgumentException', 'ParameterBindingException', 'PositionalParameterNotFound', 'PSArgumentException', 'ArgumentException'
         if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
-            $e = [System.ArgumentException]::new('Requires at least -TextLiteral or -Regex parameters')
+            $e = [System.ArgumentException]::new('Requires at least a -TextLiteral or -Regex parameter')
             $PSCmdlet.ThrowTerminatingError($e)
         }
     }

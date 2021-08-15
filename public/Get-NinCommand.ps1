@@ -5,6 +5,12 @@ function Get-NinCommand {
     .notes
         future:
         - [ ] use 'ProxyCommand'?
+    .example
+        # get my commands by default
+        PS> Get-NinCommand
+    .example
+        # else use wildcards
+        PS> Get-NinCommand *template* | Get-CommandSummary
     #>
     [CmdletBinding()]
     param (
@@ -18,7 +24,7 @@ function Get-NinCommand {
     )
 
     begin {
-        Write-Warning 'kinda nyi / needs refactor. finds non-nin commands'
+        # Write-Warning 'kinda nyi / needs refactor. finds non-nin commands'
         $userFavModules = @(
             'ClassExplorer'
             'Dev.Nin'
@@ -54,8 +60,7 @@ function Get-NinCommand {
         # }
         if (!($ModuleName)) {
             $gcmDefault_splat['Module'] = $userFavModules
-        }
-        else {
+        } else {
             $gcmDefault_splat.Module = $ModuleName
         }
 

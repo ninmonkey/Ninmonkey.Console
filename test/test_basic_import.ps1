@@ -10,8 +10,10 @@ $splat_AllOn = @{
 
 $splat_Default = @{
     Force             = $true
+
     InformationAction = 'Continue'
 }
 
-Import-Module @splat_Default -Name Ninmonkey.Console
+Import-Module @splat_Default -Name Ninmonkey.Console -ea stop
+# Import-Module @splat_AllOn -Name Ninmonkey.Console #-ea stop
 # Import-Module Ninmonkey.Console -Force -Verbose -Debug -InformationAction Continue

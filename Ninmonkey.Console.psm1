@@ -7,7 +7,7 @@ $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 try {
     Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
 } catch {
-    Write-Error "PSReadline: Missing function 'ShowCommandHelp'"
+    Write-Warning "PSReadline: Missing function 'ShowCommandHelp'"
 }
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
@@ -30,14 +30,22 @@ $__Config = @{
     includePSReadline     = $false
 }
 
-try {
-    $FileName = ('{0}\public_autoloader\__init__.ps1' -f $psscriptroot)
-    if (Test-Path $FileName ) {
-        . $FileName
+if ($False) {
+    try {
+        $FileName = ('{0}\public_autoloader\__init__.ps1' -f $psscriptroot)
+        if (Test-Path $FileName ) {
+            . $FileName
+        }
     }
-} catch {
-    Write-Error 'Something Bad happened'
-    $_
+    catch {
+        Write-Error "public_autoloader error: '$fileName'"
+
+    }
+}
+if ($true) {
+    # $base = $psscriptroot ?? ('C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Ninmonkey.Console')
+    # . (Get-Item -ea Stop (Join-Path $base 'public_autoloader\__init__.ps1'))
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_autoloader\__init__.ps1'))
 }
 
 
