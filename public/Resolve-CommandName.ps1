@@ -14,6 +14,7 @@ function Resolve-CommandName {
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # command/alias name
+        [Alias('Name')]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [string[]]$CommandName,
 
