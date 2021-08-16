@@ -49,6 +49,7 @@ function Format-RelativePath {
     }
     end {
         Pop-Location -StackName 'temp'
+        write-warning 'Already wrote the code using the dotnet method, its far faster'
     }
 }
 

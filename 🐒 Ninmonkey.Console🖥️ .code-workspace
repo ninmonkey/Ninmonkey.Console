@@ -30,7 +30,7 @@
             start
         */
         // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
-        "terminal.integrat ed.drawBoldTextInBrightColors": true,
+        "terminal.integrated.drawBoldTextInBrightColors": true,
         "terminal.integrated.fontSize": 14,
         "editor.fontSize": 16,
         "debug.console.fontSize": 14,

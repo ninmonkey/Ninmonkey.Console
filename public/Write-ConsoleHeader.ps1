@@ -62,8 +62,7 @@ function Write-ConsoleHeader {
         $FinalName = if ($Depth -gt 0 -and ! $NoPadding) {
             #was:  -and -le 6) {
             "$PaddingPrefix $Name"
-        }
-        else {
+        } else {
             $Name
         }
 
@@ -86,4 +85,4 @@ function Write-ConsoleHeader {
 
 }
 
-Write-Warning 'Label-Rewrite: refactor, should be calling a shared, non-field function'
+# Write-Warning 'Label-Rewrite: refactor, should be calling a shared, non-field function'

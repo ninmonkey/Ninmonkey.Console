@@ -148,7 +148,7 @@ function Write-ConsoleLabel {
         @{
             'ParameterSetName'  = $PSCmdlet.ParameterSetName
             'PSBoundParameters' = $PSBoundParameters
-        } | Format-Table |  Out-String | Write-Debug
+        } | Format-Table | Out-String | Write-Debug
 
         # $newTextSplat_Text | Format-Table | Out-String
         # | Write-Debug
@@ -180,8 +180,7 @@ function Write-ConsoleLabel {
                 Write-Error "Property '$PropertyName' is invalid or = $null"
                 $newTextSplat_Text['Object'] = $strConst.Null
             }
-        }
-        else {
+        } else {
             $newTextSplat_Text['Object'] = $InputObject
         }
 
@@ -197,8 +196,7 @@ function Write-ConsoleLabel {
         if (
             [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
             $StrText = New-Text @newTextSplat_Text
-        }
-        else {
+        } else {
             $StrText = ''
             Write-Error "-Object was $null"
         }

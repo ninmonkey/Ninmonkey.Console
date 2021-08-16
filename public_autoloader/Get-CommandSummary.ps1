@@ -44,15 +44,18 @@ function Get-CommandSummary {
 
 
 
-        $final = $Commands | ForEach-Object {
-            $cmd = $_
-            $helpObj = Get-Help $cmd
+        $final = $CommandName | ForEach-Object {
+            $curCmd = $_
+            $helpObj = Get-Help $curCmd
+            # $ResolvedCommand = (Get-Command -ErrorAction ignore $curCmd) # ?? 'NotFound?'
+            $ResolvedCommand = Resolve-CommandName -CommandName $curCmd
 
             # I want multi-line output like psreadline
             #      PS> Get-PSReadLineKeyHandler -Bound | ? Group -match 'history' | % gettype
             $cmdSummary = @{
                 PSTypeName      = 'Nin.CommandSummary'
-                ResolvedCommand = 'wip'
+                ResolvedCommand = $ResolvedCommand
+                Name            = $ResolvedCommand.Name
 
             }
 
@@ -69,7 +72,7 @@ function Get-CommandSummary {
                 $helpObj.Description.Text
                 $DescriptionColor = @(
                     $Help.Synopsis
-                    hr 1
+                    Hr 1
                     $helpObj.Description.Text | ForEach-Object { $_ -replace '(`.+?`)', ( New-Text $_ -fg red ) }
                 ) -join ''
                 # ) | Join-String -sep ' ⸺ ⟶⟹ '
@@ -91,10 +94,10 @@ function Get-CommandSummary {
 
     }
 }
+if ($false -and $EnableDebugInline) {
+    Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
+    # | ForEach-Object {
 
-# Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
-# | ForEach-Object {
-if ($false) {
     Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
     Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
 

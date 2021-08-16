@@ -106,8 +106,7 @@
         }
         if (! $WithBrackets) {
             $filteredName
-        }
-        else {
+        } else {
             '[', $filteredName, ']' -join ''
         }
     }
@@ -132,7 +131,7 @@ function NestedOrNot( [type]$TypeInfo ) {
     }
 
 }
-Write-Warning @'
+$warningText = @'
 1]
     [string](([system.collections.generic.list[hashtable]]@()).GetType())
 
