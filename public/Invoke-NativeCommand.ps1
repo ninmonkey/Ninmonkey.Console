@@ -35,7 +35,7 @@ function Invoke-NativeCommand {
         Not sure if this is a a bug or not. currently this creats a new window:
             Invoke-NativeCommand 'code' -ArgumentList @('--help')
     #>
-
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # command name: 'python' 'ping.exe', extension is optional
         [Parameter(Mandatory, Position = 0)]
@@ -43,6 +43,9 @@ function Invoke-NativeCommand {
 
         # Force error if multiple  binaries are found
         [Parameter()][switch]$OneOrNone,
+
+        # Some commands don't print STDOUT to the STDOUT stream, so they print to host if not redirected
+        [Parameter()][switch]$RedirectToStdout,
 
         # Force error if multiple  binaries are found
         [Parameter()][switch]$WhatIf,
@@ -60,6 +63,19 @@ function Invoke-NativeCommand {
         return
     }
 
-    & $binCommand @ArgumentList
+
+    <#
+    future: Also needs to capture any terminating errors.
+    currently running this command requires redirection to capture any output
+    but that causes it to throw during an ErrorAction -stop
+    NativeCommand has the same problem.
+
+        autorunsc64 /? *>&1
+    #>
+    if (! $RedirectToStdout) {
+        & $binCommand @ArgumentList
+        return
+    }
+    & $binCommand @ArgumentList *>&1
 
 }

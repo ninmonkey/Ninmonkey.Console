@@ -1,4 +1,6 @@
-﻿
+﻿$script:publicToExport.function += @('Get-CommandSummary')
+$script:publicToExport.alias += @('HelpCommmand')
+
 function Get-CommandSummary {
     <#
     .synopsis
@@ -11,6 +13,7 @@ function Get-CommandSummary {
     .example
         Get-NinCommand *template* | Get-CommandSummary
     #>
+    [Alias('HelpCommand')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # CommandName[s]

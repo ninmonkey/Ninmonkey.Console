@@ -78,6 +78,9 @@
 
         switch ( $PSCmdlet.ParameterSetName ) {
             'paramTypeAsString' {
+                if ( [string]::IsNullOrWhiteSpace( $TypeAsString ) ) {
+                    return
+                }
                 Write-Debug "Original: $TypeName"
                 $TypeAsString = $TypeName
                 Write-Verbose 'Nyi: Regex (Format-TypeName)'
@@ -85,6 +88,9 @@
                 break
             }
             'paramTypeAsInstance' {
+                if ($null -eq $TypeInstance) {
+                    return
+                }
                 if ($TypeInstance.IsGenericType) {
                     Write-Debug 'IsGenericType: True'
                     $TypeInstance | Format-GenericTypeName -WithBrackets:$WithBrackets
