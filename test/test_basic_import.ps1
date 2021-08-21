@@ -1,4 +1,4 @@
-'hi world'
+
 # Remove-Module Ninmonkey.Console
 # $ErrorActionPreference = 'Continue'
 $splat_AllOn = @{
