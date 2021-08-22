@@ -54,8 +54,16 @@ function _enumerateMyModule {
     Join-Hashtable $h1 $h2 -DropNullKeys
     #>
 
-    if ($All) { $getModuleSplat['All'] = $True }
-    if ($ListAvailable) { $getModuleSplat['ListAvailable'] = $True }
+    if ($All) {
+        $getModuleSplat['All'] = $True
+    }
+    if ($ListAvailable) {
+        $getModuleSplat['ListAvailable'] = $True
+    }
+
+    $ModuleGroups =  @{
+        'FavModules' = 'ClassExplorer', 'EditorServicesCommandSuite', 'Pansies', 'PowerShellEditorServices.Commands', 'PowerShellEditorServices.VSCode', 'PSReadLine'
+    }
 
     $allModules = Get-Module @getModuleSplat
     $uniqueNames = @(
@@ -73,6 +81,9 @@ function _enumerateMyModule {
         'Ninmonkey.Factorio'
         'Ninmonkey.Powershell'
         'Ninmonkey.Power*bi'
+        'Powershell.Cv'
+        '*.Jake'
+        'Jake.*'
     ) | Sort-Object -Unique
 
     # $getModuleSplat['Name'] = $uniqueNames
@@ -81,8 +92,12 @@ function _enumerateMyModule {
         All           = $false
         ListAvailable = $false
     }
-    if ($All) { $getFinalModuleSplat['All'] = $True }
-    if ($ListAvailable) { $getFinalModuleSplat['ListAvailable'] = $True }
+    if ($All) {
+        $getFinalModuleSplat['All'] = $True
+    }
+    if ($ListAvailable) {
+        $getFinalModuleSplat['ListAvailable'] = $True
+    }
 
     $uniqueNames | Get-Module @getFinalModuleSplat
     | Sort-Object -Unique -Prop $final_SortOrder
