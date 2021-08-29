@@ -55,7 +55,7 @@
             "*.lnk": true,
             "*.exe": true,
             "LICENSE": true,
-            "C:\\Users\\cppmo_000\\Documents\\2020\\powershell\\MyModules_Github\\Ninmonkey.Console-dotsource\\*": true, // warning: doesn't seem to affect <ctrl+p>
+            "C:/Users/cppmo_000/Documents/2020/powershell/MyModules_Github/Ninmonkey.Console-dotsource/*": true, // warning: doesn't seem to affect <ctrl+p>
         },
         "files.associations": {
             "*.ps1xml": "xml"
@@ -115,7 +115,7 @@
                     "order": 1
                 },
                 "request": "launch",
-                "script": "${workspaceFolder}\\test\\public\\Write-ConsoleLabel.visual_tests.ps1",
+                "script": "${workspaceFolder}/test/public/Write-ConsoleLabel.visual_tests.ps1",
                 "cwd": "${file}"
             },
             {

@@ -14,6 +14,10 @@ function Invoke-NativeCommand {
 
         future: for an alternate implementation that redirects STDOUT and STDERR, check out
             [Indented-Automation: Invoke-NativeCommand](https://gist.github.com/indented-automation/fba795c43ef5a53483398cdc72ab7fa0)
+
+        also see:
+           [Posh-Git\Invoke-Utf8ConsoleCommand](https://github.com/dahlbyk/posh-git/blob/b79c2dc39c9387847642bc3b38fa2186b29f6113/src/Utils.ps1#L28)
+
     .example
         PS> # Use the first 'python' in path:
         Invoke-NativeCommand 'python' -Args '--version'

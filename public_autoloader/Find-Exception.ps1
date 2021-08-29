@@ -11,6 +11,8 @@ function Find-Exception {
         PS> Find-Exception
     .description
         PS> Find-Exception -ShowReferences
+    .outputs
+         [string] | [Exception] | $null
     #>
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -18,6 +20,7 @@ function Find-Exception {
         # Show Common Exceptions list
         [Parameter()][switch]$ShowReferences
     )
+
     if ($ShowReferences) {
         @'
 - [Common Exceptions: dotnet core 3.1](https://docs.microsoft.com/en-us/dotnet/api/system.exception?view=netcore-3.1#choosing-standard-exceptions)
@@ -33,5 +36,6 @@ function Find-Exception {
     ) | Sort-Object -Unique FullName
 
     "Found $($Query.Count) 'Exception' types" | Write-Information
+    Write-Warning 'next: <C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Ninmonkey.Console\private\metadata\ExceptionTypes.metadata.ps1>'
     $Query
 }

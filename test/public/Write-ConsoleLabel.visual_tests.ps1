@@ -1,7 +1,11 @@
-﻿& {
+﻿Import-Module Ninmonkey.Console -Force
+
+Write-ConsoleText 'hi' -fg green -Debug
+# | Out-Null
+& {
     # Import-Module Ninmonkey.Console -Force | Out-Null
     $VisualConfig = @{
-        ArrayVerbose = $false
+        ArrayVerbose = $true
     }
 
     if ($VisualConfig.ArrayVerbose) {
@@ -69,5 +73,5 @@
     $filesFormatted
 
     Label 'As Join-String' -fg pink -bef 1
-    $filesFormatted  | Join-String -sep ', '
+    $filesFormatted | Join-String -sep ', '
 }
