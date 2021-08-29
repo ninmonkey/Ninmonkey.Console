@@ -18,6 +18,7 @@
         [string]$Path
     )
     process {
+        # Todo: see: <https://github.com/SeeminglyScience/dotfiles/blob/7e224fb5fc16998f5956aead620baa4ef9407ebd/PowerShell/Utility.psm1#L231>>
         $ItemPath = Get-Item $Path
         ($ItemPath.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
     }

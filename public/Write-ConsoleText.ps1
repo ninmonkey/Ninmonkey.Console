@@ -20,17 +20,20 @@
     # [Alias('Text', 'Write-Color')] # maybe: Write-Text ?
     [Alias('Write-Text')]
     [cmdletbinding(
-        # DefaultParameterSetName =
+        DefaultParameterSetName = 'FromParams',
         PositionalBinding = $false
     )]
     param(
         # String to write
         # New-Text supports [object].
         # Should I allow that here?
-        [Alias('Text')]
-        [Parameter(Mandatory, Position = 0)]
+        [Alias('Text', 'Object')]
+        [Parameter(
+            ParameterSetName = 'FromPipeline', Mandatory, ValueFromPipeline)]
+        [Parameter(
+            ParameterSetName = 'FromParams', Mandatory, Position = 0)]
         # [string]$Text, # Object text?
-        [object]$Object, # Object text?
+        [object]$InputObject, # Object text?
 
         # New-Text supports [object]$Separator.
         # Should I allow that here?
@@ -38,7 +41,10 @@
         [object]$Separator, # Object text?
 
         # Foregorund Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
-        [Parameter(Mandatory, Position = 1)]
+        [Parameter(
+            ParameterSetName = 'FromPipeline', Position = 0)]
+        [Parameter(
+            ParameterSetName = 'FromParams', Position = 1)]
         [alias('Fg')]
         [PoshCode.Pansies.RgbColor]$ForegroundColor,
 
@@ -68,6 +74,7 @@
 
     begin {}
     Process {
+        # New-Text 'hi world' -fg green | ForEach-Object tostring
         $Prefix = "`n" * $LinesBefore
         $Suffix = "`n" * $LinesAfter
 
@@ -75,9 +82,9 @@
         $Text_splat = $pscmdlet.MyInvocation.BoundParameters
 
         # Looks akward. I was planning for dynamic aliases
-        [void]$Text_splat.remove( 'Object' )
-        $Obj = $prefix, $Object, $Suffix -join ''
-        [void]$Text_splat.add( 'Object', $Obj )
+        [void]$Text_splat.remove( 'InputObject' )
+        $ObjectWithFixes = $prefix, $InputObject, $Suffix -join $Separator
+        [void]$Text_splat.add( 'Object', $ObjectWithFixes )
         [void]$Text_splat.Remove('LinesBefore')
         [void]$Text_splat.Remove('LinesAfter')
 
@@ -85,7 +92,7 @@
         $textObj = New-Text @Text_splat
 
         if ($AsString) {
-            $textObj.ToString()
+            ($textObj)?.ToString()
             return
         }
         $textObj
