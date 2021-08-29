@@ -34,6 +34,16 @@ Describe 'Format-TypeName' -Tag 'wip' {
 
             Func`2[String, Object]
         #>
+    It 'FirstEasy' {
+        $Sample = 'system.io.fileinfo'
+        $sample | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets
+    }
+    It 'AutoConvert Inputs' {
+        $Sample = 'system.io.fileinfo'
+        $res1 = $sample | Format-TypeName -Brackets
+        $res2 = $sample | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets
+        $res1 | Should -Be $res2 -Because 'Strings should auto-coerce to type instances'
+    }
     It 'ads' {
         $Sample = 'System.Func`2[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'
 

@@ -2,9 +2,13 @@ Import-Module Ninmonkey.Console -Force #| Out-Null
 # Some tests are visual, or not Pester worthy
 # This file is a scratchboard
 
+# editfunc editfunc -PassThru
+# write-warning 'do me first'
+
+
 # H1 'quick test'
 $ConfigTest = @{
-    'tryCommand'                 = $True
+    'tryCommand'                 = $false
     'PropertyList.Format.ps1xml' = $True
     'PropShortTypeName'          = $false
     'PropShortTypeName_Coerce'   = $false

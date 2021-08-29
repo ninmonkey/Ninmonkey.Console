@@ -2,10 +2,41 @@
 
 function Get-EnumInfo {
     <#
-    .description
+    .synopsis
         Displays name mappings to values
+    .description
+        (warning: check updated version on SeeminglySci's profile)
     .example
-        PS> [IO.Compression.CompressionMode] | Get-EnumInfo
+        bug:
+        [ValidateRange] | Get-EnumInfo
+        # returns nothing
+        # was:
+        #   ([ValidateRange]).BaseType
+            [ValidateEnumeratedArgumentsAttribute]
+        ?? info
+            🐒> ([ValidateRange]).CustomAttributes.ConstructorArguments
+
+            ArgumentType            Value
+            ------------            -----
+            System.AttributeTargets   384
+
+    .example
+        🐒> [IO.Compression.CompressionMode] | Get-EnumInfo
+
+            Name       Value Hex Bits
+            ----       ----- --- ----
+            Decompress     0 0x0 0000.0000
+            Compress       1 0x1 0000.0001
+
+        🐒> [ConsoleColor] | Get-EnumInfo
+
+            Name        Value Hex Bits
+            ----        ----- --- ----
+            Black           0 0x0 0000.0000
+            DarkBlue        1 0x1 0000.0001
+            DarkGreen       2 0x2 0000.0010
+            DarkCyan        3 0x3 0000.0011
+            ... cont. ...
     #>
     [Alias('EnumInfo')]
     [CmdletBinding()]
