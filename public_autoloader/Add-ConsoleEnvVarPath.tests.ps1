@@ -6,7 +6,8 @@ BeforeAll {
 
 Describe "$__PesterFunctionName" -Tag Unit {
     BeforeAll {
-        . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
+        Import-Module Ninmonkey.Console -Force
+        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
         $ErrorActionPreference = 'Stop'
     }
