@@ -12,6 +12,11 @@ if ($true) {
 #>
 
 Describe 'Format-TypeName' -Tag 'wip' {
+    Describe 'Generic Types' {
+        It 'Non-Instance of Generic from ClassExplorer' {
+
+        }
+    }
 
     It 'ComplexType DataDriven Test' {
         $Expected = 'Func`2[String, Object]'
