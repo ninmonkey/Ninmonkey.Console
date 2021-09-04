@@ -118,6 +118,7 @@ Export-ModuleMember -Function $public_NativeWrapper
 
 $public_toDotSource = @(
     # misc
+    'Get-NinMyVSCode'
     'Join-Regex'
     'Resolve-CommandName'
     'Test-UserIsAdmin'
@@ -218,7 +219,9 @@ $public_toDotSource = @(
 #>
 foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+        # good
+    }
+    else {
         Write-Error "Import: failed: public: $File"
     }
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
@@ -226,6 +229,7 @@ foreach ($file in $public_toDotSource) {
 
 $functionsToExport = @(
     # misc
+    'Get-NinMyVSCode'
     '_enumerateMyModule'
     'Join-Regex'
     'Resolve-CommandName'

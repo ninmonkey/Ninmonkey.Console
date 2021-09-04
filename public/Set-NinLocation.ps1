@@ -1,24 +1,31 @@
-﻿
+﻿using namespace System.Management.Automation
 function Set-NinLocation {
     <#
     .Synopsis
         A nicer 'cd' command that doesn't error when the target is a filename
     .example
-        PS> Goto './folder'
+        🐒> Goto /c/foo/bar
+        /c/foo/bar
+
+        # go back
+        🐒> Goto -Back
+    .example
+        🐒> Goto './folder'
             # runs: cd './folder'
 
             # piping works
-            Start-LogTestNet -GetLogPath | Goto
+        🐒> Start-LogTestNet -GetLogPath | Goto
 
-        PS> Goto '/folder/foo.txt'
+        🐒> Goto '/folder/foo.txt'
             # runs: cd './folder'
 
-        PS> Goto -Back
+        🐒> Goto -Back
             # runs: pop-location -StackName 'NinLocation'
     #>
 
     [Alias('Goto')]
-    [CmdletBinding(DefaultParameterSetName = 'GoToPath')]
+    [CmdletBinding(PositionalBinding = $false,
+        DefaultParameterSetName = 'GoToPath')]
 
     param(
         # change directory to target Directory or (even a Filename)
@@ -39,40 +46,40 @@ function Set-NinLocation {
         [Parameter()][switch]$AlwaysLsAfter
     )
 
-    $Regex = @{
-        RegistryProviderPrefix = [regex]::Escape('Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\')
-    }
-
-
     Write-Debug "Path: '$Path'"
 
     if ($Back) {
         try {
             Pop-Location -StackName 'NinLocation' -ea Stop
-        } catch {
+        }
+        catch {
             Write-Debug 'stack was empty'
         }
         return
     }
 
     $DestItem = Get-Item $Path
-    # need to rewrite to support registry provider
-    if ($Path.PSPath -match $Regex.RegistryProviderPrefix) {
-        throw 'registry'
+    $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
+    if ($DestItem.PSProvider.Name -ne 'filesystem') {
+        $PSCmdlet.WriteError(
+            [ErrorRecord]::new(
+                [NotSupportedException]::new('Non-filesystem providers are not supported'),
+                'InvalidProviderType',
+                [ErrorCategory]::NotImplemented, $DestItem
+            )
+        )
+        return
+        # todo: future: pass command to Push-Location for providers like registry
     }
-    if ($DestItem.PSProvider.Name -eq 'Registry') {
 
-    }
     if (! (Test-Path -Path $Path)) {
-        'Invalid path: {0}' -f $Path | Write-Error
+        'Invalid path: {0}' -f $Path | Write-Error -Category 'InvalidArgument'
         return
     }
 
 
     # $cust = 'Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -replace (), 'HKCU:\'
     # Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Keyboard Layout\
-
-
 
     if (!(Test-IsDirectory $DestItem.FullName)) {
         Write-Debug "Input was a file: $DestItem"
@@ -86,13 +93,3 @@ function Set-NinLocation {
         Get-NinChildItem
     }
 }
-
-<#
-temp test
-Set-Location -Path 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console'
-# $NowTry:
-$pathToFile = Get-ChildItem -File | Select-Object -First 1
-
-Set-NinLocation $pathToFile -Debug
-Set-Location -Path 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console'
-#>
