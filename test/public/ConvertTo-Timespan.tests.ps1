@@ -15,6 +15,17 @@ Describe 'ConvertTo-Timespan' {
     #         '3d'
     #     )
     # }
+    BeforeAll {
+        # $ErrorActionPreference = 'break'
+    }
+    Describe 'Empty Values' {
+        It 'Zero is Valid' {
+            { RelativeTs '0s' -ZeroIsValid:$True } | Should -Not -Throw
+        }
+        It 'Zero Should Throw' {
+            { RelativeTs '0s' -ZeroIsValid:$false } | Should -Throw
+        }
+    }
     It 'Returns <expected> (<name>)' -ForEach @(
         # I think some values go out of range or precision errors
         @{ Name = '3d1m'; Expected = ([timespan]::new(3, 0, 1, 0, 0)) }

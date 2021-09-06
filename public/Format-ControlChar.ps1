@@ -38,7 +38,12 @@ function Format-ControlChar {
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
-        [string[]]$InputText
+        [string[]]$InputText,
+
+        # Preserves whitespace: tab, cr, tab.
+        # useful when piping from something like ansi-highlighted Markdown files
+        [Alias('AllowWhitespace')]
+        [Parameter()][switch]$PreserveWhitespace
 
     )
     begin {
@@ -46,8 +51,17 @@ function Format-ControlChar {
         $Filters = @{
 
             'ControlChars_C0' = @{
-                min = 0x0
-                max = 0x1f
+                type = 'range'
+                min  = 0x0
+                max  = 0x1f
+            }
+            'Whitespace'      = @{
+                type   = 'list'
+                values = @(
+                    0xd # cr
+                    0x9 # tab
+                    0xa # newline
+                )
             }
         }
         $controlMin = 0x0
@@ -62,6 +76,12 @@ function Format-ControlChar {
                 $RuneInfo = $_ # is a [Text.Rune]
                 $Codepoint = $RuneInfo.Value
                 if ($Codepoint -ge $controlMin -and $Codepoint -le $controlMax ) {
+                    if ($PreserveWhitespace) {
+                        if ($Codepoint -in $Filters.Whitespace.values ) {
+                            [void]$bufferSB.Append( [char]::ConvertFromUtf32( $Codepoint ) )
+                            return
+                        }
+                    }
                     $Codepoint += 0x2400
                 }
                 [void]$bufferSB.Append( [char]::ConvertFromUtf32( $Codepoint ) )
@@ -69,6 +89,7 @@ function Format-ControlChar {
         }
     }
     end {
+        # $bufferSB.ToString() | Join-String # no?
         $bufferSB.ToString()
     }
 }

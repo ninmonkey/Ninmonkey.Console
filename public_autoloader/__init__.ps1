@@ -31,7 +31,13 @@ try {
     | ForEach-Object {
         # are these safe? or will it alter where-object?
         # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-        . $_
+        $curScript = $_
+        try {
+            . $curScript
+        }
+        catch {
+            Write-Error -Exception $_ -Message "DotsourceImportFailed: public_autoloader\__init__.ps1: '$($curScript)'" -TargetObject $_ -Category InvalidOperation
+        }
     }
 }
 catch {

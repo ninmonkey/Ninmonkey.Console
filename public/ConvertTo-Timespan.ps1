@@ -4,7 +4,13 @@ function ConvertTo-Timespan {
     .synopsis
         converts fuzzy dates to a [datetime]
     .description
-        minimal error detection.
+        minimal error detection, or some defaults apply less impact
+        ex: Without strict mode, if the $RelativeText has extra data
+            after splitting, then there's an error.
+        new:
+            - throw errors when no value is created, user may ignore it.
+
+
         future:
             decent deterministic error dectection is
                 1] attempt to grab matches in the orignal string:
@@ -27,12 +33,17 @@ function ConvertTo-Timespan {
             'New-RelativeTimespan' or 'ConvertTo-Timespan' ?
 
     #>
-    [cmdletbinding()]
-    [Alias('RelativeTs')] # 'New-RelativeTimespan' ?
+    [cmdletbinding( PositionalBinding = $false)]
+    [Alias('RelativeTs')] # 'New-RelativeTimespan' ?\
+    [OutputType( [TimeSpan] )]
     param(
         # relative string, ex: 1d3h4s
         [Parameter(Position = 0, Mandatory)]
-        [string]$RelativeText
+        [string]$RelativeText,
+
+        # don't throw an error when it evaluates to zero  (like a silent parse fail RelativeTs 'azfefj')
+        [ALias('AllowZero')]
+        [Parameter()][switch]$ZeroIsValid
     )
 
     begin {
@@ -60,28 +71,44 @@ function ConvertTo-Timespan {
 '@
     }
     process {
-        if (!($RelativeText -match $Regex.ParseString)) {
-            Write-Error "Failed parsing string '$RelativeText'"
-            return
-        }
-
-        $Days = $Matches.Days ?? 0
-        $Hours = $Matches.Hours ?? 0
-        $Minutes = $Matches.Minutes ?? 0
-        $Seconds = $Matches.Seconds ?? 0
-        $Milliseconds = $Matches.Milliseconds ?? 0
-
-        $Days, $Hours, $Minutes, $Seconds, $Milliseconds
-        | Join-String -sep ', ' | Label 'Args' | Write-Debug
-
         try {
+            # todo: If anything is **not captured**, ie: the unmatched length is > 0
+            # then throw a parse error
+            if (!($RelativeText -match $Regex.ParseString)) {
+                Write-Error "Failed parsing string '$RelativeText'" -Category InvalidArgument
+                return
+            }
+
+            $Days = $Matches.Days ?? 0
+            $Hours = $Matches.Hours ?? 0
+            $Minutes = $Matches.Minutes ?? 0
+            $Seconds = $Matches.Seconds ?? 0
+            $Milliseconds = $Matches.Milliseconds ?? 0
+
+            $Days, $Hours, $Minutes, $Seconds, $Milliseconds
+            | Join-String -sep ', ' | Label 'Args' | Write-Debug
+
 
             $ts = [timespan]::new($Days, $Hours, $Minutes, $Seconds, $Milliseconds)
+            if ($ts -eq 0 -or $null -eq $ts) {
+                # write-debug '[timespan] == 0'
+                # Do I want to opt in or out?
+                if (! $ZeroIsValid) {
+                    $splatError = @{
+                        ErrorAction = 'Stop'
+                    }
+                }
+                Write-Error '[timespan] == 0' -TargetObject $RelativeText @splatError
+            }
             $ts
         }
         catch {
-            Write-Error "Failed parsing string '$RelativeText'"
+            Write-Error -Message "Failed parsing string '$RelativeText'" -ErrorRecord $_
             # throw [System.MissingFieldException]::new('Could not access field', $_.Exception)
         }
     }
 }
+
+# hr 2
+# RelativeTs '3' -ea break
+# RelativeTs '0'
