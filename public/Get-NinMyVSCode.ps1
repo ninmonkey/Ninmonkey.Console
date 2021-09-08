@@ -43,16 +43,15 @@ function Get-NinMyVSCode {
     $finalBin ??= Get-NativeCommand 'code-insiders' -ea ignore
     $finalBin ??= Get-NativeCommand 'code' -ea ignore
     $finalBin ??= $DefaultBin
-    $FinalBin = $finalBin | Get-Command 'code-insiders' | Get-Item # gi redundant?
-    # temprarily hard-coding as stringt
+    $FinalBin = $finalBin | Get-Command 'code-insiders' | Get-Item
+    # Temporarily forcing get-item because it invoked easier
 
     if ($Strict_MustExist) {
         $finalBin | Get-NativeCommand -ea stop
         # | Select -first 1 # does that help or not?
     }
     $finalBin
-    | Get-Item
-    | Select-Object -First 1
+    | Get-Item | Select-Object -First 1
 
 
 

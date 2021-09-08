@@ -42,7 +42,8 @@ function Measure-NinChildItem {
                 # $errorRecord = [ErrorRecord]::
                 # $PSCmdlet.WriteError(
                 #     <# ErrorRecord: #> $errorRecord)
-                Write-Error "'Invalid Path: $curPath'"
+                Write-Error "'Invalid Path: $curPath'" -TargetObject $curPath #@-Exception
+
                 return
             }
             # $bytes = Measure-ChildItem -Path $curPath -Unit B -ValueOnly

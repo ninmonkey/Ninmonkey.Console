@@ -1,7 +1,7 @@
-    # Import-Module Ninmonkey.console -Force
 BeforeAll {
+    # Import-Module Ninmonkey.console -Force
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
-
+    $ErrorActionPreference = 'Break'
 }
 
 Describe 'Write-ConsoleText' -Tag 'ConvertTo' {

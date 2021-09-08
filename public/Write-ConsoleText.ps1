@@ -38,14 +38,14 @@
         # New-Text supports [object]$Separator.
         # Should I allow that here?
         [Parameter()]
-        [object]$Separator, # Object text?
+        [string]$Separator, # Object text?
 
         # Foregorund Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
+        [alias('Fg')]
         [Parameter(
             ParameterSetName = 'FromPipeline', Position = 0)]
         [Parameter(
             ParameterSetName = 'FromParams', Position = 1)]
-        [alias('Fg')]
         [PoshCode.Pansies.RgbColor]$ForegroundColor,
 
         # Background Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
@@ -63,7 +63,7 @@
         [Alias('After')]
         [uint]$LinesAfter = 0,
 
-        # Force coercion to string immediately
+        # Force coercion to string immediately? That might become the default
         [Alias('Force')]
         [Parameter()][switch]$AsString
 
@@ -80,6 +80,20 @@
 
         # might use smart aliases here
         $Text_splat = $pscmdlet.MyInvocation.BoundParameters
+        $smartAlias = $pscmdlet.MyInvocation.InvocationName -eq @('Pair', 'wH1', 'wHr')
+        switch ($smartAlias) {
+            'wH1' {
+                $Fg = 'orange'
+            }
+            'Write-ConsoleText' {
+                #
+            }
+            default {
+                Write-Debug "Smart alias NYI: '$smartAlias'"
+            }
+
+        }
+
 
         # Looks akward. I was planning for dynamic aliases
         [void]$Text_splat.remove( 'InputObject' )

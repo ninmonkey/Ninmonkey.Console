@@ -1,4 +1,6 @@
-﻿$script:publicToExport.function += @('Get-CommandSummary')
+﻿$script:publicToExport.function += @(
+    'Get-CommandSummary'
+)
 $script:publicToExport.alias += @('HelpCommmand')
 
 function Get-CommandSummary {
@@ -85,8 +87,6 @@ function Get-CommandSummary {
                 # $cmd = $cmd | Add-Member -Force -NotePropertyName 'DescriptionColor' -NotePropertyValue $DescStringColor -PassThru -ea ignore
                 $cmd
             }
-
-
         }
         # $helpObj | Join-String -Separator "`n" -Property { $_.description }
 

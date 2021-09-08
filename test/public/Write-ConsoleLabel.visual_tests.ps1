@@ -1,5 +1,6 @@
 ﻿Import-Module Ninmonkey.Console -Force
-
+# $ErrorActionPreference = 'stop'
+# $ErrorActionPreference = 'break'
 Write-ConsoleText 'hi' -fg green -Debug
 # | Out-Null
 & {
@@ -7,12 +8,13 @@ Write-ConsoleText 'hi' -fg green -Debug
     $VisualConfig = @{
         ArrayVerbose = $true
     }
+    $ErrorActionPreference = 'Break'
 
     if ($VisualConfig.ArrayVerbose) {
         Label 'name' 'fred'
         Label 'species' 'cat' -fg 'green'
         # }
-        'cat' | Write-NinLabel 'bob' -fg 'pink' # -Debug
+        'cat' | Write-ConsoleText -fg 'pink' # -Debug
 
         0, 5, 6 | Label 'num' # -Debug
 
@@ -36,6 +38,7 @@ Write-ConsoleText 'hi' -fg green -Debug
 }
 
 & {
+    $ErrorActionPreference = 'Break'
     Label -fg pink 'Change color based on filetype' -before 1 -LinesAfter 1
 
     Get-ChildItem -Path 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console' | ForEach-Object {
@@ -65,6 +68,7 @@ Write-ConsoleText 'hi' -fg green -Debug
 }
 
 & {
+    $ErrorActionPreference = 'Break'
     $filesFormatted = Get-ChildItem . | Select-Object -First 3
     | ForEach-Object {
         Label $_.Name (' ', $_.LastWriteTime -join '')
