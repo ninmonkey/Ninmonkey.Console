@@ -1,9 +1,12 @@
-Import-Module Ninmonkey.Console -Force #| Out-Null
+Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
 # Some tests are visual, or not Pester worthy
 # This file is a scratchboard
 
 # editfunc editfunc -PassThru
 # write-warning 'do me first'
+
+$red = [rgbcolor]'red'
+$red | iProp
 
 
 # H1 'quick test'

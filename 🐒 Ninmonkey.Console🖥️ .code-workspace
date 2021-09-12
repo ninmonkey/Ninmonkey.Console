@@ -95,6 +95,13 @@
                 },
             },
             {
+                "name": "'Get-ChildItem ",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "write-host hi",
+                "cwd": "${workspaceFolder}"
+            },
+            {
                 "name": "<temprun>.ps1",
                 "type": "PowerShell",
                 "request": "launch",

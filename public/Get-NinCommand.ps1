@@ -18,8 +18,9 @@ function Get-NinCommand {
         [Parameter(Position = 0)]
         [string[]]$CommandName,
 
+        # todo: future: autcomplete *only* my modules
         [Parameter()]
-        [string[]]$ModuleName = ''
+        [string[]]$ModuleName
 
     )
 

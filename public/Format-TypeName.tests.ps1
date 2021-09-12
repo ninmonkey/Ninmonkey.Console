@@ -136,6 +136,25 @@ Describe 'Format-TypeName' -Tag 'wip' {
             $items = [list[string]]::new()
             $itemType = $items.GetType()
             $expectedTypeFormat = 'List`1[[String]]'
+            $expectedValidFormats = @(
+                'List`1[[String]]'
+                '[List[string]]'
+                [List`1[String]]
+                [list[String]]
+            )
+        }
+        It 'From Generic List instance' {
+            [Collections.Generic.list[string]] | Format-TypeName | Should -BeIn $expectedValidFormats
+        }
+
+        It 'Basic Generic from typeinstance' {
+            $SampleType = [System.Collections.ObjectModel.ReadOnlyCollection`1[System.Management.Automation.ExperimentalFeature]]
+            $validAnswers = @(
+                [Collections.ObjectModel.ReadOnlyCollection`1[ExperimentalFeature]]
+                [ReadOnlyCollection`1[ExperimentalFeature]]
+
+            )
+            $SampleType | Format-TypeName -Brackets | Should -BeIn $validAnswers
         }
 
         It 'Should Forward to Format-GenericTypeName' {
