@@ -1,7 +1,11 @@
 if (! $DebugInline) {
 
-    $script:publicToExport.function += @('Get-NinCommandName')
-    $script:publicToExport.alias += @('_enumerateMyCommand')
+    $script:publicToExport.function += @(
+        'Get-NinCommandName'
+    )
+    $script:publicToExport.alias += @(
+        '_enumerateMyCommand'
+    )
 }
 
 function Get-NinCommandName {
@@ -13,7 +17,19 @@ function Get-NinCommandName {
     .example
         PS> Get-NinCommandName -ListKeys
     .example
-        PS> Get-NinCommandName -Category DevTool💻
+        🐒> Get-NinCommandName -Category DevTool💻 -Name *prop*
+
+            DevTool💻-iProp
+
+    .example
+        🐒> Get-NinCommandName -Category DevTool💻
+
+            DevTool💻-GetArgumentCompleter
+            DevTool💻-GetHiddenArgumentCompleter
+            DevTool💻-GetTypeAccellerators
+            DevTool💻-iProp
+            DevTool💻-Params-FindCommandWithParameterAlias
+
     .outputs
         [string[]] | [hashtable]
     #>
@@ -37,18 +53,30 @@ function Get-NinCommandName {
         $isCategory
 
 
-        $AllCmds = Get-Command -Module (_enumerateMyModule) | Sort-Object Module, Name, Verb
+        $getCommandSplat = @{
+            Module = (_enumerateMyModule)
+        }
+
+        "filter: -Name $($Name -join ', ' )" | Write-Debug
+
+        if ( ! [string]::IsNullOrWhiteSpace($Name) ) {
+            $getCommandSplat['Name'] = $Name
+        }
+
+        $getCommandSplat | Format-HashTable Pair | Write-Debug
+
+        $AllCmds = Get-Command @getCommandSplat | Sort-Object Module, Name, Verb
         $CategoriesMapping = @{
             'DevTool💻'         = $AllCmds | ?str -Starts 'DevTool💻' Name
             'Conversion📏'      = @()
-            'Style🎨'           = $AllCmds | ?Str '🎨|color' Name
+            'Style🎨'           = $AllCmds | ?Str '🎨' Name
             'Format🎨'          = $AllCmds | ?Str '🎨|format' Name
             'ArgCompleter🧙‍♂️' = @()
             'NativeApp💻'       = @()
             'ExamplesRef📚'     = @()
             'TextProcessing📚'  = @()
-            'Regex🔍'           = @()
-            'Prompt💻'          = @()
+            'Regex🔍'           = $AllCmds | ?str 'Regex'
+            'Prompt💻'          = $AllCmds | ?str 'Prompt'
             'Cli_Interactive🖐' = @()
         }
     }
@@ -60,10 +88,7 @@ function Get-NinCommandName {
 
         $ValidMatches = $Category | ForEach-Object {
             $curCat = $_
-            if (! $CategoriesMapping.ContainsKey($curCat )) {
-                $cmds = $CategoriesMapping[$curCat]
-            }
-            $cmd ??= @()
+            $cmds = $CategoriesMapping[$curCat]
             if ($cmds.length -eq 0) {
                 Write-Warning "No commands in category: $curCat"
             }
@@ -78,14 +103,15 @@ function Get-NinCommandName {
         $AllCmds | Where-Object {
             $curCmd = $_
             # todo: refactor: Test-IsAny
-            $isMatching = $curCmd.Name -in $ValidMatches.Name
+            $isMatching = $ValidMatches.Name -contains $curCmd.Name
+            # $isMatching = $curCmd -in $ValidMatches
             "'$curCmd' was in $($ValidMatches -join ', ')? $isMatching" | Write-Debug
 
             if ($isMatching) {
                 $true ; return
             }
 
-        } | ForEach-Object { $_.Name }
+        } | ForEach-Object { $_.Name } | Sort-Object -Unique
 
         # if ( ! [string]::IsNullOrWhiteSpace( $Category ) ) {
         #     Write-Error -Category NotImplemented -Message 'Metadata not yet written'
