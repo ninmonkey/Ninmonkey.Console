@@ -5,8 +5,9 @@
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 try {
-    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp
-} catch {
+    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea SilentlyContinue
+}
+catch {
     Write-Warning "PSReadline: Missing function 'ShowCommandHelp'"
 }
 Set-PSReadLineOption -Colors @{
@@ -74,7 +75,8 @@ if ($psEditor) {
 foreach ($file in $private_seeminglySci) {
     # Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+    }
+    else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
     }
     . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
@@ -91,7 +93,8 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+    }
+    else {
         Write-Error "Import: private: failed: private: $File"
     }
     . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
@@ -107,7 +110,8 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
     . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
@@ -172,7 +176,7 @@ $public_toDotSource = @(
 
     'Export-PlatformFolderPath'
     # history
-    'Find-HelpFromHistory'
+
 
 
     'Format-History'
@@ -275,7 +279,7 @@ $functionsToExport = @(
     'Export-PlatformFolderPath'
 
     # history
-    'Find-HelpFromHistory'
+
 
 
     # inspection

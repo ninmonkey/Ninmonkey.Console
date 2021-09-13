@@ -42,7 +42,7 @@ function Get-NinCommandName {
         [string[]]$Name,
 
         [Parameter(position = 1)]
-        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐')]
+        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️')]
         [string[]]$Category,
 
         # Docstring
@@ -65,19 +65,38 @@ function Get-NinCommandName {
 
         $getCommandSplat | Format-HashTable Pair | Write-Debug
 
+
+        $res | ?{   ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
+        ($_ | ?str 'nativeapp|nativecommand' Definition) }
+
+
+
         $AllCmds = Get-Command @getCommandSplat | Sort-Object Module, Name, Verb
+        $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru -ea SilentlyContinue
+        | % File | %{ Get-IndentedFunctionInfo $_ }
+
+        $nativeApp_Cmds = $AllFuncInfo | ?{
+            # future: Using AST, detect whether function 'Invoke-NativeCommand' was called
+            ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
+            ($_ | ?str 'nativeapp|nativecommand' Definition)
+        }
+        # $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru | % File | %{ Get-IndentedFunctionInfo $_ }
         $CategoriesMapping = @{
             'DevTool💻'         = $AllCmds | ?str -Starts 'DevTool💻' Name
-            'Conversion📏'      = @()
+            'Conversion📏'      = $AllCmds | ?Str 'ConvertTo|ConvertFrom' Name
             'Style🎨'           = $AllCmds | ?Str '🎨' Name
             'Format🎨'          = $AllCmds | ?Str '🎨|format' Name
-            'ArgCompleter🧙‍♂️' = @()
-            'NativeApp💻'       = @()
-            'ExamplesRef📚'     = @()
+            'ArgCompleter🧙‍♂️' = $AllCmds | ?Str 'ArgumentCompleter|Argument|Completer|Completion' Name
+            'NativeApp💻'       = $nativeApp_Cmds
+            # 'NativeApp💻'       = $AllFuncInfo | ?{   ($_ | ?str 'native.*app' ScriptBlock) -or
+            # ($_ | ?str 'native.*app' Definition) } | % Name
+            'ExamplesRef📚'     = $AllCmds | ?Str 'Example🔖|Example|Template|Cheatsheet' Name
             'TextProcessing📚'  = @()
-            'Regex🔍'           = $AllCmds | ?str 'Regex'
-            'Prompt💻'          = $AllCmds | ?str 'Prompt'
-            'Cli_Interactive🖐' = @()
+            'Experimental🧪'    = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
+            'Regex🔍'           = $AllCmds | ?str 'Regex' Name
+            'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
+            'UnderPublic🕵️‍♀️'          = $AllCmds | ?str -Starts  '_' 'Name'
+            # 'Cli_Interactive🖐' = @()
         }
     }
     process {
@@ -88,6 +107,14 @@ function Get-NinCommandName {
 
         $ValidMatches = $Category | ForEach-Object {
             $curCat = $_
+
+            # is a valid value, and exists
+            if ([string]::IsNullOrWhiteSpace($curCat)) {
+                return
+            }
+            if (! $CategoriesMapping.ContainsKey($curCat)) {
+                return
+            }
             $cmds = $CategoriesMapping[$curCat]
             if ($cmds.length -eq 0) {
                 Write-Warning "No commands in category: $curCat"
@@ -102,6 +129,10 @@ function Get-NinCommandName {
 
         $AllCmds | Where-Object {
             $curCmd = $_
+
+            if ($CategoriesMapping.Count -eq 0) {
+                $true; return
+            }
             # todo: refactor: Test-IsAny
             $isMatching = $ValidMatches.Name -contains $curCmd.Name
             # $isMatching = $curCmd -in $ValidMatches
