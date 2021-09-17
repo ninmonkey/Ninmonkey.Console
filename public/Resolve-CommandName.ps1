@@ -30,6 +30,10 @@ function Resolve-CommandName {
     }
     process {
         $CommandName | ForEach-Object {
+            # just in case. guard to prevent accidental recursion
+            if ($_ -eq 'Resolve-CommandName') {
+                return
+            }
             $NameList.Add( $_ )
         }
     }

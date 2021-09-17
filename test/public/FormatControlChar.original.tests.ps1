@@ -13,9 +13,13 @@
 #>
 
 BeforeAll {
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
-    $ErrorActionPreference = 'break'
-    $ErrorActionPreference = 'Continue'
+    # 1] either run adjacent file  (foo.tests.ps1 -> foo.ps1)
+    #. $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+
+    # 2] or if you're using multiple commands
+    Import-Module Dev.Nin -Force # Is this the correct way to import
+    $ErrorActionPreference = 'stop'
+    $NullStr = '␀' # "`u{2400}"
 }
 
 Describe 'Format-ControlChar' {
@@ -32,6 +36,14 @@ Describe 'Format-ControlChar' {
         $result = $sampleRunes | Format-ControlChar
         $result | Should -Be $Expected
     }
+
+
+    It '"<Label>" Returns "<expected>"' -ForEach @(
+        @{ Label = 'Red'; AnsiString = "`e[91mhi world`e[39m!"; Expected = '␛[91mhi world␛[39m!' }
+    ) {
+        $AnsiString | Format-ControlChar | Should -Be $Expected -Because 'Manually Written Samples'
+    }
+
     Describe 'AllowWhitespace' {
         BeforeAll {
 
@@ -46,21 +58,27 @@ text
     - bar
 - item2
 "@
+            It '"<Sample>" Returns "<expected>"' -ForEach @(
+                @{ sample = "n`n t`t `nr`r" ; expected = 'n␊ t␉ ␊r␍' }
+            ) {
+                . $__PesterFunctionName $Sample | Should -Be $Expected
+            }
 
         }
-        It 'Disabled' {
-            # 1 / 0
-            $sample = "n`n t`t `nr`r"
-            $expected = 'n␊ t␉ ␊r␍'
-            1 / 0
+        if ($false) {
+            It 'Disabled' -Skip {
+                # 1 / 0
 
-            $sample | Format-ControlChar | Should -Be $expected
+
+                $sample | Format-ControlChar | Should -Be $expected
+            }
+            It 'Enabled' {
+                $sample = "n`n t`t `nr`r"
+                $expected = $sample
+                $sample | Format-ControlChar -AllowWhitespace | Should -Be $sample -Because 'If whitespace is ignored, the string should be equivalent'
+            }
         }
-        It 'Enabled' {
-            $sample = "n`n t`t `nr`r"
-            $expected = $sample
-            $sample | Format-ControlChar -AllowWhitespace | Should -Be $sample -Because 'If whitespace is ignored, the string should be equivalent'
-        }
+
         It 'Markdown | disabled' {
             $Expected = '# header␍␊␍␊text␍␊␉tabbed␍␊␍␊- list␍␊    - depth␍␊    - bar␍␊- item2'
             $SampleMd | Format-ControlChar | Should -Be $Expected -Because 'Manually tested output'

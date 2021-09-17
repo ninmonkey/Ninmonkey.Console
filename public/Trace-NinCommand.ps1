@@ -73,6 +73,7 @@
     # $ExportPath = 'temp:\lasttrace-output.log'
     $Paths = @{
         ExportPath   = "$env:LocalAppData\Temp\LastTrace-output.log"
+        ExportStdout = "$env:LocalAppData\Temp\LastTrace-output.stdout.txt"
         ExportFilter = "$env:LocalAppData\Temp\LastTrace-output.filter.log"
     }
 
@@ -89,7 +90,7 @@
     [pscustomobject]$traceCommandSplat
     | Format-List | Out-String -w 9999 | Write-Debug
 
-    Trace-Command @traceCommandSplat | Out-Null
+    $stdout = Trace-Command @traceCommandSplat
 
     if ($PassThru) {
         Get-Content $Paths.ExportPath
@@ -124,6 +125,8 @@
         # }
     } | Set-Content -Path $Paths.ExportFilter
 
+    $stdout | Set-Content -Path $Paths.ExportStdout -Encoding utf8
+
     if (! $Silent ) {
         if (! $NoColor) {
             $RegexQuote = "\b\'\b"
@@ -139,9 +142,9 @@
     }
     if ( $AutoOpen) {
         if ($WithOriginal) {
-            Invoke-Item $Paths.ExportPath
+            codei -r -g ($Paths.ExportPath)
         }
-        Invoke-Item $Paths.ExportFilter
+        codei -r -g ($Paths.ExportFilter)
     }
 
 

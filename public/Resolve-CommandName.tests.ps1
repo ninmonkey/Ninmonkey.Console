@@ -1,19 +1,16 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+BeforeAll {
+    Import-Module Ninmonkey.Console -Force
+    $ErrorActionPreference = 'Stop'
+    $ErrorActionPreference = 'break'
+    # ensure ls.exe exists, or mock it.
+}
 
 Describe "$__PesterFunctionName" {
-    BeforeAll {
-        Import-Module Ninmonkey.Console -Force
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
-        # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
-        $ErrorActionPreference = 'Stop'
-        # ensure ls.exe exists, or mock it.
-
-    }
-    It 'Runs without error' {
-        . $__PesterFunctionName '*'
-    }
-
+    # It 'Runs without error' {
+    #     Resolve-CommandName '*'
+    # }
     # 1] I'm having trouble getting the '<IncludeExe>' to display true/false
     # 2] What's the right way to mock a 'ls.exe' file so that 'Get-Command' will find it.?
     Describe '-IncludeExe Return Type' {
@@ -33,7 +30,7 @@ Describe "$__PesterFunctionName" {
                 IncludeExe = $IncludeExe ?? $false
             }
             # $IncludeExeLabel = [string]$IncludeExe # I tried this
-            $result = . $__PesterFunctionName @splatParam
+            $result = Resolve-CommandName @splatParam
 
             if ($null -eq $ExpectedType) {
                 $result.count | Should -Be 0
@@ -61,7 +58,7 @@ Describe "$__PesterFunctionName" {
             | Should -Be $false -Because 'IncludeExe is off'
         }
     }
-    Describe '-OneOrNone will Throw' {
+    Describe '-OneOrNone will Throw' -Skip {
         # terrible names here
         # future: maybe the whole 'ConvertFrom' block should enumerate with and without strict?
         It 'On and Non-distinct "ls" exists' {
@@ -109,24 +106,44 @@ Describe "$__PesterFunctionName" {
                 @{ Name = 'ls' ; Expected = [System.Management.Automation.CmdletInfo] }
                 @{ Name = 'h1' ; Expected = [System.Management.Automation.FunctionInfo] }
             ) {
-                . $__PesterFunctionName $Name | Should -BeOfType $Expected
+                Resolve-CommandName $Name | Should -BeOfType $Expected
             }
         }
         Describe 'TryA: Hardcoded - Return Type IncludeExe' {
             It '"<Name>" Returns "<expected>"' -ForEach @(
                 @{
-                    Name = 'ls.exe' ; IncludeExe = $True
-                    Expected = [Management.Automation.ApplicationInfo]
+                    Name         = 'ls.exe'
+                    IncludeExe   = $True
+                    ExpectedType = [Management.Automation.ApplicationInfo]
                 }
 
                 @{
-                    Name = 'ls.exe' ; Expected = $null
+                    Name         = 'ls.exe'
+                    IncludeExe   = = $false
+                    ExpectedType = $null
+                    # ExpectedType = $null
                     # error:
                     #       [-] "ls.exe" Returns "" 62ms (61ms|1ms)
                     #       RuntimeException: The right operand of '-is' must be a type.
                 }
             ) {
-                . $__PesterFunctionName $Name -IncludeExe | Should -BeOfType $Expected
+                $splat = @{
+                    Name     = $Name
+                    Expected = $Expected
+                }
+
+
+                if ($ExpectedType) {
+                    $query = Resolve-CommandName $Name -IncludeExe
+                    $query | Should -BeOfType $ExpectedType
+                }
+                if ($IncludeExe) {
+                    $splat.Add('IncludeExe', $IncludeExe)
+                }
+                Resolve-CommandName @splat
+                # Resolve-CommandName $Name -IncludeExe:$IncludeExe | should -Be
+                # Resolve-CommandName $Name -IncludeExe | Should -BeOfType $Expected
+                # Resolve-CommandName $Name -IncludeExe | Should -BeOfType $Expected
             }
         }
         Describe 'TryB: Dynamic - Return Type IncludeExe' {
@@ -148,7 +165,7 @@ Describe "$__PesterFunctionName" {
                     Name       = $Name
                     IncludeExe = $IncludeExe ?? $false
                 }
-                $result = . $__PesterFunctionName @splatParam
+                $result = Resolve-CommandName @splatParam
                 $null -eq $result | Should -Be $True
             }
         }

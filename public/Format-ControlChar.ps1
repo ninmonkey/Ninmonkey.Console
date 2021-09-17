@@ -66,12 +66,17 @@ function Format-ControlChar {
         }
         $controlMin = 0x0
         $controlMax = 0x1f
+        $NullStr = "`u{2400}"
         $bufferSB = [StringBuilder]::new()
     }
 
     process {
         $InputText | ForEach-Object {
             $CurrentLine = $_
+            if ($Null -eq $CurrentLine) {
+                $CurrentLine = "`u{0}"
+                # return # [void]$bufferSB.Append( $nullStr )
+            }
             $CurrentLine.EnumerateRunes() | ForEach-Object {
                 $RuneInfo = $_ # is a [Text.Rune]
                 $Codepoint = $RuneInfo.Value
