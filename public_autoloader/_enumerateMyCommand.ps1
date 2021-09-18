@@ -5,6 +5,7 @@ if (! $DebugInline) {
     )
     $script:publicToExport.alias += @(
         '_enumerateMyCommand'
+        'MyGcm🐒'
     )
 }
 
@@ -33,7 +34,7 @@ function Get-NinCommandName {
     .outputs
         [string[]] | [hashtable]
     #>
-    [Alias('_enumerateMyCommand')]
+    [Alias('_enumerateMyCommand', 'MyGcm🐒')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 
@@ -42,7 +43,7 @@ function Get-NinCommandName {
         [string[]]$Name,
 
         [Parameter(position = 1)]
-        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️')]
+        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒')]
         [string[]]$Category,
 
         # Docstring
@@ -64,12 +65,6 @@ function Get-NinCommandName {
         }
 
         $getCommandSplat | Format-HashTable Pair | Write-Debug
-
-
-        $res | ?{   ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
-        ($_ | ?str 'nativeapp|nativecommand' Definition) }
-
-
 
         $AllCmds = Get-Command @getCommandSplat | Sort-Object Module, Name, Verb
         $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru -ea SilentlyContinue
@@ -96,6 +91,7 @@ function Get-NinCommandName {
             'Regex🔍'           = $AllCmds | ?str 'Regex' Name
             'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
             'UnderPublic🕵️‍♀️'          = $AllCmds | ?str -Starts  '_' 'Name'
+            'My🐒' = $AllCmds | ?str '🐒'
             # 'Cli_Interactive🖐' = @()
         }
     }

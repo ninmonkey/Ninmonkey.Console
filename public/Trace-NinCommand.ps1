@@ -101,10 +101,15 @@
     Get-Content $Paths.ExportPath | ForEach-Object {
 
         $cur = $_
+        # strips: 'ParameterBinding Information: 0 : '
         $cur = $cur -replace $Regex.StripPrefix, ''
 
-        foreach ($tName in $Regex.TypeNameList ) {
-            $cur = $cur -replace $tName, $replaceWith
+        # removes typenames
+        $StripNamespace = $false
+        if ($StripNamespace) {
+            foreach ($tName in $Regex.TypeNameList ) {
+                $cur = $cur -replace $tName, $replaceWith
+            }
         }
         $cur
 

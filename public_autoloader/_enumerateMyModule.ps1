@@ -1,7 +1,17 @@
-function _enumerateMyModule {
+
+$script:publicToExport.function += @(
+    'Get-MyModule'
+)
+$script:publicToExport.alias += @(
+    '_enumerateMyModule'
+    'MyModule🐒'
+)
+
+
+function Get-MyModule {
     <#
     .synopsis
-        internal function, when I need to 'guess' at my module names.
+        internal function, when I need to 'guess' at my module names, or autocomplete them
     .description
         super inefficient, but easily catches all cases
     .example
@@ -19,12 +29,15 @@ function _enumerateMyModule {
         Count             : 32
 
     .notes
-        todo: at leeast cache the get-module call
+        -[ ] future:
+            - query non-imported modules too, but cache the query
+        -[ ] todo: at least cache the get-module call
         using
             'Test-AnyTrue'
     .outputs
         [string[]] of Module names
     #>
+    [Alias('_enumerateMyModule', 'MyModule🐒')]
     [cmdletbinding()]
     param(
         # All? : Get-Module -All
@@ -61,7 +74,7 @@ function _enumerateMyModule {
         $getModuleSplat['ListAvailable'] = $True
     }
 
-    $ModuleGroups =  @{
+    $ModuleGroups = @{
         'FavModules' = 'ClassExplorer', 'EditorServicesCommandSuite', 'Pansies', 'PowerShellEditorServices.Commands', 'PowerShellEditorServices.VSCode', 'PSReadLine'
     }
 

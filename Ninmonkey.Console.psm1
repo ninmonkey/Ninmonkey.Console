@@ -86,7 +86,7 @@ foreach ($file in $private_seeminglySci) {
     section: Private
 #>
 $private = @(
-    '_enumerateMyModule'
+
     'Toast-LogTestNetResult'
     'pester/Test-PesterLinesAreEqual'
 )
@@ -234,7 +234,7 @@ foreach ($file in $public_toDotSource) {
 $functionsToExport = @(
     # misc
     'Get-NinMyVSCode'
-    '_enumerateMyModule'
+
     'Join-Regex'
     'Resolve-CommandName'
     'Test-UserIsAdmin'
