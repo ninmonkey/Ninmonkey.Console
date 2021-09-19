@@ -1,14 +1,22 @@
 ﻿using namespace System.Collections.Generic
+# using namespace System.Management.Automation
 <# init
     todo: better config system, than copying my profile
 #>
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 try {
-    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea SilentlyContinue
+    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea Stop #SilentlyContinue
 }
 catch {
-    Write-Warning "PSReadline: Missing function 'ShowCommandHelp'"
+    # catch [System.Management.Automation.ParameterBindingValidationException] {
+    if ($_.ToString() -match 'Cannot validate argument on parameter ''Function''. The argument "ShowCommandHelp"') {
+        "Module PSReadline: version {0} is missing function: 'ShowCommandHelp'" -f @( (Get-Module PSReadLine).Version )
+        | Write-Warning
+    }
+    else {
+        throw $_
+    }
 }
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"

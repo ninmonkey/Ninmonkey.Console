@@ -1,15 +1,18 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
-Describe "$__PesterFunctionName" -Tag Unit {
-    BeforeAll {
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
-        # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
-        # $ErrorActionPreference = 'stop'
+BeforeAll {
+    Import-Module Ninmonkey.Console -Force
+    # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "Join-Regex.ps1")
+    # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
+    # $ErrorActionPreference = 'break'
+    $ErrorActionPreference = 'stop'
 
-    }
+}
+
+Describe 'Join-Regex' -Tag {
     It 'Runs without error' {
-        # . $__PesterFunctionName
+        # . Join-Regex
         Join-Regex -Regex 'a', 'b'
     }
     It 'No Params Should Error' {
