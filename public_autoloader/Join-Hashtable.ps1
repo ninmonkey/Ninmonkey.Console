@@ -4,19 +4,22 @@ $script:publicToExport.function += @(
 # $script:publicToExport.alias += @(
 # 'HelpCommmand')
 
+
 Function Join-Hashtable {
     <#
     .description
         Copy and append BaseHash with new values from UpdateHash
+    .notes
+        future: add valuefrom pipeline to $UpdateHash param
     #>
     [cmdletbinding()]
     param(
-        [Parameter(
-            Mandatory, ValueFromPipeline, Position = 0, HelpMessage = "Base Hashtable")]
+        # base hashtable
+        [Parameter(Mandatory, Position = 0)]
         [hashtable]$BaseHash,
-
-        [Parameter(
-            Mandatory, Position = 1, HelpMessage = "New values to append and overwrite with")]
+        
+        # New values to append and/or overwrite 
+        [Parameter(Mandatory, Position = 1)]
         [hashtable]$UpdateHash
     )
 
