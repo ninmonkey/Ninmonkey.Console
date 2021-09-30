@@ -26,10 +26,18 @@ function Start-LogTestNet {
     $FilenameSafeDate = (Get-Date).ToString("yyyy_M_dd")
     $FileName = "PingLog_${FilenameSafeDate}.csv"
     $BasePath = "$Env:UserProfile\Documents\2020\powershell\dump\log"
+
+    if ($OneDrive.Enable_MyDocsBugMapping) {
+        # hack to work around one drive
+        $NewBasePath = 'G:\datasource\logs\router\ping-log'
+        write-warning "Using OneDriveBugfixOverride '$BasePath' -> '$NewBasePath'"
+        $BasePath = gi -ea stop $NewBasePath
+    }
+
     $LogPath = Join-Path $BasePath -ChildPath $FileName
     [int]$NumLoops = 0
     if ( [string]::IsNullOrWhiteSpace( $TargetName ) ) {
-        [string[]]$TargetName = 'google.com', '8.8.8.8', '1.1.1.1'
+        [string[]]$TargetName = 'google.com', '8.8.8.8', '1.1.1.1', 'reddit.com', ''
     }
 
     if ($GetLogPath) {
@@ -70,7 +78,8 @@ function Start-LogTestNet {
         if (! $Silent) {
             if ($WriteProgress) {
                 Write-Progress -Activity 'Logging: Test-Net' -Id 1 -Status $Status
-            } else {
+            }
+            else {
                 Write-Host -ForegroundColor Green $Status
             }
         }
