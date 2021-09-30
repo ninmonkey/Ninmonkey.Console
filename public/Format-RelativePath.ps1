@@ -3,6 +3,8 @@ function Format-RelativePath {
     <#
     .synopsis
         convert full path names to relative paths, optionally relative any path.
+    .notes
+        todo: get the dotnet [io.path] method, which is a lot faster
     .example
         # sample files for below
         PS> ls ~\.vscode | select -First 2 | % FullName
@@ -49,9 +51,9 @@ function Format-RelativePath {
     }
     end {
         Pop-Location -StackName 'temp'
-        write-warning 'Already wrote the code using the dotnet method, its far faster'
     }
 }
+# write-warning 'Already wrote the code using the dotnet method, its far faster'
 
 if ($false -and $DebugTestMode) {
     # refactor to use Pester temp drives

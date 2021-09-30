@@ -154,14 +154,14 @@ function Write-ConsoleLabel {
         # | Write-Debug
     }
     Process {
-        Write-Debug 'rewrite'
-        Write-Verbose 'rewrite'
-        return
+        # write-error -ea Continue "rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails        
+        
         # foreach ($Line in $Text) {
         $newTextSplat_Label['Object'] = $Label
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
         $StrLabel = New-Text @newTextSplat_Label
-
+        
+        return
         # if ($LinesBefore -gt 0) {
         #     '' * $LinesBefore
         # }
@@ -180,7 +180,8 @@ function Write-ConsoleLabel {
                 Write-Error "Property '$PropertyName' is invalid or = $null"
                 $newTextSplat_Text['Object'] = $strConst.Null
             }
-        } else {
+        }
+        else {
             $newTextSplat_Text['Object'] = $InputObject
         }
 
@@ -196,7 +197,8 @@ function Write-ConsoleLabel {
         if (
             [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
             $StrText = New-Text @newTextSplat_Text
-        } else {
+        }
+        else {
             $StrText = ''
             Write-Error "-Object was $null"
         }
@@ -214,6 +216,8 @@ function Write-ConsoleLabel {
     }
 
 }
+
+Write-Warning "Error: rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
 
 @'
 Label missing fail case:
