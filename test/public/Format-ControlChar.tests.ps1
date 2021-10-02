@@ -3,9 +3,8 @@ BeforeAll {
     #. $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 
     # 2] or if you're using multiple commands
-    Import-Module Dev.Nin -Force # Is this the correct way to import
-    $ErrorActionPreference = 'break'
-
+    Import-Module 'Ninmonkey.Console' -Force # Dev.Nin -Force # Is this the correct way to import
+    $ErrorActionPreference = 'stop' #'break'
 }
 
 Describe 'Format-ControlChar' {
@@ -50,7 +49,7 @@ Describe 'Format-ControlChar' {
             $sampleRunes = 0..50 | ForEach-Object {
                 [char]::ConvertFromUtf32( $_ )
             }
-            $expected = '␀␁␂␃␄␅␆␇␈␉␊␋␌␍␎␏␐␑␒␓␔␕␖␗␘␙␚␛␜␝␞␟ !"#$%&''()*+,-./012'
+            $expected = '␀␁␂␃␄␅␆␇␈␉␊␋␌␍␎␏␐␑␒␓␔␕␖␗␘␙␚␛␜␝␞␟␠!"#$%&''()*+,-./012'
 
             $result = $sampleRunes | Format-ControlChar
             $result | Should -Be $Expected

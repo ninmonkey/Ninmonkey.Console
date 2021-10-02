@@ -38,6 +38,7 @@ function Set-NinLocation {
         [String]$Path,
 
         # Go back? (uses Pop-Location on custom stack name)
+        [Alias('Popd')]
         [Parameter(ParameterSetName = 'GoBack')]
         [Switch]$Back,
 

@@ -43,7 +43,11 @@ function Format-ControlChar {
         # Preserves whitespace: tab, cr, tab.
         # useful when piping from something like ansi-highlighted Markdown files
         [Alias('AllowWhitespace')]
-        [Parameter()][switch]$PreserveWhitespace
+        [Parameter()][switch]$PreserveWhitespace,
+
+        # Preserve \r\n, otherwise replace all other whitespace
+        [Alias('AllowNewline')]
+        [Parameter()][switch]$PreserveNewline
 
     )
     begin {
@@ -58,14 +62,22 @@ function Format-ControlChar {
             'Whitespace'      = @{
                 type   = 'list'
                 values = @(
-                    0xd # cr
-                    0x9 # tab
-                    0xa # newline
+                    0x20 # space
+                    0xd  # cr
+                    0x9  # tab
+                    0xa  # newline
+                )
+            }
+            'Newlines'        = @{
+                type   = 'list'
+                values = @(
+                    0xd  # cr
+                    0xa  # newline
                 )
             }
         }
-        $controlMin = 0x0
-        $controlMax = 0x1f
+        $controlMin = $Filters.'ControlChars_C0'.min
+        $controlMax = $Filters.'ControlChars_C0'.max + 1 # Because space isn't in C0
         $NullStr = "`u{2400}"
         $bufferSB = [StringBuilder]::new()
     }
@@ -81,6 +93,12 @@ function Format-ControlChar {
                 $RuneInfo = $_ # is a [Text.Rune]
                 $Codepoint = $RuneInfo.Value
                 if ($Codepoint -ge $controlMin -and $Codepoint -le $controlMax ) {
+                    if ($PreserveNewline) {
+                        if ($Codepoint -in $Filters.Newlines.values ) {
+                            [void]$bufferSB.Append( [char]::ConvertFromUtf32( $Codepoint ) )
+                            return
+                        }
+                    }
                     if ($PreserveWhitespace) {
                         if ($Codepoint -in $Filters.Whitespace.values ) {
                             [void]$bufferSB.Append( [char]::ConvertFromUtf32( $Codepoint ) )

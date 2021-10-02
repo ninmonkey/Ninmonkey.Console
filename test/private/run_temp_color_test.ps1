@@ -7,6 +7,10 @@
 # This file is a scratchboard
 Import-Module Ninmonkey.Console -Force -ea stop
 
+'sdf' | Write-ConsoleText -fg 'pink' -ea  Break
+
+return 
+
 # H1 'quick test'
 $ConfigTest = @{
     'write-color'  = $false

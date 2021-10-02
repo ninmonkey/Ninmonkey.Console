@@ -51,7 +51,14 @@ function Get-NinCommandName {
         [Parameter()][switch]$ListKeys
     )
     begin {
-        $isCategory
+        if ($ListKeys) {
+            $CategoriesMapping
+            hr
+            'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒'
+            | Join-String -sep ' '
+            return
+        }
+
 
 
         $getCommandSplat = @{
@@ -68,9 +75,9 @@ function Get-NinCommandName {
 
         $AllCmds = Get-Command @getCommandSplat | Sort-Object Module, Name, Verb
         $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru -ea SilentlyContinue
-        | % File | %{ Get-IndentedFunctionInfo $_ }
+        | % File | % { Get-IndentedFunctionInfo $_ }
 
-        $nativeApp_Cmds = $AllFuncInfo | ?{
+        $nativeApp_Cmds = $AllFuncInfo | ? {
             # future: Using AST, detect whether function 'Invoke-NativeCommand' was called
             ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
             ($_ | ?str 'nativeapp|nativecommand' Definition)
@@ -90,16 +97,12 @@ function Get-NinCommandName {
             'Experimental🧪'    = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
             'Regex🔍'           = $AllCmds | ?str 'Regex' Name
             'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
-            'UnderPublic🕵️‍♀️'          = $AllCmds | ?str -Starts  '_' 'Name'
-            'My🐒' = $AllCmds | ?str '🐒'
+            'UnderPublic🕵️‍♀️' = $AllCmds | ?str -Starts  '_' 'Name'
+            'My🐒'              = $AllCmds | ?str '🐒'
             # 'Cli_Interactive🖐' = @()
         }
     }
     process {
-        if ($ListKeys) {
-            $CategoriesMapping
-            return
-        }
 
         $ValidMatches = $Category | ForEach-Object {
             $curCat = $_
