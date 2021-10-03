@@ -53,7 +53,7 @@ function Format-TestConnection {
 
         switch ( $PSCmdlet.ParameterSetName) {
             'Ping' {
-                'ping' | Write-Verbose
+                # 'ping' | Write-Verbose
                 $InputRecord | private_Format-TestConnectionPingCommand -Detailed:$Detailed
             }
             default {

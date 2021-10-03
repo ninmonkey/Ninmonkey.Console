@@ -8,6 +8,7 @@
 Import-Module Ninmonkey.Console -Force -ea stop
 
 'sdf' | Write-ConsoleText -fg 'pink' -ea  Break
+'sdf' | Write-ConsoleText -fg 'pink' -bg $null -ea  Break
 
 return 
 

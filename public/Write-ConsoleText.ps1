@@ -7,7 +7,9 @@
         Base function used by other commands like Write-ConsoleHeader, Write-ConsoleLabel
 
         The verb 'write' may not be right, but I wanted to avoid a direct collision
-            with Pansies\Text and Pansies\New-Text
+        with Pansies\Text and Pansies\New-Text
+    .notes
+        Wrapper/sugar for Write-Color, smart-aliases choose different defaults
     .example
         Write-Text 'hi' -ForegroundColor green
     .example
@@ -15,7 +17,6 @@
         # Pansies Sep is an object
         $sep = new-text -fg 'orange' '--'
         New-Text ('a'..'z') -sep $sep | % tostring
-    .notes
     #>
     # [Alias('Text', 'Write-Color')] # maybe: Write-Text ?
     [Alias('Write-Text')]
@@ -38,7 +39,7 @@
         # New-Text supports [object]$Separator.
         # Should I allow that here?
         [Parameter()]
-        [string]$Separator, # Object text?
+        [string]$Separator = '', # Object text?
 
         # Foregorund Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"
         [alias('Fg')]
@@ -72,8 +73,13 @@
         # [uint]$Depth = 1
     )
 
-    begin {}
+    begin {
+        if ($AsString) {
+            Write-Error '-AsString:$false' -Category NotImplemented
+        }
+    }
     Process {
+
         # New-Text 'hi world' -fg green | ForEach-Object tostring
         $Prefix = "`n" * $LinesBefore
         $Suffix = "`n" * $LinesAfter
@@ -91,25 +97,71 @@
             default {
                 Write-Debug "Smart alias NYI: '$smartAlias'"
             }
-
         }
-
-
-        # Looks akward. I was planning for dynamic aliases
-        [void]$Text_splat.remove( 'InputObject' )
-        $ObjectWithFixes = $prefix, $InputObject, $Suffix -join $Separator
-        [void]$Text_splat.add( 'Object', $ObjectWithFixes )
-        [void]$Text_splat.Remove('LinesBefore')
-        [void]$Text_splat.Remove('LinesAfter')
-
-        $Text_splat | Format-Table | Out-String -Width 999 | Write-Debug
-        $textObj = New-Text @Text_splat
-
-        if ($AsString) {
-            ($textObj)?.ToString()
-            return
+        $writecolorSplat = @{
+            ForegroundColor = $ForegroundColor
+            BackgroundColor = $BackgroundColor
+            Text            = $InputObject -join $Separator
         }
-        $textObj
+        
+        # function Where-NonNullValue {
+        #     <#
+        #     .synoposis 
+        #     #>
+        #     # don't pass null valued optional args to invocation
+        #     $writecolorSplat.Keys.clone() | ForEach-Object {
+        #         $Key = $_
+        #         if (! $writecolorSplat.ContainsKey($Key)) {
+        #             return
+        #         }
+        #         $Value = $writecolorSplat[ $Key ]
+        #         # or maybe explicit key names : 'ForegroundColor', 'BackgroundColor'
+        #         if ($Null -eq $value  ) {                
+        #             $writecolorSplat.Remove( $Key )                
+        #         }
+        #     }
+        # }
+
+
+        # todo: refactor: use Where-NonNullHashtableValue
+
+        # don't pass null valued optional args to invocation
+        $writecolorSplat.Keys | Join-String -sep ', ' -SingleQuote -op 'Initial Keys: ' | Write-debug
+        $writecolorSplat.Keys.clone() | ForEach-Object {
+            # or maybe explicit key names : 'ForegroundColor', 'BackgroundColor
+            if (! $writecolorSplat.ContainsKey($_)) { return }
+            $val = $writecolorSplat[$_]
+            if ($Null -eq $val ) {
+                $writecolorSplat.Remove( $_ )
+            }
+        }
+        $writecolorSplat.Keys | Join-String -sep ', ' -SingleQuote -op 'Keys Kept: ' | Write-debug
+
+        # render
+        @(
+            $Prefix
+            write-color @writecolorSplat
+            $Suffix
+        ) -join ''
+
+        # return
+        # # Looks akward. I was planning for dynamic aliases
+        # [void]$Text_splat.remove( 'InputObject' )
+        # $ObjectWithFixes = $prefix, $InputObject, $Suffix -join $Separator
+        # [void]$Text_splat.add( 'Object', $ObjectWithFixes )
+        # [void]$Text_splat.Remove('LinesBefore')
+        # [void]$Text_splat.Remove('LinesAfter')
+        # $AsString = ($Text_splat)?['AsString'] ?? $false
+        # [void]$Text_splat.Remove('AsString')
+
+        # $Text_splat | Format-Table | Out-String -Width 999 | Write-Debug
+        # $textObj = New-Text @Text_splat
+
+        # if ($AsString) {
+        #     ($textObj)?.ToString()
+        #     return
+        # }
+        # $textObj
     }
     end {}
 

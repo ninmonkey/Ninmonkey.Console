@@ -5,7 +5,8 @@ function Format-Predent {
     .synopsis
         Adds indentation to code, ex: to post on a forum
     .description
-        .
+        compare/merge with: 
+            C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Format-IndentText.ps1
     .example
         # use clipboard, predent it, then save to clipbard
         PS> Format-Predent

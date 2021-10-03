@@ -5,6 +5,7 @@
 #>
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
+# $PSDefaultParameterValues['Write-Text:AsString'] = $true
 try {
     Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea Stop #SilentlyContinue
 }
@@ -369,7 +370,8 @@ foreach ($typeName in $formatData) {
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    } else {
+    }
+    else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -464,7 +466,8 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
-} else {
+}
+else {
 
     $curSplat = @{
         # Verbose = -Verbose
