@@ -16,7 +16,7 @@ function Get-NinPSReadlineHistory {
     .example
     .notes
         future:
-            - [ ] params -first X, -Last x
+            - [ ] supportsPaging: -first X, -Last x
             - [ ] custom view formatting
     #>
     [Alias('getHistory')]
