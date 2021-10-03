@@ -4,7 +4,7 @@ BeforeAll {
 
     # 2] or if you're using multiple commands
     Import-Module 'Ninmonkey.Console' -Force # Dev.Nin -Force # Is this the correct way to import
-    $ErrorActionPreference = 'stop' #'break'
+    # $ErrorActionPreference = 'stop' #'break'
 }
 
 Describe 'Format-ControlChar' {

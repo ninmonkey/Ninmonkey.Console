@@ -124,6 +124,28 @@ Describe 'Where-NonNullHashtableValue' {
         $Sample.AllGood | Where-NonNullHashtableValue -Debug | Should -Be $Expected.AllGood
         # $Sample | Where-NonNullHashtableValue | Should -Be $Expected.AllGood
     }
+    It 'AllGoodValues-assert' {
+        $Sample.AllGood | Where-NonNullHashtableValue -Debug | Should -Be $Expected.AllGood
+        $results = $Sample.AllGood | Where-NonNullHashtableValue
+        Assert-HashtableEqual $Sample.AllGood $results | Should -Be $True
+        # $Sample | Where-NonNullHashtableValue | Should -Be $Expected.AllGood
+    }
+    It 'TestingTheTester' {
+
+
+        $Sample = @{ 'Something' = 2 ; 'EmptyReference' = $null }
+
+        $Expected1 = @{'Something' = 2 }
+        $Expected2 = @{ 'Something' = 2 ; 'EmptyReference' = $null }
+
+        $res1 = $Sample | Where-NonNullHashtableValue -Debug -Keys 'Something', 'EmptyReference'
+        $res2 = $Sample | Where-NonNullHashtableValue -Debug -Keys 'Something'
+        $res3 = $Sample | Where-NonNullHashtableValue -Debug -Keys 'Something'
+
+        Assert-HashtableEqual $Res1 $Expected1 | Should -Be $True -Because 'Keys included "EmptyReference"'
+        Assert-HashtableEqual $Res2 $Expected2 | Should -Be $True -Because 'Some keys were set, yet did not contain "EmptyReference"'
+        Assert-HashtableEqual $res3 $Expected1 | Should -Be $True -Because 'No Keys were set'
+    }
     Describe 'Explicit Included Keys' {
         BeforeAll {
             $true | Should -Be $false -Because 'NYI'
@@ -150,6 +172,8 @@ Describe 'Where-NonNullHashtableValue' {
         }
     }
     It 'Single $Null Value' {
+        $null -eq ($Sample.BasicNull).EmptyReference | Join-String -op 'EmptyRef is Null?: '
+        | Write-Debug
         # $true | Should -Be $false -Because 'NYI'
         $Sample.BasicNull | Where-NonNullHashtableValue -Debug | Should -Be $Expected.BasicNull
         # $Sample | Where-NonNullHashtableValue | Should -Be $Expected.AllGood
