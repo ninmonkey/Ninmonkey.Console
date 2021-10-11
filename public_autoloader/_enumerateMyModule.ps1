@@ -1,14 +1,16 @@
 
 $script:publicToExport.function += @(
-    'Get-MyModule'
+    'Get-NinModule'
 )
 $script:publicToExport.alias += @(
     '_enumerateMyModule'
     'MyModule🐒'
+    'MyGmo🐒'
+
 )
 
 
-function Get-MyModule {
+function Get-NinModule {
     <#
     .synopsis
         internal function, when I need to 'guess' at my module names, or autocomplete them
@@ -37,7 +39,7 @@ function Get-MyModule {
     .outputs
         [string[]] of Module names
     #>
-    [Alias('_enumerateMyModule', 'MyModule🐒')]
+    [Alias('_enumerateMyModule', 'MyModule🐒', 'MyGmo🐒')]
     [cmdletbinding()]
     param(
         # All? : Get-Module -All

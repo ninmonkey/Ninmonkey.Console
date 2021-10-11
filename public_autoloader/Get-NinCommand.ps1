@@ -1,29 +1,57 @@
-if (! $DebugInline) {
+#Requires -Version 7.0.0
+
+if (! $__debugInlineNin) {
 
     $script:publicToExport.function += @(
-        'Get-NinCommandName'
+        'Get-NinCommand'
     )
     $script:publicToExport.alias += @(
         '_enumerateMyCommand'
         'MyGcm🐒'
+        'MyGet-Command🐒'
     )
 }
 
-function Get-NinCommandName {
+function Get-NinCommand {
     <#
     .synopsis
-        like 'Get-Command -Module (mine)'
+        Does far more than wrapping Get-Command. For that check out 'Ninmonkey.Console\Get-NinCommandProxy
     .notes
-        todo: for Get-NinCommandNameArgumentCompleterAttribute
+        todo: for Get-NinCommandArgumentCompleterAttribute
+
+    note on naming standards:
+
+        Appending '🐒' because
+
+            autocomplete works exactly the same
+
+        my customized standard functions are aliased like
+
+            gcm -> MyGcm🐒
+            ls -> MyLs🐒
+
+        categories
+
+            until categories are added, verbose aliases are defined like
+
+                PS> gcm DevTool💻*
+
+                    DevTool💻-GetArgumentCompleter
+                    DevTool💻-GetHiddenArgumentCompleter
+                    DevTool💻-GetTypeAccellerators
+                    DevTool💻-iProp
+                    DevTool💻-Params-FindCommandWithParameterAlias
+                    DevTool💻-Params-TestTabExpansionResults
+
     .example
-        PS> Get-NinCommandName -ListKeys
+        PS> Get-NinCommand -ListKeys
     .example
-        🐒> Get-NinCommandName -Category DevTool💻 -Name *prop*
+        🐒> Get-NinCommand -Category DevTool💻 -Name *prop*
 
             DevTool💻-iProp
 
     .example
-        🐒> Get-NinCommandName -Category DevTool💻
+        🐒> Get-NinCommand -Category DevTool💻
 
             DevTool💻-GetArgumentCompleter
             DevTool💻-GetHiddenArgumentCompleter
@@ -34,7 +62,7 @@ function Get-NinCommandName {
     .outputs
         [string[]] | [hashtable]
     #>
-    [Alias('_enumerateMyCommand', 'MyGcm🐒')]
+    [Alias('_enumerateMyCommand', 'MyGcm🐒', 'MyGet-Command🐒')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 
@@ -43,7 +71,7 @@ function Get-NinCommandName {
         [string[]]$Name,
 
         [Parameter(position = 1)]
-        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒')]
+        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵')]
         [string[]]$Category,
 
         # Docstring
@@ -54,15 +82,17 @@ function Get-NinCommandName {
         if ($ListKeys) {
             $CategoriesMapping
             hr
-            'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒'
-            | Join-String -sep ' '
+            'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵'
+            | sort -unique
+            | Join-String -sep ', ' -SingleQuote
             return
         }
 
 
+        $cached_MyModules = _enumerateMyModule # future: todo: only caches current run
 
         $getCommandSplat = @{
-            Module = (_enumerateMyModule)
+            Module = ($cached_MyModules)
         }
 
         "filter: -Name $($Name -join ', ' )" | Write-Debug
@@ -74,15 +104,15 @@ function Get-NinCommandName {
         $getCommandSplat | Format-HashTable Pair | Write-Debug
 
         $AllCmds = Get-Command @getCommandSplat | Sort-Object Module, Name, Verb
-        $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru -ea SilentlyContinue
-        | % File | % { Get-IndentedFunctionInfo $_ }
+        $AllFuncInfo = Get-Command * -m ($cached_MyModules) | editfunc -PassThru -ea SilentlyContinue
+        | ForEach-Object File | ForEach-Object { Get-IndentedFunctionInfo $_ }
 
-        $nativeApp_Cmds = $AllFuncInfo | ? {
+        $nativeApp_Cmds = $AllFuncInfo | Where-Object {
             # future: Using AST, detect whether function 'Invoke-NativeCommand' was called
             ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
             ($_ | ?str 'nativeapp|nativecommand' Definition)
         }
-        # $AllFuncInfo = gcm * -m (_enumerateMyModule) | editfunc -PassThru | % File | %{ Get-IndentedFunctionInfo $_ }
+        # $AllFuncInfo = gcm * -m ($cached_MyModules) | editfunc -PassThru | % File | %{ Get-IndentedFunctionInfo $_ }
         $CategoriesMapping = @{
             'DevTool💻'         = $AllCmds | ?str -Starts 'DevTool💻' Name
             'Conversion📏'      = $AllCmds | ?Str 'ConvertTo|ConvertFrom' Name
@@ -153,7 +183,7 @@ function Get-NinCommandName {
 }
 
 
-if ( $DebugInline) {
-    Get-NinCommandName -ListKeys
-    Get-NinCommandName -Category DevTool💻
+if ( $false -and $__debugInlineNin) {
+    Get-NinCommand -ListKeys
+    Get-NinCommand -Category DevTool💻
 }
