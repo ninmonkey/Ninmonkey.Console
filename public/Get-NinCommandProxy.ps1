@@ -1,17 +1,20 @@
-function Get-NinCommand {
+function Get-NinCommandProxy {
     <#
     .synopsis
-        Get-Command wrapper for the CLI
+        [proxy] Wraps the built-in version of 'Get-Command'
+    .description
+
     .notes
         future:
         - [ ] use 'ProxyCommand'?
     .example
         # get my commands by default
-        PS> Get-NinCommand
+        PS> Get-NinCommandProxy
     .example
         # else use wildcards
-        PS> Get-NinCommand *template* | Get-CommandSummary
+        PS> Get-NinCommandProxy *template* | Get-CommandSummary
     #>
+    [Alias('Proxy👻.Get-Command')]
     [CmdletBinding()]
     param (
         # docstring
@@ -36,7 +39,7 @@ function Get-NinCommand {
             'PowerShellEditorServices.Commands'
             'PowerShellEditorServices.VSCode'
             'PSReadLine'
-        )
+        ) | Sort-Object -Unique
 
         $finalSortOrder = 'Source', 'Version', 'Name', 'CommandType'
 
@@ -61,7 +64,8 @@ function Get-NinCommand {
         # }
         if (!($ModuleName)) {
             $gcmDefault_splat['Module'] = $userFavModules
-        } else {
+        }
+        else {
             $gcmDefault_splat.Module = $ModuleName
         }
 
@@ -80,36 +84,4 @@ function Get-NinCommand {
         # | Join-String -Sep ', '
 
     }
-}
-
-function __Format-Command {
-    # other types 'Alias', 'Function', 'Cmdlet', 'ExternalScript', 'Application'
-    # why logic inside Join-Str? Just to try it.
-    $joinStr_splat = @{
-        Separator = "`n"
-        Property  = {
-            switch ($this.CommandType) {
-                'Cmdlet' {
-                    $this.Source, $this.Name -join '\'
-                    break
-                }
-                'Application' {
-                    '{0} ( {1} )' -f @(
-                        $this.Name
-                        $this.Source
-                        break
-                    )
-                }
-                default {
-                    '<no>'
-                }
-            }
-        }
-    }
-
-    Get-Command '*name*'
-    | Sort-Object -Prop 'Source', 'Version', 'Name', 'Command'
-    | Join-String @joinStr_splat
-    # | Sort-Object -Unique
-    throw 'not yet working'
 }
