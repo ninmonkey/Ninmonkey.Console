@@ -1,16 +1,14 @@
 
 $script:publicToExport.function += @(
-    'Get-NinModule'
+    '_enumerateMyModule'
+    # 'Get-NinModule'
 )
 $script:publicToExport.alias += @(
-    '_enumerateMyModule'
     'MyModule🐒'
     'MyGmo🐒'
-
 )
 
-
-function Get-NinModule {
+function _enumerateMyModule {
     <#
     .synopsis
         internal function, when I need to 'guess' at my module names, or autocomplete them
@@ -39,13 +37,13 @@ function Get-NinModule {
     .outputs
         [string[]] of Module names
     #>
-    [Alias('_enumerateMyModule', 'MyModule🐒', 'MyGmo🐒')]
+    [Alias('MyModule🐒', 'MyGmo🐒')]
     [cmdletbinding()]
     param(
         # All? : Get-Module -All
         [Parameter()][switch]$All,
 
-        # ListAvailable? : Get-Module -ListAvailable
+        # Slow. ListAvailable? : Get-Module -ListAvailable
         [Parameter()][switch]$ListAvailable
         # # ListAvailable? : Get-Module -ListAvailable
         # [Parameter()][switch]$Everything
@@ -77,7 +75,11 @@ function Get-NinModule {
     }
 
     $ModuleGroups = @{
-        'FavModules' = 'ClassExplorer', 'EditorServicesCommandSuite', 'Pansies', 'PowerShellEditorServices.Commands', 'PowerShellEditorServices.VSCode', 'PSReadLine'
+        'FavModules' = @(
+            'ClassExplorer', 'EditorServicesCommandSuite',
+            'Pansies', 'PowerShellEditorServices.Commands',
+            'PowerShellEditorServices.VSCode', 'PSReadLine'
+        )
     }
 
     $allModules = Get-Module @getModuleSplat

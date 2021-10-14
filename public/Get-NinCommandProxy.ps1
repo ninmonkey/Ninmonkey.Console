@@ -3,7 +3,7 @@ function Get-NinCommandProxy {
     .synopsis
         [proxy] Wraps the built-in version of 'Get-Command'
     .description
-
+        basically Get-Command with specific defaults
     .notes
         future:
         - [ ] use 'ProxyCommand'?

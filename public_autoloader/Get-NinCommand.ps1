@@ -6,8 +6,8 @@ if (! $__debugInlineNin) {
         'Get-NinCommand'
     )
     $script:publicToExport.alias += @(
-        '_enumerateMyCommand'
         'MyGcm🐒'
+        'Find-Command🐒'
         'MyGet-Command🐒'
     )
 }
@@ -62,7 +62,8 @@ function Get-NinCommand {
     .outputs
         [string[]] | [hashtable]
     #>
-    [Alias('_enumerateMyCommand', 'MyGcm🐒', 'MyGet-Command🐒')]
+    [Alias('MyGcm🐒', 'MyGet-Command🐒',
+        'Find-Command🐒')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 
