@@ -72,8 +72,13 @@ function Get-NinCommand {
         [string[]]$Name,
 
         [Parameter(position = 1)]
-        [ValidateSet('DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵')]
-        [string[]]$Category,
+        [ValidateSet(
+            'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨',
+            'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚',
+            'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪',
+            'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵',
+            'Todo🚧', 'NYI🚧'
+        )][string[]]$Category,
 
         # Docstring
         [Alias('ListCategory')]
@@ -83,7 +88,15 @@ function Get-NinCommand {
         if ($ListKeys) {
             $CategoriesMapping
             hr
-            'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵'
+            @(
+                # 'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵'
+                # 'Todo🚧', 'NYI🚧',
+                'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨',
+                'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚',
+                'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪',
+                'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵',
+                'Todo🚧', 'NYI🚧'
+            )
             | sort -unique
             | Join-String -sep ', ' -SingleQuote
             return
@@ -113,6 +126,18 @@ function Get-NinCommand {
             ($_ | ?str 'nativeapp|nativecommand' ScriptBlock) -or
             ($_ | ?str 'nativeapp|nativecommand' Definition)
         }
+
+        $todoCommands = $AllFuncInfo | Where-Object {
+            # future: Using AST, detect whether function 'Invoke-NativeCommand' was called
+            ($_ | ?str 'todo' ScriptBlock) -or
+            ($_ | ?str 'todo' Definition)
+        }
+        $NYICommands = $AllFuncInfo | Where-Object {
+            # future: Using AST, detect whether function 'Invoke-NativeCommand' was called
+            ($_ | ?str '(\bnyi\b)|(\bwip\b)' ScriptBlock) -or
+            ($_ | ?str '(\bnyi\b)|(\bwip\b)' Definition)
+        }
+
         # $AllFuncInfo = gcm * -m ($cached_MyModules) | editfunc -PassThru | % File | %{ Get-IndentedFunctionInfo $_ }
         $CategoriesMapping = @{
             'DevTool💻'         = $AllCmds | ?str -Starts 'DevTool💻' Name
@@ -127,6 +152,8 @@ function Get-NinCommand {
             'TextProcessing📚'  = @()
             'Experimental🧪'    = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
             'Regex🔍'           = $AllCmds | ?str 'Regex' Name
+            'Todo🚧'           = $todoCommands
+            'NYI🚧'           = $NYICommands
             'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
             'UnderPublic🕵️‍♀️' = $AllCmds | ?str -Starts  '_' 'Name'
             'My🐒'              = $AllCmds | ?str '🐒'
