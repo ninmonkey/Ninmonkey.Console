@@ -22,6 +22,9 @@ function Resolve-CommandName {
         [Parameter()][Switch]$IncludeExe,
 
         # Error if not exactly one match is found
+        [Parameter()][switch]$QualifiedName,
+
+        # Error if not exactly one match is found
         [Alias('Strict')]
         [Parameter()][switch]$OneOrNone
     )
@@ -66,9 +69,16 @@ function Resolve-CommandName {
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
-            } else {
+            }
+            else {
                 "Match count 1 != $($Commands.count)" | Write-Warning
             }
+        }
+
+        if ($QualifiedName) {
+            $Commands
+            | Join-String { $_.Source, $_.Name -join '\' }
+            return
         }
         $Commands
     }

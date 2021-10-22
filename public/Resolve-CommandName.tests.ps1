@@ -1,13 +1,26 @@
-#requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
-$SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+# #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
+# $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+
 BeforeAll {
     Import-Module Ninmonkey.Console -Force
     $ErrorActionPreference = 'Stop'
-    $ErrorActionPreference = 'break'
+    # $ErrorActionPreference = 'break'
     # ensure ls.exe exists, or mock it.
 }
 
-Describe "$__PesterFunctionName" {
+Describe 'Resolve-CommandName' {
+
+    Describe 'Resolve Source Name' {
+        It '<Query> returns <Expected>' -ForEach @(
+            @{ Query = 'ls'; Expected = 'Microsoft.PowerShell.Management\Get-ChildItem' }
+            @{ Query = 'goto'; Expected = 'Ninmonkey.Console\Set-NinLocation' }
+        ) {
+            Resolve-CommandName -QualifiedName -CommandName $Query
+            | Should -Be $Expected
+        }
+
+    }
+
     # It 'Runs without error' {
     #     Resolve-CommandName '*'
     # }

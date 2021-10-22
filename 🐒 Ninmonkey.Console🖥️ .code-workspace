@@ -62,7 +62,13 @@
         },
         "terminal.integrated.copyOnSelection": true,
         "powershell.codeFormatting.pipelineIndentationStyle": "None",
-        "powershell.codeFormatting.addWhitespaceAroundPipe": true
+        "powershell.codeFormatting.addWhitespaceAroundPipe": true,
+        "markdownlint.config": {
+            "MD028": false,
+            "MD025": {
+                "front_matter_title": ""
+            }
+        }
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387

@@ -175,7 +175,6 @@ $public_toDotSource = @(
 
 
     # misc
-    'Get-NinHelp'
     'Select-NinProperty'
 
     # the rest
@@ -251,7 +250,6 @@ $functionsToExport = @(
     'Import-NinModule'
     'Import-NinPSReadLineKeyHandler'
     'ConvertTo-Timespan'
-    'Get-NinHelp'
     'Select-NinProperty'
 
     # console formatting
@@ -402,7 +400,7 @@ if ($true) {
         'Docs'
         'Here'
         'IPython'
-        'ninHelp'
+
 
         # smart alias
         ## Select-NinProperty
