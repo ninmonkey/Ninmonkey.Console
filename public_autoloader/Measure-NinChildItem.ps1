@@ -76,10 +76,11 @@ function Measure-NinChildItem {
                 # 'Size'           = [int64]$query.'Size'
                 'FileCount'      = $query.'FileCount'
                 'DirectoryCount' = $query.'DirectoryCount'
-            } 
+                # todo: update wusing with format data?  or extract it as a mini  example
+            }
             $summaryObj
-            
-            
+
+
         }
     }
 }
@@ -89,6 +90,6 @@ $splatForceIgnore = @{ Force = $true; 'Ea' = 'Ignore' }
 
 Update-TypeData -TypeName 'Nin.DiskUsageSummary' -MemberType ScriptProperty -MemberName 'RelativePath' -Value {
     $this.Path | Format-RelativePath -BasePath (Get-Item . )
-} @splatForceIgnore 
+} @splatForceIgnore
 
-Update-TypeData -TypeName 'Nin.DiskUsageSummary' -DefaultDisplayPropertySet RelativePath, SizeStr, FileCount, DirectoryCount @splatForceIgnore 
+Update-TypeData -TypeName 'Nin.DiskUsageSummary' -DefaultDisplayPropertySet RelativePath, SizeStr, FileCount, DirectoryCount @splatForceIgnore
