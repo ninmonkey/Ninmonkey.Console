@@ -9,6 +9,7 @@ function Find-GitRepo {
             a custom attribute for (filepath must exist) vs (filepath optionally exists) logic?
 
         future
+            - [ ] performance: use 'fdfind' or 'everythingSearch' or even dotnet methods
             - [ ] return record with a custom view?
 
     .example

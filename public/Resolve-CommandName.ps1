@@ -7,11 +7,20 @@ function Resolve-CommandName {
         .description
             Currently returns all types, including CommandType 'Application'
         .example
-            Resolve-Command 'ls'
+            PS> Resolve-Command 'ls'
+            Get-ChildItem
+        .example
+            PS>  Resolve-CommandName ls, goto, at -QualifiedName
+
+                Microsoft.PowerShell.Management\Get-ChildItem
+                Ninmonkey.Console\Set-NinLocation
+                Utility\Select-ObjectIndex
         .outputs
+            [Management.Automation.CmdletInfo[]] or [string[]]
             zero-to-many [CmdletInfo] or other [Command] types
         #>
     [CmdletBinding(PositionalBinding = $false)]
+    [OutputType([Management.Automation.CmdletInfo])]
     param(
         # command/alias name
         [Alias('Name')]
@@ -21,7 +30,7 @@ function Resolve-CommandName {
         # Include exe?
         [Parameter()][Switch]$IncludeExe,
 
-        # Error if not exactly one match is found
+        # Returns the source and command as text, ex: 'ls' outputs: 'Microsoft.PowerShell.Management\Get-ChildItem'
         [Parameter()][switch]$QualifiedName,
 
         # Error if not exactly one match is found
@@ -76,8 +85,10 @@ function Resolve-CommandName {
         }
 
         if ($QualifiedName) {
-            $Commands
-            | Join-String { $_.Source, $_.Name -join '\' }
+            # this works
+            $Commands | ForEach-Object {
+                '{0}\{1}' -f @( $_.Source, $_.Name )
+            }
             return
         }
         $Commands
