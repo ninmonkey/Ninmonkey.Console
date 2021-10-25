@@ -95,6 +95,10 @@ function Get-ObjectProperty {
                         [␀] Description
                         [␀] Product
                     String __NounName           Process
+    .link
+        Dev.Nin\_enumerateProperty
+    .link
+        Dev.Nin\iProp
     .example
         ,(1..4) | prop -IncludeTypeTitle
         1..4 | prop -IncludeTypeTitle

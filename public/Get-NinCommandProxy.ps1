@@ -7,6 +7,8 @@ function Get-NinCommandProxy {
     .notes
         future:
         - [ ] use 'ProxyCommand'?
+
+        see: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-10\Proxies\.output\ProxyCommand-Create-_writeReverseHistory.ps1>
     .example
         # get my commands by default
         PS> Get-NinCommandProxy
