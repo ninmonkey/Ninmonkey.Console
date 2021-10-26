@@ -2,8 +2,11 @@
     "folders": [
         {
             "path": ".",
-            "name": "Ninmonkey.Console | powershell"
-        }
+            "name": "Ninmonkey.Console"
+        },
+        // {
+        //     // "path": "..\\..\\..\\dotfiles_git\\powershell\\Ninmonkey.Profile"
+        // }
     ],
     "settings": {
         /*
@@ -31,7 +34,7 @@
         */
         // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
         "terminal.integrated.drawBoldTextInBrightColors": true,
-        "terminal.integrated.fontSize": 14,
+        "terminal.integrated.fontSize": 18,
         "editor.fontSize": 18,
         "debug.console.fontSize": 18,
         "editor.suggestFontSize": 14,
@@ -68,7 +71,8 @@
             "MD025": {
                 "front_matter_title": ""
             }
-        }
+        },
+        "terminal.integrated.fontFamily": "'consolas'"
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
@@ -112,6 +116,7 @@
                 "type": "PowerShell",
                 "request": "launch",
                 "script": "${workspaceFolder}/test/private/run_temp_test.ps1",
+                // "script": "${Ninmonkey.Console:workspaceFolder}/test/private/run_temp_test.ps1",
                 "cwd": "${file}",
                 "presentation": {
                     "hidden": false,
