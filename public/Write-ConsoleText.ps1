@@ -103,10 +103,10 @@
             BackgroundColor = $BackgroundColor
             Text            = $InputObject -join $Separator
         }
-        
+
         # function Where-NonNullValue {
         #     <#
-        #     .synoposis 
+        #     .synoposis
         #     #>
         #     # don't pass null valued optional args to invocation
         #     $writecolorSplat.Keys.clone() | ForEach-Object {
@@ -116,8 +116,8 @@
         #         }
         #         $Value = $writecolorSplat[ $Key ]
         #         # or maybe explicit key names : 'ForegroundColor', 'BackgroundColor'
-        #         if ($Null -eq $value  ) {                
-        #             $writecolorSplat.Remove( $Key )                
+        #         if ($Null -eq $value  ) {
+        #             $writecolorSplat.Remove( $Key )
         #         }
         #     }
         # }

@@ -5,6 +5,8 @@ Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
 # editfunc editfunc -PassThru
 # write-warning 'do me first'
 
+'hi world'
+
 $red = [rgbcolor]'red'
 $red | iProp
 

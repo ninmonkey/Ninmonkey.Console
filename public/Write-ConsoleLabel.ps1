@@ -154,13 +154,13 @@ function Write-ConsoleLabel {
         # | Write-Debug
     }
     Process {
-        # write-error -ea Continue "rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails        
-        
+        # write-error -ea Continue "rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
+
         # foreach ($Line in $Text) {
         $newTextSplat_Label['Object'] = $Label
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
         $StrLabel = New-Text @newTextSplat_Label
-        
+
         return
         # if ($LinesBefore -gt 0) {
         #     '' * $LinesBefore
@@ -217,7 +217,7 @@ function Write-ConsoleLabel {
 
 }
 
-Write-Warning "Error: rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
+# Write-Warning "Error: rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
 
 @'
 Label missing fail case:
@@ -225,3 +225,4 @@ Label missing fail case:
     Label 'Final Query' $joinedQuery | Write-Information
 
 '@
+Write-Warning 'either: label or format-dict has a depth overflow'
