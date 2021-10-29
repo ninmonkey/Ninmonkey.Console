@@ -56,6 +56,10 @@ function Get-NativeCommand {
         if ((Get-NativeCommand fd -TestAny) -and (Get-NativeCommand fzf -TestAny)) {
             $ENV:FZF_DEFAULT_COMMAND = 'fd'
         }
+
+        $binGh = Get-NativeCommand -CommandName gh -OneOrNone
+        $ghArgs = 'gist', 'list'
+        & $binGh @ghArgs
     #>
     [cmdletbinding()]
     [OutputType([System.Boolean], [System.Management.Automation.ApplicationInfo])] # null too?
@@ -67,7 +71,7 @@ function Get-NativeCommand {
         # One or None: Raise errors when there are more than one match
         [Parameter()][switch]$OneOrNone,
 
-        # Returns true if there at least one, or more matches
+        # Returns a [boolean]. true if there at least one, or more matches
         [Parameter()][switch]$TestAny,
 
         # List all matches -- then quit, PassThru?
@@ -85,9 +89,9 @@ function Get-NativeCommand {
             if ($TestAny) {
                 $splat_Gcm.ErrorAction = 'SilentlyContinue'
             }
-            # $query = Get-Command -Name $CommandName -All -CommandType Application -ea Stop
             $query = Get-Command @splat_Gcm | Sort-Object Name
-        } catch [CommandNotFoundException] {
+        }
+        catch [CommandNotFoundException] {
             Write-Error "ZeroResults: '$CommandName'"
             return
         }
@@ -100,7 +104,6 @@ function Get-NativeCommand {
             $query
             return
         }
-
 
         if ($OneOrNone -and $query.Count -gt 1) {
             $first = $query | Select-Object -First 1
@@ -117,5 +120,4 @@ function Get-NativeCommand {
         Write-Debug "Using Item: $($query.Source)"
         $query
     }
-
 }

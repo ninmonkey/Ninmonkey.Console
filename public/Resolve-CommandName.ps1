@@ -20,7 +20,7 @@ function Resolve-CommandName {
             zero-to-many [CmdletInfo] or other [Command] types
         #>
     [CmdletBinding(PositionalBinding = $false)]
-    [OutputType([Management.Automation.CmdletInfo])]
+    [OutputType([object])]
     param(
         # command/alias name
         [Alias('Name')]
