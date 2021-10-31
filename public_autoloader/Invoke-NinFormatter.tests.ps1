@@ -1,7 +1,7 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
-$SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
-Describe "$__PesterFunctionName" -Tag Unit {
+
+Describe Invoke-NinFormatter {
     BeforeAll {
         Import-Module Ninmonkey.Console -Force
         # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")

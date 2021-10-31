@@ -22,7 +22,12 @@ function Get-NinPSReadlineHistory {
     [Alias('getHistory')]
     [CmdletBinding(PositionalBinding = $false)]
     param (
+        # Warning, very slow
+        [Parameter()][switch]$IncludeProfile
     )
-
     [Microsoft.PowerShell.PSConsoleReadLine]::GetHistoryItems()
+
+    if ($IncludeProfile) {
+        $profile.PSReadLineHistory | Get-Content
+    }
 }

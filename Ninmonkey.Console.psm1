@@ -167,7 +167,7 @@ $public_toDotSource = @(
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
-    'ConvertTo-BitString'
+
     'ConvertTo-PropertyList'
 
     # inspection
@@ -272,7 +272,7 @@ $functionsToExport = @(
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
-    'ConvertTo-BitString'
+
     'ConvertTo-PropertyList'
 
 
@@ -331,7 +331,7 @@ $functionsToExport = @(
     'Test-Net'
     # seemingly-sci
     # 'Get-ElementName'
-    'ConvertTo-BitString'
+
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'

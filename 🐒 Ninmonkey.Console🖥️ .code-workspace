@@ -3,10 +3,7 @@
         {
             "path": ".",
             "name": "Ninmonkey.Console"
-        },
-        // {
-        //     // "path": "..\\..\\..\\dotfiles_git\\powershell\\Ninmonkey.Profile"
-        // }
+        }
     ],
     "settings": {
         /*
@@ -34,10 +31,7 @@
         */
         // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
         "terminal.integrated.drawBoldTextInBrightColors": true,
-        "terminal.integrated.fontSize": 18,
-        "editor.fontSize": 18,
-        "debug.console.fontSize": 18,
-        "editor.suggestFontSize": 14,
+        "editor.fontSize": 16,
         "markdown.preview.fontSize": 12,
         // "screencastMode.fontSize": 56,
         // "window.zoomLevel": 0,
@@ -71,8 +65,7 @@
             "MD025": {
                 "front_matter_title": ""
             }
-        },
-        "terminal.integrated.fontFamily": "'consolas'"
+        }
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387

@@ -4,7 +4,7 @@ $script:publicToExport.function += @(
     'Invoke-NinFormatter'
 )
 $script:publicToExport.alias += @(
-    'FormatScript🎨'
+    'Format.ScriptPs1🎨'
 )
 
 function Invoke-NinFormatter {
@@ -19,6 +19,7 @@ function Invoke-NinFormatter {
         future: allow piping from:
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
     .outputs
+
           [string]
 
     #>
@@ -29,11 +30,15 @@ function Invoke-NinFormatter {
         [Parameter(
             ParameterSetName = 'FromPipeOrParam',
             Mandatory, Position = 0, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
+        [AllowNull()]
+        [AllowEmptyString()]
+        [AllowEmptyCollection()]
+        # [ValidateNotNullOrEmpty()]
         [string]$ScriptDefinition,
 
         # Formats Last Command in history
-        [Alias('FromLastCommand', 'PrevCommand', 'FromHistory')]
+        # [Alias('FromLastCommand', 'PrevCommand', 'FromHistory')]
+        [Alias('PrevCommand')]
         [Parameter(
             Mandatory,
             ParameterSetName = 'FromHistory'
@@ -58,34 +63,54 @@ function Invoke-NinFormatter {
 
     }
     process {
-        try {
-            switch ($PSCmdlet.ParameterSetName) {
-                'FromPipeOrParam' {
-                }
-                'FromHistory' {
-                    $ScriptDefinition = (Get-History -Count 1 | ForEach-Object CommandLine)
-                }
-                'FromClipboard' {
-                    $ScriptDefinition = (Get-Clipboard)
-                }
-
-                default {
-                    Write-Error -ea stop -Category NotImplemented -Message 'Unhandled ParameterSet' -TargetObject $PSCmdlet.ParameterSetName
-                    # throw "Unhandled ParameterSet: $($PSCmdlet.ParameterSetName)"
+        # try {
+        switch ($PSCmdlet.ParameterSetName) {
+            'FromPipeOrParam' {
+                if ($null -eq $ScriptDefinition) {
+                    return
                 }
             }
-
-            $invokeFormatterSplat = @{
-                ScriptDefinition = $ScriptDefinition
-                # formatter requires path, while Invoke-ScriptAnalyzer doe
-                Settings         = (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
+            'FromHistory' {
+                $ScriptDefinition = (Get-History -Count 1 | ForEach-Object CommandLine)
+            }
+            'FromClipboard' {
+                $ScriptDefinition = (Get-Clipboard)
             }
 
-            Invoke-Formatter @invokeFormatterSplat # -Range
+            default {
+                Write-Error -ea stop -Category NotImplemented -Message 'Unhandled ParameterSet' -TargetObject $PSCmdlet.ParameterSetName
+                # throw "Unhandled ParameterSet: $($PSCmdlet.ParameterSetName)"
+            }
         }
-        catch {
-            $PSCmdlet.WriteError( $_ )
+
+        $invokeFormatterSplat = @{
+            ScriptDefinition = $ScriptDefinition
+            # formatter requires path, while Invoke-ScriptAnalyzer doe
+            Settings         = try {
+                (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
+            }
+            catch {
+                Write-Error -m (
+                    'Error loading: $__ninConfig.Config.PSScriptAnalyzerSettings = "{0}"' -f @(
+                        $__ninConfig.Config.PSScriptAnalyzerSettings
+                    )
+                )
+
+            }
         }
+        'using: $__ninConfig.Config.PSScriptAnalyzerSettings = "{0}"' -f @(
+            $__ninConfig.Config.PSScriptAnalyzerSettings
+        ) | Write-Debug
+        $invokeFormatterSplat | Format-dict | Write-Debug
+
+
+        # try {}
+
+        Invoke-Formatter @invokeFormatterSplat # -Range
+        # }
+        # catch {
+        # $PSCmdlet.WriteError( $_ )
+        # }
     }
     end {}
 }

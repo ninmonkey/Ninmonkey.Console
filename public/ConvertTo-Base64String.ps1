@@ -4,7 +4,7 @@
 function ConvertTo-Base64String {
     <#
     .synopsis
-        originally from: <ConvertTo-SciBase64String>
+        originally from: <Utility\ConvertTo-Base64String>
     .notes
         currently the same, separate same. separate for dependency clarity
     .example
