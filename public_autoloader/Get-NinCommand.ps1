@@ -6,9 +6,9 @@ if (! $__debugInlineNin) {
         'Get-NinCommand'
     )
     $script:publicToExport.alias += @(
-        'MyGcm🐒'
+        # 'MyGcm🐒'
         'Find-Command🐒'
-        'MyGet-Command🐒'
+        # 'MyGet-Command🐒'
     )
 }
 
@@ -17,6 +17,7 @@ function Get-NinCommand {
     .synopsis
         Does far more than wrapping Get-Command. For that check out 'Ninmonkey.Console\Get-NinCommandProxy
     .notes
+        maybe this should be Find-NinCommand?
         todo: for Get-NinCommandArgumentCompleterAttribute
 
     note on naming standards:
@@ -58,12 +59,16 @@ function Get-NinCommand {
             DevTool💻-GetTypeAccellerators
             DevTool💻-iProp
             DevTool💻-Params-FindCommandWithParameterAlias
+    .link
+        Dev.Nin\Get-CommandNameCompleter
 
     .outputs
         [string[]] | [hashtable]
     #>
-    [Alias('MyGcm🐒', 'MyGet-Command🐒',
-        'Find-Command🐒')]
+    [Alias(
+        # 'MyGcm🐒',
+        'Find-Command🐒'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 

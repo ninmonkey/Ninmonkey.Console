@@ -30,10 +30,7 @@ function Invoke-NinFormatter {
         [Parameter(
             ParameterSetName = 'FromPipeOrParam',
             Mandatory, Position = 0, ValueFromPipeline)]
-        [AllowNull()]
-        [AllowEmptyString()]
-        [AllowEmptyCollection()]
-        # [ValidateNotNullOrEmpty()]
+        [ValidateNotNullOrEmpty()]
         [string]$ScriptDefinition,
 
         # Formats Last Command in history
@@ -66,9 +63,6 @@ function Invoke-NinFormatter {
         # try {
         switch ($PSCmdlet.ParameterSetName) {
             'FromPipeOrParam' {
-                if ($null -eq $ScriptDefinition) {
-                    return
-                }
             }
             'FromHistory' {
                 $ScriptDefinition = (Get-History -Count 1 | ForEach-Object CommandLine)
