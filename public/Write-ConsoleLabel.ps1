@@ -138,6 +138,7 @@ function Write-ConsoleLabel {
             # Separator = 'x'
             LeaveColor      = $LeaveColor
             IgnoreEntities  = $true
+            Object          = $InputObject
             # Object          = $Text # both are set later anyway
         }
 
@@ -161,7 +162,7 @@ function Write-ConsoleLabel {
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
         $StrLabel = New-Text @newTextSplat_Label
 
-        return
+
         # if ($LinesBefore -gt 0) {
         #     '' * $LinesBefore
         # }
@@ -172,7 +173,7 @@ function Write-ConsoleLabel {
         # tofix: It's actually type object unless no property param
         if ($PropertyName) {
             # $newTextSplat_Text['Object'] = $Text.psobject.properties.$PropertyName
-            $newTextSplat_Text['Object'] = $Text.$PropertyName
+            $newTextSplat_Text['Object'] = $InputObject.$PropertyName
             if ($null -eq $Text.PropertyName) {
                 # allow the user the option to continue with null value
                 # future: test if property exist, then if null,
@@ -194,14 +195,15 @@ function Write-ConsoleLabel {
         # }
         # $InputObject ??= $strConst.Null
         # if ($null -eq $newTextSplat_Text.Object) {
-        if (
-            [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
-            $StrText = New-Text @newTextSplat_Text
-        }
-        else {
-            $StrText = ''
-            Write-Error "-Object was $null"
-        }
+        $strText = New-Text @newTextSplat_Text
+        # if (
+        #     [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
+        #     $StrText = New-Text @newTextSplat_Text
+        # }
+        # else {
+        #     $StrText = ''
+        #     # Write-Error "-Object was $null"
+        # }
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
         Br -Count $LinesAfter
