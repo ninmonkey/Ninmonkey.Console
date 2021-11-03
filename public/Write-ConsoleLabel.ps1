@@ -57,7 +57,20 @@ function Write-ConsoleLabel {
         [Parameter(
             ParameterSetName = 'TextFromPipe',
             Mandatory = $false, ValueFromPipeline)]
+
+
+
+
+        <#
+            Null is allowed for the user's conveinence.
+            allowing null makes it easier for the user to pipe, like:
+            'gc' without -raw or '-split' on newlines
+
+        #>
         # Text is not required. defaults to no color.
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [Parameter(
             ParameterSetName = 'TextFromParam',
             Mandatory = $false, Position = 1)]
@@ -186,24 +199,7 @@ function Write-ConsoleLabel {
             $newTextSplat_Text['Object'] = $InputObject
         }
 
-        #      = $Text
-        #         $StrText = New-Text @newTextSplat_Text
-        #     }
-        #     else {
-
-        #     }
-        # }
-        # $InputObject ??= $strConst.Null
-        # if ($null -eq $newTextSplat_Text.Object) {
         $strText = New-Text @newTextSplat_Text
-        # if (
-        #     [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
-        #     $StrText = New-Text @newTextSplat_Text
-        # }
-        # else {
-        #     $StrText = ''
-        #     # Write-Error "-Object was $null"
-        # }
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
         Br -Count $LinesAfter
@@ -214,17 +210,6 @@ function Write-ConsoleLabel {
 
     }
     end {
-        # Write-Debug 'todo: rewrite to call Write-ConsoleText'
     }
 
 }
-
-# Write-Warning "Error: rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
-
-@'
-Label missing fail case:
-
-    Label 'Final Query' $joinedQuery | Write-Information
-
-'@
-Write-Warning 'either: label or format-dict has a depth overflow'

@@ -1,4 +1,33 @@
-﻿function Format-TypeName {
+﻿function _writeTypeNameString {
+    <#
+    .synopsis
+        macro conditionally prints with parens
+
+    .example
+        _writeTypeNameString 'Foo' -Brackets
+            [Foo]
+    #>
+    param(
+        [alias('Text')]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string]$TypeNameString,
+
+        [Alias('Brackets')]
+        [Parameter()]
+        [switch]$WithBrackets
+    )
+    process {
+        if (! $WithBrackets) {
+            $TypeNameString
+            return
+        }
+        '[{0}]' -f @($TypeNameString)
+        return
+    }
+}
+
+
+function Format-TypeName {
     <#
     .synopsis
         Formats type names to be more readable, removes common prefixes
@@ -15,12 +44,18 @@
     #>
     param(
         # list of types as strings
-        [Parameter(ParameterSetName = 'paramTypeAsString', Mandatory, ValueFromPipeline)]
-        [string]$TypeName,
+        [Alias('Type')]
+        [Parameter(
+            ParameterSetName = 'paramTypeAsString',
+            Mandatory, ValueFromPipeline
+        )]
+        [object]$InputObject,
 
-        # list of types / type instances
-        [Parameter(ParameterSetName = 'paramTypeAsInstance', ValueFromPipeline)]
-        [System.Reflection.TypeInfo]$TypeInstance,
+        # # list of types / type instances
+        # [Parameter(
+        #     ParameterSetName = 'paramTypeAsInstance',
+        #     ValueFromPipeline
+        # )][System.Reflection.TypeInfo]$TypeInstance,
 
         # A List of Namespaces or prefixes to ignore: -IgnoreNamespace
         [Parameter()][Alias('WithoutPrefix')]
@@ -42,6 +77,9 @@
         # [Parameter()][switch]$NoBrackets
     )
     begin {
+        $Config = @{
+            # WithoutBrackets
+        }
         $DefaultIgnorePrefix = @(
             'System.Collections.Generic'
             'System.Collections'
@@ -51,22 +89,24 @@
             'System'
         )
 
-        # Sorting by longest regex simplifies namespace collisions when handling  removal
-        $DefaultIgnorePrefix | Join-String -sep ', ' | Label 'IgnoreDefault' | Write-Debug
-        $IgnorePrefix | Join-String -sep ', ' | Label 'IgnorePrefix' | Write-Debug
-
-        $IgnorePrefix += $DefaultIgnorePrefix
-        $IgnorePrefix = $IgnorePrefix | Sort-Object -Property Length -Descending
-        $IgnorePrefix | Join-String -sep ', ' | Label 'IgnoreCombined' | Write-Debug
-
-
-        # Write-Warning 'Ignore prefix is not working?'
-
-        if ( $IncludePrefix.Count -gt 0) {
-            throw 'Prefix include list NYI'
+        if ($IncludePrefix.count -gt 0) {
+            Write-Warning 'currently ignoring: -IncludePrefix'
+        }
+        if ($IgnorePrefix.count -gt 0) {
+            Write-Warning 'currently ignoring: -IgnorePrefix'
         }
         if ($Colorize) {
-            throw 'Format.ps1xml Ansi Escape NYI'
+            throw 'Format.ps1xml Ansi Escape NYI' 
+            # also use ENV:NO_COLOR
+        }
+        $Str = @{
+            NullSymbol = "`u{2400}"
+            EmptyStr   = 'EmptyStr'
+            EmptySet   = '∅'
+        }        
+
+        $wb = @{
+            WithBrackets = $WithBrackets
         }
     }
 
@@ -74,8 +114,63 @@
         <#
         refactor:
             attempt 'typenameString' -as 'type' before other parsing
+            quick hack before rewrite, otherwise it consumes types
         #>
 
+        # todo: is type already a type?
+
+        # true null?
+        $tinfo = ($InputObject)?.GetType()
+        if ($InputObject -is 'type') {
+            $tinfo = $InputObject
+        }
+       
+        if (($null -eq $InputObject) -or ($null -eq $tinfo)) {
+            _writeTypeNameString @wb $str.NullSymbol
+            return 
+        }
+        # string-y null?
+        if ([string]::IsNullOrWhiteSpace( $InputObject ) ) {
+            _writeTypeNameString @wb $str.NullSymbol
+            return
+        }
+
+        # is a str, but is a valid type? 
+        $maybeFromStr = $InputObject -as 'type'
+        if ($maybeFromStr) {
+            $tinfo = $maybeFromStr
+            $finalString = ''
+            # str, but not a valid type
+        } else {
+            $finalString = $InputObject
+        }
+
+        if ($finalString) {
+            $parsed = $finalString
+        } else {
+            $parsed = $tinfo.fullname -replace '^System\.', ''
+        }
+        
+        $dbgMeta = @{
+            ParameterSetName = $PSCmdlet.ParameterSetName
+            Name             = $tinfo.Name
+            FullName         = $tinfo.FullName
+            Type             = $tinfo
+            PreCastInputType = $InputObject.GetType().FullName
+            FinalString      = $finalString
+        }
+
+
+
+        $dbgMeta | Format-Dict | wi
+
+        _writeTypeNameString @wb $parsed
+
+        return 
+
+        $PSCmdlet.ParameterSetName
+        | str prefix 'parameterSetName'
+        | Write-Debug
         switch ( $PSCmdlet.ParameterSetName ) {
             'paramTypeAsString' {
                 if ( [string]::IsNullOrWhiteSpace( $TypeAsString ) ) {

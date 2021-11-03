@@ -54,6 +54,8 @@ function ConvertTo-PropertyList {
         | % GetEnumerator
         | Join-String -sep "`n" -Property { '{0} = {1}' -f ($_.Key, $_.Value) }
     .link
+        Select-NinProperty
+    .link
         EZOut\ConvertTo-PropertySet
     #>
     [alias('Select-ObjectProperty-HashTable')]

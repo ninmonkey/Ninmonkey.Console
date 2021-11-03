@@ -1,5 +1,6 @@
 ﻿BeforeAll {
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+    # . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+    Import-Module Ninmonkey.Console -Force
 }
 
 <#
@@ -10,6 +11,17 @@ if ($true) {
     'system.text'.GetType() | Format-TypeName
 }
 #>
+InModuleScope 'Ninmonkey.Console' {
+    Describe '_writeTypeNameString' {
+        It 'Default' {
+            _writeTypeNameString 'Foo' | Should -Be 'Foo'
+        }    
+        It 'Bracket' {
+            _writeTypeNameString 'Foo' -WithBrackets | Should -Be '[Foo]'
+        }    
+    }
+}
+
 
 Describe 'Format-TypeName' -Tag 'wip' {
     Describe 'Generic Types' {
