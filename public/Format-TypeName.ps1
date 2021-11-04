@@ -20,9 +20,21 @@ function _writeTypeNameString {
             [Foo]
     #>
     param(
-        [alias('Text')]
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        # Can be anything, it's a string
+        [alias('Name')]
+        [Parameter(
+            ParameterSetName = 'NameOnly',
+            Mandatory, Position = 0, 
+            ValueFromPipeline 
+        )]
         [string]$TypeNameString,
+
+        # may not be a real namespace. used for color
+        [Alias('NameSpace')]
+        [Parameter(Position = 1        
+            # ValueFromPipelineByPropertyName
+        )]
+        [String]$Prefix,
 
         # pre/post
         [Alias('Brackets')]
@@ -34,6 +46,14 @@ function _writeTypeNameString {
         [Parameter()]
         [switch]$Color
     )
+    begin {
+        <#
+        todo: next: Will
+            - show a bunch of (visual only) tests of Format-TYpeNameColor
+            colorize brackets, namespace, typename
+        #>
+        
+    }
     process {
         if (! $WithBrackets) {
             $TypeNameString
@@ -61,11 +81,16 @@ function Format-TypeName {
         PS> $cat.pstypenames | Format-TypeName | join-string -sep ', ' { "[$_]" }
 
             [Selected.System.Management.Automation.PSCustomObject], [Nin.Animal], [PSCustomObject], [Object]
+    
     .notes
     see also:
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
 
         [https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties]
+
+    warning:
+        A low level function like this, should (probably) never use functions like 'format-dict',
+        because of indirect recursion
 
     .link
         Dev.Nin\Get-HelpFromTypeName
@@ -135,9 +160,10 @@ function Format-TypeName {
             # also use ENV:NO_COLOR
         }
         $Str = @{
-            NullSymbol = "`u{2400}"
-            EmptyStr   = 'EmptyStr'
-            EmptySet   = '∅'
+            NullSymbol     = "`u{2400}"
+            EmptyStr       = 'EmptyStr'
+            EmptySet       = '∅'
+            OnlyWhitespace = 'StringIsBlank'
         }        
 
         $wb = @{
@@ -157,6 +183,9 @@ function Format-TypeName {
         # return
         <#
         refactor:
+
+            if type doesn't resolve, and get type isn't non-string, then return self
+
             attempt 'typenameString' -as 'type' before other parsing
             quick hack before rewrite, otherwise it consumes types
         #>
@@ -164,51 +193,83 @@ function Format-TypeName {
         # todo: is type already a type?
 
         # true null?
+        $startedAsString = $InputObject -is 'string'
+        
         $tinfo = ($InputObject)?.GetType()
         if ($InputObject -is 'type') {
             $tinfo = $InputObject
         }
+        # is a str, but is a valid type? 
+        $maybeFromStr = $InputObject -as 'type'
+        $resolvedFromStringFailed = $null -eq $maybeFromStr
        
+        # if (($null -eq $InputObject) -or ($null -eq $tinfo)) {
         if (($null -eq $InputObject) -or ($null -eq $tinfo)) {
+            # might need to move out
+            Write-Debug "I think valid str-resolve-types fall here, but shouldn't '$tinfo', '$resolvedFromStringFailed'"
+            Write-Debug 'if type doesn''t resolve, and get type isn''t non-string, then return self'
             _writeTypeNameString @wb $str.NullSymbol
             return 
         }
         # string-y null?
         if ([string]::IsNullOrWhiteSpace( $InputObject ) ) {
-            _writeTypeNameString @wb $str.NullSymbol
+            _writeTypeNameString @wb $str.OnlyWhitespace
             return
         }
+       
+        @{
+            InputObject              = $InputObject
+            tinfo                    = $tinfo
+            maybeFromStr             = $maybeFromStr ?? '$null'
+            resolvedFromStringFailed = $resolvedFromStringFailed
+        } | Format-Table | Out-String | Write-Debug
 
-        # is a str, but is a valid type? 
-        $maybeFromStr = $InputObject -as 'type'
+        if (! $resolvedFromStringFailed) {
+            # good, keep it
+            $parsed = 
+
+            # if($)
+            
+            $finalString = $tinfo.GetType().FullName            
+        } else {
+
+            $finalString 
+            $maybeFromStr.GetType().FullName
+        }
+        
         if ($maybeFromStr) {
             $tinfo = $maybeFromStr
             $finalString = ''
             # str, but not a valid type
         } else {
-            $finalString = $InputObject
+            $finalString = $tinfo.FullName
         }
 
         if ($finalString) {
             $parsed = $finalString
         } else {
-            $parsed = $tinfo.fullname -replace '^System\.', ''
+            $parsed = $tinfo.FullNames
         }
         
         $dbgMeta = @{
-            ParameterSetName = $PSCmdlet.ParameterSetName
-            Name             = $tinfo.Name
-            FullName         = $tinfo.FullName
-            Type             = $tinfo
-            PreCastInputType = $InputObject.GetType().FullName
-            FinalString      = $finalString
+            ParameterSetName         = $PSCmdlet.ParameterSetName
+            Name                     = $tinfo.Name
+            FullName                 = $tinfo.FullName
+            Type                     = $tinfo
+            PreCastInputType         = $InputObject.GetType().FullName
+            FinalString              = $finalString
+            # ... extra
+            InputObject              = $InputObject
+            tinfo                    = $tinfo
+            maybeFromStr             = $maybeFromStr ?? '$null'
+            resolvedFromStringFailed = $resolvedFromStringFailed
         }
 
 
 
         $dbgMeta | Format-Table | Out-String | wi
 
-        _writeTypeNameString @wb $parsed
+        _writeTypeNameString @wb $parsed # this part, actually goes into rendering? no?
 
         return 
 

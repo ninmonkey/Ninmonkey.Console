@@ -13,12 +13,46 @@ if ($true) {
 #>
 InModuleScope 'Ninmonkey.Console' {
     Describe '_writeTypeNameString' {
-        It 'Default' {
-            _writeTypeNameString 'Foo' | Should -Be 'Foo'
-        }    
-        It 'Bracket' {
-            _writeTypeNameString 'Foo' -WithBrackets | Should -Be '[Foo]'
-        }    
+        
+        Describe 'Color' -Tag 'Ansi', 'Color' {
+            Context 'Raw Strings Type' {
+                It 'Default' {
+                    _writeTypeNameString 'Foo' | Should -Be 'Foo'
+                }    
+                It 'Bracket' {
+                    _writeTypeNameString 'Foo' -WithBrackets | Should -Be '[Foo]'
+                }
+            }
+        }
+        Describe 'NoColor' -Tag 'NO_COLOR' {
+            Context 'Raw Strings Type' {
+                It 'Default' {
+                    _writeTypeNameString 'Foo' | Should -Be 'Foo'
+                }    
+                It 'Bracket' {
+                    _writeTypeNameString 'Foo' -WithBrackets | Should -Be '[Foo]'
+                }
+            }
+            Context 'Real Object FullNames' {
+                BeforeEach {
+                    $Sample = @{
+                        File = Get-Item .
+                    }                
+                }
+                It 'File: -Bracket <WithBrackets> is <Expected>' -Foreach @(
+                    @{
+                        Expected = 'System.IO.DirectoryInfo' ; WithBrackets = $false
+                    }
+                    @{
+                        Expected = '[System.IO.DirectoryInfo]' ; WithBrackets = $true
+                    }
+                ) {
+                    $Name = $Sample.File.GetType().FullName                    
+                    _writeTypeNameString -TypeNameString $Name -WithBrackets:$WithBrackets
+                    | Should -Be $Expected
+                }
+            }
+        }
     }
 }
 
@@ -69,54 +103,56 @@ Describe 'Format-TypeName' -Tag 'wip' {
         | Should -Be 'Func`2[String, Object]'
         # or verbosely: 'System.Func`2[System.String,System.Object]'
     }
+    Describe 'IgnorePrefix' {
 
-    It 'String: FileInfo' {
-        'System.IO.FileInfo' | Format-TypeName
-        | Should -Be '[IO.FileInfo]'
-    }
+        It 'String: FileInfo' {
+            'System.IO.FileInfo' | Format-TypeName
+            | Should -Be '[IO.FileInfo]'
+        }
 
-    It 'String: FileInfo' {
-        'System.IO.FileInfo' | Format-TypeName -NoBrackets
-        | Should -Be 'IO.FileInfo'
-    }
+        It 'String: FileInfo' {
+            'System.IO.FileInfo' | Format-TypeName -NoBrackets
+            | Should -Be 'IO.FileInfo'
+        }
 
-    It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {
-        'System.IO.FileInfo' | Format-TypeName -IgnorePrefix 'System.IO' -NoBrackets
-        | Should -Be 'FileInfo'
-    }
+        It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {
+            'System.IO.FileInfo' | Format-TypeName -IgnorePrefix 'System.IO' -NoBrackets
+            | Should -Be 'FileInfo'
+        }
 
-    It 'TypeInfo instance: FileInfo' {
-        $file = (Get-ChildItem . -Directory | Select-Object -First 1)
-        $file.GetType() | Format-TypeName
-        | Should -Be '[IO.DirectoryInfo]'
-    }
+        It 'TypeInfo instance: FileInfo' {
+            $file = (Get-ChildItem . -Directory | Select-Object -First 1)
+            $file.GetType() | Format-TypeName
+            | Should -Be '[IO.DirectoryInfo]'
+        }
 
-    It 'TypeInfo instance: FileInfo' {
-        $file = (Get-ChildItem . -Directory | Select-Object -First 1)
-        $file.GetType() | Format-TypeName
-        | Should -Be '[IO.DirectoryInfo]'
-    }
+        It 'TypeInfo instance: FileInfo' {
+            $file = (Get-ChildItem . -Directory | Select-Object -First 1)
+            $file.GetType() | Format-TypeName
+            | Should -Be '[IO.DirectoryInfo]'
+        }
 
-    It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {
-        $file = (Get-ChildItem . -Directory | Select-Object -First 1)
-        $file.GetType() | Format-TypeName -IgnorePrefix 'System.IO' -NoBrackets
-        | Should -Be 'DirectoryInfo'
-    }
+        It 'String: FileInfo -IgnorePrefix "System.IO" -NoBrackets' {
+            $file = (Get-ChildItem . -Directory | Select-Object -First 1)
+            $file.GetType() | Format-TypeName -IgnorePrefix 'System.IO' -NoBrackets
+            | Should -Be 'DirectoryInfo'
+        }
 
-    It 'Pipe: Types as text -NoBrackets' {
-        # $inputList = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
-        $inputList = 'b.system.bar', (23).GetType(), 'System.foo', 'System.Object[]', 'foo[]'
-        $expected = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
-        $inputList | Format-TypeName -NoBrackets
-        | Should -Be $expected
-    }
+        It 'Pipe: Types as text -NoBrackets' {
+            # $inputList = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
+            $inputList = 'b.system.bar', (23).GetType(), 'System.foo', 'System.Object[]', 'foo[]'
+            $expected = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
+            $inputList | Format-TypeName -NoBrackets
+            | Should -Be $expected
+        }
 
-    It 'Pipe: Types as text' {
-        # $inputList = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
-        $inputList = 'b.system.bar', (23).GetType(), 'System.foo', 'System.Object[]', 'foo[]'
-        $expected = '[b.system.bar]', '[Int32]', '[foo]', '[Object[]]', '[foo[]]'
-        $inputList | Format-TypeName
-        | Should -Be $expected
+        It 'Pipe: Types as text' {
+            # $inputList = 'b.system.bar', 'Int32', 'foo', 'Object[]', 'foo[]'
+            $inputList = 'b.system.bar', (23).GetType(), 'System.foo', 'System.Object[]', 'foo[]'
+            $expected = '[b.system.bar]', '[Int32]', '[foo]', '[Object[]]', '[foo[]]'
+            $inputList | Format-TypeName
+            | Should -Be $expected
+        }
     }
 
     Context 'GenericsWithNestedClass: NYI' -Tag 'wip', 'nyi' {
