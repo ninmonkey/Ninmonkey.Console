@@ -1,4 +1,16 @@
-﻿function _writeTypeNameString {
+﻿$__ninColor = @{
+    Default = @{
+        SkyBlue      = '#85BDD8'
+        Fg           = 'gray85'
+        FgDim        = 'gray60'
+        PesterGreen  = '#3EBC77'
+        PesterPurple = '#A35BAA'
+
+    }    
+}
+
+
+function _writeTypeNameString {
     <#
     .synopsis
         macro conditionally prints with parens
@@ -12,16 +24,29 @@
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$TypeNameString,
 
+        # pre/post
         [Alias('Brackets')]
         [Parameter()]
-        [switch]$WithBrackets
+        [switch]$WithBrackets,
+
+        # ansi color? 
+        [Alias('WithColor')]
+        [Parameter()]
+        [switch]$Color
     )
     process {
         if (! $WithBrackets) {
             $TypeNameString
             return
         }
-        '[{0}]' -f @($TypeNameString)
+
+        if (! $Color ) {
+            '[{0}]' -f @($TypeNameString)
+            return 
+        }
+
+        
+        '[{0}]' -f @($TypeNameString) | Write-Color $__ninColor.Default.PesterGreen
         return
     }
 }
@@ -41,9 +66,17 @@ function Format-TypeName {
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
 
         [https://docs.microsoft.com/en-us/dotnet/api/system.reflection.typeinfo?view=netcore-3.1#properties]
+
+    .link
+        Dev.Nin\Get-HelpFromTypeName
     #>
+
     param(
         # list of types as strings
+
+        [AllowEmptyString()]
+        [AllowEmptyCollection()]
+        [AllowNull()]
         [Alias('Type')]
         [Parameter(
             ParameterSetName = 'paramTypeAsString',
@@ -96,7 +129,7 @@ function Format-TypeName {
             Write-Warning 'currently ignoring: -IgnorePrefix'
         }
         if ($Colorize) {
-            throw 'Format.ps1xml Ansi Escape NYI' 
+            Write-Error 'Format.ps1xml Ansi Escape NYI' 
             # also use ENV:NO_COLOR
         }
         $Str = @{
@@ -107,6 +140,13 @@ function Format-TypeName {
 
         $wb = @{
             WithBrackets = $WithBrackets
+        }
+
+        $color = @{
+            SkyBlue      = '#85BDD8'
+            FgDim        = 'gray60'
+            PesterGreen  = '#3EBC77'
+            PesterPurple = '#A35BAA'
         }
     }
 
@@ -196,7 +236,7 @@ function Format-TypeName {
                 $TypeAsString = $TypeInstance.FullName
                 break
             }
-            default { throw "not implemented parameter set: $switch" }
+            default { Write-Error "not implemented parameter set: '$switch'" }
         }
 
         $filteredName = $TypeAsString
