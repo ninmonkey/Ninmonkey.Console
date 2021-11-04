@@ -16,6 +16,8 @@ function Get-HelpFromTypeName {
           .
     .outputs
           [string | None]
+    .link
+        Ninmonkey.Console\Format-TypeName
 
     #>
     [Alias('HelpFromType')]

@@ -110,6 +110,8 @@ function Format-TypeName {
         # [Parameter()][switch]$NoBrackets
     )
     begin {
+        # $x = 10
+        # return 
         $Config = @{
             # WithoutBrackets
         }
@@ -151,6 +153,8 @@ function Format-TypeName {
     }
 
     Process {
+        # $x2 = 0
+        # return
         <#
         refactor:
             attempt 'typenameString' -as 'type' before other parsing
@@ -202,7 +206,7 @@ function Format-TypeName {
 
 
 
-        $dbgMeta | Format-Dict | wi
+        $dbgMeta | Format-Table | Out-String | wi
 
         _writeTypeNameString @wb $parsed
 
