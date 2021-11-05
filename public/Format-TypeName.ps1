@@ -10,6 +10,8 @@
 }
 
 
+
+# }
 function _writeTypeNameString {
     <#
     .synopsis
@@ -23,18 +25,18 @@ function _writeTypeNameString {
         # Can be anything, it's a string
         [alias('Name')]
         [Parameter(
-            ParameterSetName = 'NameOnly',
+            # ParameterSetName = '',
             Mandatory, Position = 0, 
-            ValueFromPipeline 
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
         )]
-        [string]$TypeNameString,
+        [string]$TypeName,
 
         # may not be a real namespace. used for color
-        [Alias('NameSpace')]
-        [Parameter(Position = 1        
-            # ValueFromPipelineByPropertyName
+        [Parameter(
+            Position = 1, ValueFromPipelineByPropertyName
         )]
-        [String]$Prefix,
+        [String]$NameSpace,
 
         # pre/post
         [Alias('Brackets')]
@@ -56,17 +58,17 @@ function _writeTypeNameString {
     }
     process {
         if (! $WithBrackets) {
-            $TypeNameString
+            $TypeName
             return
         }
 
         if (! $Color ) {
-            '[{0}]' -f @($TypeNameString)
+            '[{0}]' -f @($TypeName)
             return 
         }
 
         
-        '[{0}]' -f @($TypeNameString) | Write-Color $__ninColor.Default.PesterGreen
+        '[{0}]' -f @($TypeName) | Write-Color $__ninColor.Default.PesterGreen
         return
     }
 }
@@ -128,7 +130,10 @@ function Format-TypeName {
 
         # surround type names with '[]' ?
         [Alias('Brackets')]
-        [Parameter()][switch]$WithBrackets
+        [Parameter()][switch]$WithBrackets,
+
+        # PassThru formatted typename 
+        [Parameter()][switch]$PassThru
 
 
         # [Alias('WithoutBrackets')]
@@ -193,9 +198,91 @@ function Format-TypeName {
         # todo: is type already a type?
 
         # true null?
-        $startedAsString = $InputObject -is 'string'
-        
+        if ($Null -eq $InputObject) {
+            _writeTypeNameString @wb $str.NullSymbol
+            return
+        }
+
+        $startedAsString = $InputObject -is 'string'     
+        $startedAsType = $InputObject -is 'type'   
         $tinfo = ($InputObject)?.GetType()
+
+
+        if ($InputObject -is 'type') { 
+            $tinfo = $InputObject
+        } else {
+            $tinfo = ($InputObject)?.GetType()
+        }
+        
+        if ($startedAsString) {
+            # todo: next: PR: auto cast using -as
+            $parsed = $InputObject -replace '^System\.', ''
+            # $nameSpace = 
+        } else {
+            $parsed = $tinfo.FullName -replace '^System\.', ''
+        }
+        
+        $parsedInfo = [ordered]@{
+            PSTypeName        = 'nin.ParsedTypeName' 
+            <#
+            duties:
+                external code/type has 'nin.TypeInfo' and other inspection
+
+                Format-TypeName:
+                    least amount of info, and dependencies as possible. 
+                    otherwise recursion 
+            #>
+            # RenderName        = # plus, here, it's recursive. visual, maybe not? $tinfo | Format-TypeName -WithBrackets 
+            FullName          = $tinfo.FullName
+            Name              = $tinfo.Name # would be format style / compute some
+            NameSpace         = $tinfo.NameSpace
+            OriginalReference = $tinfo
+        }
+
+        if ($PassThru) {
+            [pscustomobject]$parsedInfo
+            return
+        }
+ 
+        # -replace '^System\.', ''
+        _writeTypeNameString @wb -Name $parsedInfo.Name -Namespace $parsedInfo.NameSpace
+        # _writeTypeNameString @wb -TypeNameString $ninTypeInfo -Namespace ($tinfo.Namespace ?? '')
+
+
+
+
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        Write-Debug 'skipping  logic'
         if ($InputObject -is 'type') {
             $tinfo = $InputObject
         }
@@ -334,9 +421,19 @@ function NestedOrNot( [type]$TypeInfo ) {
         $true -eq $typeinfo.IsNested | Label 'IsNested?: '
         $nestedTypeName = $typeinfo.DeclaringType.Name, $typeinfo.Name -join '+'
         ( $typeinfo.namespace), $nestedTypeName -join '.'
-    }
-
+    }    
 }
+
+<#
+
+test it:
+Import-Module Ninmonkey.Console -Force
+
+(gi . ) | Format-TypeName  -ea break
+
+(gi . ).GetType() | Format-TypeName  -ea break
+
+#>
 $warningText = @'
 1]
     [string](([system.collections.generic.list[hashtable]]@()).GetType())
