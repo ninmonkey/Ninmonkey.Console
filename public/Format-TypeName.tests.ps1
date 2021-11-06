@@ -89,6 +89,19 @@ Describe 'Format-TypeName' -Tag 'wip' {
         $Sample = 'system.io.fileinfo'
         $sample | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets
     }
+    It 'PrettyPrintMe' {
+        $rawString = @'
+Cannot create object of type "System.Collections.Generic.Dictionary`2[System.String,System.Object]". The mystring property was not found for the System.Collections.Generic.Dictionary`2[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] object. The available property is: [Comparer <System.Collections.Generic.IEqualityComparer`1[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]>] , [Count <System.Int32>] , [Keys <System.Collections.Generic.Dictionary`2+KeyCollection[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]>] , [Values <System.Collections.Generic.Dictionary`2+ValueCollection[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Object, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]>] , [IsReadOnly <System.Boolean>] , [IsFixedSize <System.Boolean>] , [SyncRoot <System.Object>] , [IsSynchronized <System.Boolean>]
+'@
+        # maybe tokenize smallest chunks of [[.*?]]
+        $rawString -replace (@(
+                ReLit '[['
+                '.*?'
+                ReLit '[['
+            ) -join '') , "`n`n"
+        $dict = [System.Collections.Generic.Dictionary[string, object]]@{'mystring' = 'myobject' }
+        $False | Should -Be $True -Because 'test is not written yet'
+    }
     It 'AutoConvert Inputs' {
         $Sample = 'system.io.fileinfo'
         $res1 = $sample | Format-TypeName -Brackets
