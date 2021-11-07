@@ -58,6 +58,12 @@ InModuleScope 'Ninmonkey.Console' {
 
 
 Describe 'Format-TypeName' -Tag 'wip' {
+    It 'First Bug' {
+        (Get-Item .).pstypenames | Format-TypeName -Brackets
+        (Get-Item .).pstypenames | Format-TypeName -Brackets
+        | Sort-Object -Unique | len
+        | Should -Not -Be 1
+    }
     Describe 'Generic Types' {
         It 'Non-Instance of Generic from ClassExplorer' {
 

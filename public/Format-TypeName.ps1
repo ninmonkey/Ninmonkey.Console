@@ -21,6 +21,7 @@ function _writeTypeNameString {
         _writeTypeNameString 'Foo' -Brackets
             [Foo]
     #>
+    [cmdletbinding()]
     param(
         # Can be anything, it's a string
         [alias('Name')]
@@ -98,6 +99,7 @@ function Format-TypeName {
         Dev.Nin\Get-HelpFromTypeName
     #>
 
+    [cmdletbinding()]
     param(
         # list of types as strings
 
