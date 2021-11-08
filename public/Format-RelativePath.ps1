@@ -2,9 +2,18 @@ Export-ModuleMember -Alias 'ConvertTo-RelativePath'
 function Format-RelativePath {
     <#
     .synopsis
-        convert full path names to relative paths, optionally relative any path.
-    .notes
+        relative paths, allows you to pipe to commands that expects raw text like 'fzf preview'. 
+    .description
+        Transforms both paths as text and (get-item)s
+            - convert to the raw File.FullName raw text
+            - convert to relative path
+        If not specified, it uses your current directory
+
+        for files/folders, converts to the string relative path
+        this is meant to pre-process items as was as j
         todo: get the dotnet [io.path] method, which is a lot faster
+    .example
+        newestItem🔎 Code-Workspace💻 | StripAnsi | To->RelativePath | pipe->Peek
     .example
         🐒> ls . -Recurse *.json | Format-RelativePath
     .example
@@ -28,32 +37,54 @@ function Format-RelativePath {
         C:\Users\cppmo_000\.vscode\argv.json
     .example
         # use a specific base path
-        PS> ls ~\.vscode | select -First 2 | Format-RelativePath ~\.vscode\
-        .\extensions
-        .\argv.json
+        🐒> ls -Force ~\.vscode | Format-RelativePath "$Env:USERPROFILE"
+
+            .vscode\extensions
+            .vscode\argv.json
     .example
         # use relative your CWD
-        PS> PWD
-        C:\Users\cppmo_000\Documents\2020\powershell
 
-        PS> ls ~\.vscode | select -First 2 | Format-RelativePath
-        ..\..\..\.vscode\extensions
-        ..\..\..\.vscode\argv.json
+        🐒> ls .\My_Gist\ | To->RelativePath
+
+            My_Gist\AngleSharp Example
+            My_Gist\Calling-Pwsh-Commands-With-Dynam           
+            My_Gist\Making regular expressions reada
+            
+    .outputs
+        [string]
+    .link
+        https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getrelativepath
+    .link
+        https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getfullpath
     #>
     [Alias('ConvertTo-RelativePath')]
     [cmdletbinding()]
     param (
         # Filepath
-        [Alias('PSPath', 'Path')]
+        [Alias('PSPath', 'Path', 'To->RelativePath')]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [object[]]$InputObject,
 
         # relative path to resolve from
+        # future, use completions so visual and final replace are different
+        # it can show 'dotfiles' but really use env vars, etc.
+        # $items = "$Env:UserProfile", "$Env:AppData", "$Env:LocalAppData"
+        # | ForEach-Object tostring
+        # , $items
         [Parameter(Position = 0)]
+        [ArgumentCompletions(
+            'C:\Users\cppmo_000\SkyDrive\Documents\2021',
+            'C:\Users\cppmo_000\AppData\Roaming',
+            'C:\Users\cppmo_000\AppData\Local',
+            'C:\Users\cppmo_000'
+        )]
         [string]$BasePath
 
     )
     begin {
+        $Config = @{
+            AlwaysStripAnsi = $true
+        }
         # Push-Location -StackName 'temp' $BasePath
         if (! [string]::IsNullOrWhiteSpace( $BasePath) ) {
             $curDir = Get-Item $BasePath
@@ -62,13 +93,24 @@ function Format-RelativePath {
     }
     process {
         $InputObject | ForEach-Object {
-            $curPath = $_
-            [System.IO.Path]::GetRelativePath( $curDir, $curPath )
+            $curItem = $_
+            if ($curItem -is 'string') {
+                $curItem = $curItem | Remove-AnsiEscape
+            }
+            $curItem = Get-Item $curItem
+            if ($null -eq $curItem) {
+                Write-Error 'curItem: $null'
+                return 
+            }
+            if ($null -eq $curDir) {
+                Write-Error 'curDir: $null'
+                return 
+            }
+            
+            [System.IO.Path]::GetRelativePath( $curDir, $curItem )
         }
     }
-    end {
-
-    }
+    end { }
 }
 # write-warning 'Already wrote the code using the dotnet method, its far faster'
 
