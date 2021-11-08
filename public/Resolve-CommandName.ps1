@@ -33,6 +33,11 @@ function Resolve-CommandName {
         # Returns the source and command as text, ex: 'ls' outputs: 'Microsoft.PowerShell.Management\Get-ChildItem'
         [Parameter()][switch]$QualifiedName,
 
+        # preserves alias's original names in the output
+        [Parameter()][switch]$IncludeAlias,
+
+
+
         # Error if not exactly one match is found
         [Alias('Strict')]
         [Parameter()][switch]$OneOrNone
@@ -57,10 +62,9 @@ function Resolve-CommandName {
 
         $commands = Get-Command @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
-            if ($_.CommandType -eq 'Alias') {
+            if ($_.CommandType -eq 'Alias' -and (! $IncludeAlias)) {
                 $_.ResolvedCommand
-            }
-            else {
+            } else {
                 $_
             }
         }
@@ -78,8 +82,7 @@ function Resolve-CommandName {
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
-            }
-            else {
+            } else {
                 "Match count 1 != $($Commands.count)" | Write-Warning
             }
         }
