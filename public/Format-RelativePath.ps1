@@ -78,7 +78,12 @@ function Format-RelativePath {
             'C:\Users\cppmo_000\AppData\Local',
             'C:\Users\cppmo_000'
         )]
-        [string]$BasePath
+        [string]$BasePath,
+
+        # interpret strings as literal path, verses get-item which resolves to many files
+        # paths with globs or 'c:\foo\*' resolve to many paths if this is off
+        [alias('LiteralPath')]
+        [switch]$AsLiteralPath
 
     )
     begin {
@@ -97,7 +102,9 @@ function Format-RelativePath {
             if ($curItem -is 'string') {
                 $curItem = $curItem | Remove-AnsiEscape
             }
-            $curItem = Get-Item $curItem
+            if (! $LiteralPath) {
+                $curItem = Get-Item $curItem
+            }
             if ($null -eq $curItem) {
                 Write-Error 'curItem: $null'
                 return 
@@ -110,7 +117,8 @@ function Format-RelativePath {
             [System.IO.Path]::GetRelativePath( $curDir, $curItem )
         }
     }
-    end { }
+    end { 
+    }
 }
 # write-warning 'Already wrote the code using the dotnet method, its far faster'
 

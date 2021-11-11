@@ -1,7 +1,9 @@
 ﻿$script:publicToExport.function += @(
     'Get-CommandSummary'
 )
-$script:publicToExport.alias += @('HelpCommmand')
+$script:publicToExport.alias += @(
+    'HelpCommmand'
+)
 
 function Get-CommandSummary {
     <#
