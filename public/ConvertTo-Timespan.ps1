@@ -4,33 +4,30 @@ function ConvertTo-Timespan {
     .synopsis
         converts strings to a [timespan]
     .description
-        minimal error detection, or some defaults apply less impact
+        by default the value 0 is an error, or when the regex does not match
+        throw errors when no value is created, user may ignore it.
         
-        ex: Without strict mode, if $RelativeText has extra data
-            after splitting, then there's an error.
-        new:
-            - throw errors when no value is created, user may ignore it.
-        future:
-            decent deterministic error dectection is
+        next: force a full regex match, $RelativeText has any non-matched text, 
+            after splitting, then there's an error.            
+            next: decent deterministic parse decetection is
                 1] attempt to grab matches in the orignal string:
                     "[day]? [hour]? [minute]? [second]?"
                 2] strip those matches from the original string
-                3] if orignal string.length > 0,
+                3] if non-matching string.length > 0,
                     throw error
 
-            that covers the majority of error cases,
-            without complex logic or edge cases
+                that covers the majority of error cases, without complex logic or edge cases
 
     .example
         1d3h4s -> #duration(1, 3, 4)'
     .example
-        $tslist = @(
+        PS>  $tslist = @(
             2 | days
             3 | hours
         )
 
         $ts_sum = $tslist | Measure-Object TotalMilliSeconds -Sum | % Sum | %{ 
-        [timespan]::new(0,0,0,0,$_)
+            [timespan]::new(0,0,0,0,$_)
         } 
 
         $ts_sum | Should -be (RelativeTs 2d3h -debug)
@@ -50,7 +47,6 @@ function ConvertTo-Timespan {
     .outputs
         [timespan] or null
     .notes
-        futrue:
         - [ ] better verb?
             better name, timespan? ConvertTo ?
             'New-RelativeTimespan' or 'ConvertTo-Timespan' ?
