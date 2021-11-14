@@ -34,7 +34,7 @@ function Resolve-CommandName {
         [Parameter()][switch]$QualifiedName,
 
         # preserves alias's original names in the output
-        [Parameter()][switch]$IncludeAlias,
+        [Parameter()][switch]$PreserveAlias,
 
 
 
@@ -62,7 +62,7 @@ function Resolve-CommandName {
 
         $commands = Get-Command @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
-            if ($_.CommandType -eq 'Alias' -and (! $IncludeAlias)) {
+            if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
                 $_.ResolvedCommand
             } else {
                 $_

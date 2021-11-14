@@ -11,7 +11,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.1'
+    ModuleVersion     = '0.1.2'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -26,7 +26,7 @@
     CompanyName       = 'Jake Bolton'
 
     # Copyright statement for this module
-    Copyright         = '(c) Jake Bolton 2021'
+    Copyright         = '(c) Jake Bolton 2021-2022'
 
     # Description of the functionality provided by this module
     Description       = 'Utilities to improve the quality of interactive use, the Command Line'
@@ -51,7 +51,9 @@
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @(
-        'Pansies', 'ClassExplorer'
+        'Pansies'
+        'ClassExplorer'
+        'Utility'           # hard dependency for now
     )
 
     # Assemblies that must be loaded prior to importing this module

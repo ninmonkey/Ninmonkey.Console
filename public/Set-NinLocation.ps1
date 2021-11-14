@@ -52,8 +52,7 @@ function Set-NinLocation {
     if ($Back) {
         try {
             Pop-Location -StackName 'NinLocation' -ea Stop
-        }
-        catch {
+        } catch {
             Write-Debug 'stack was empty'
         }
         return
@@ -71,7 +70,7 @@ function Set-NinLocation {
         )
         return
         # todo: future: pass command to Push-Location for providers like registry
-    }
+    } 
 
     if (! (Test-Path -Path $Path)) {
         'Invalid path: {0}' -f $Path | Write-Error -Category 'InvalidArgument'

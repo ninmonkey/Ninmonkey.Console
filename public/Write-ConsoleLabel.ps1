@@ -194,9 +194,11 @@ function Write-ConsoleLabel {
                 Write-Error "Property '$PropertyName' is invalid or = $null"
                 $newTextSplat_Text['Object'] = $strConst.Null
             }
-        }
-        else {
+        } else {
             $newTextSplat_Text['Object'] = $InputObject
+        }
+        if ($null -eq $newTextSplat_Text['Object'] ) {
+            $newTextSplat_Text['Object'] = '[␀]'
         }
 
         $strText = New-Text @newTextSplat_Text
