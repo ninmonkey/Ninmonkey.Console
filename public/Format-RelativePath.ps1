@@ -98,12 +98,14 @@ function Format-RelativePath {
     }
     process {
         $InputObject | ForEach-Object {
-            $curItem = $_
-            if ($curItem -is 'string') {
-                $curItem = $curItem | Remove-AnsiEscape
+            $rawItem = $_
+            if ($rawItem -is 'string') {
+                $parsedItem = $rawItem
+                | Remove-AnsiEscape
             }
+
             if (! $LiteralPath) {
-                $curItem = Get-Item $curItem
+                $curItem = Get-Item $parsedItem
             }
             if ($null -eq $curItem) {
                 Write-Error 'curItem: $null'
@@ -114,7 +116,7 @@ function Format-RelativePath {
                 return 
             }
             
-            [System.IO.Path]::GetRelativePath( $curDir, $curItem )
+            [System.IO.Path]::GetRelativePath( $curDir, $parsedItem )
         }
     }
     end { 
