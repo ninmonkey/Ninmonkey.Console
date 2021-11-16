@@ -90,23 +90,37 @@ function Get-NinCommand {
         [Parameter()][switch]$ListKeys
     )
     begin {
+        Write-Warning 'is there a recursive loop or something hang?'    
+        @(
+            @(
+                'make commands from VALIDATESET'
+                'commands with string "NYI"'
+                'commands with string "todo"'
+                'commands with "exception NYI"'
+                'commands with "throw"'
+            ) | str ul 
+        ) | str prefix 'Stuff todo:'
+        | Write-Warning
+
+        ## now real code
+
         if ($ListKeys) {
             $CategoriesMapping
-            hr
-            @(
-                # 'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵'
-                # 'Todo🚧', 'NYI🚧',
-                'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨',
-                'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚',
-                'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪',
-                'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵',
-                'Todo🚧', 'NYI🚧'
-            )
-            | sort -unique
-            | Join-String -sep ', ' -SingleQuote
+            # hr
+            # @(
+            #     # 'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨', 'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚', 'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪', 'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵'
+            #     # 'Todo🚧', 'NYI🚧',
+            #     'DevTool💻', 'Conversion📏', 'Style🎨', 'Format🎨',
+            #     'ArgCompleter🧙‍♂️', 'NativeApp💻', 'ExamplesRef📚', 'TextProcessing📚',
+            #     'Regex🔍', 'Prompt💻', 'Cli_Interactive🖐', 'Experimental🧪',
+            #     'UnderPublic🕵️‍♀️', 'My🐒', 'Validation🕵',
+            #     'Todo🚧', 'NYI🚧'
+            # )
+            # | Sort-Object -Unique
+            # | Join-String -sep ', ' -SingleQuote
             return
         }
-
+        
 
         $cached_MyModules = _enumerateMyModule # future: todo: only caches current run
 
@@ -157,10 +171,10 @@ function Get-NinCommand {
             'TextProcessing📚'  = @()
             'Experimental🧪'    = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
             'Regex🔍'           = $AllCmds | ?str 'Regex' Name
-            'Todo🚧'           = $todoCommands
-            'NYI🚧'           = $NYICommands
+            'Todo🚧'            = $todoCommands
+            'NYI🚧'             = $NYICommands
             'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
-            'UnderPublic🕵️‍♀️' = $AllCmds | ?str -Starts  '_' 'Name'
+            'UnderPublic🕵️‍♀️' = $AllCmds | ?str -Starts '_' 'Name'
             'My🐒'              = $AllCmds | ?str '🐒'
             # 'Cli_Interactive🖐' = @()
         }
@@ -212,7 +226,8 @@ function Get-NinCommand {
         #     $CategoriesMapping.Values
         # }
     }
-    end {}
+    end {
+    }
 }
 
 

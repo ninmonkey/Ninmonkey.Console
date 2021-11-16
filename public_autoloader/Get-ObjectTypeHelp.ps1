@@ -36,7 +36,8 @@ function Get-ObjectTypeHelp {
     )
 
     begin {
-        # list of full type nam;es
+        # list of full type nam;es1
+        $x 
         $NameList = [list[string]]::new()
         $TemplateUrl = 'https://docs.microsoft.com/en-us/dotnet/api/{0}'        
     }
@@ -45,10 +46,39 @@ function Get-ObjectTypeHelp {
             return
         }        
         # if generics cause problems, try another method
+        if ($InputObject -is 'PSMethod') {
+            $funcName = $InputObject.Name
+            <#
+    example state from: [math]::round | HelpFromType
+        > $InputObject.TypeNameOfValue
+
+            System.Management.Automation.PSMethod
+        
+        > $InputObject.GeTType() | %{ $_.Namespace, $_.Name -join '.'}
+            
+            System.Management.Automation.PSMethod`1
+
+        > $InputObject.Name
+            
+            Round
+    
+    #>
+            $maybeFullNameForUrl = $InputObject.GetType().Namespace, $InputObject.Name -join '.'
+            # maybe full url:
+            @(
+                $maybeFullNameForUrl | str prefix 'maybe url' | Write-Color yellow
+                $funcName | Write-Color yellow
+                $InputObject.TypeNameOfValue | Write-Color orange
+                $InputObject.GeTType() | ForEach-Object { $_.Namespace, $_.Name -join '.' } | Write-Color blue
+            ) | wi 
+            $NameList.add($maybeFullNameForUrl)
+            return
+
+        }
         if ($InputObject -is 'type') {
             $NameList.Add( $InputObject.FullName )
             $NameList.Add( @(
-                    $InputObject | Select-Object Namespace, Name | Join-String -sep '.'
+                    $InputObject.Namespace, $InputObject.Name -join '.'
                 ) )
             return
         }
@@ -83,5 +113,6 @@ function Get-ObjectTypeHelp {
 
 
 if (! $publicToExport) {
-    
+    # [math] | HelpFromType -PassThru
+    [math]::Round | HelpFromType -PassThru -infa Continue
 }

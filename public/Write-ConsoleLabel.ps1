@@ -52,11 +52,6 @@ function Write-ConsoleLabel {
         [AllowEmptyString()] # simplifies users errors?
         [string]$Label,
 
-        # Text / content
-        [Alias('Text')]
-        [Parameter(
-            ParameterSetName = 'TextFromPipe',
-            Mandatory = $false, ValueFromPipeline)]
 
 
 
@@ -68,6 +63,11 @@ function Write-ConsoleLabel {
 
         #>
         # Text is not required. defaults to no color.
+        # Text / content
+        [Alias('Text')]
+        [Parameter(
+            ParameterSetName = 'TextFromPipe',
+            Mandatory = $false, ValueFromPipeline)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]

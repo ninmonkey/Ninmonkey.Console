@@ -97,6 +97,9 @@ function Format-RelativePath {
         $curDir ??= Get-Location
     }
     process {
+        <#
+        ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
+        #>
         $InputObject | ForEach-Object {
             $rawItem = $_
             if ($rawItem -is 'string') {
@@ -122,23 +125,22 @@ function Format-RelativePath {
     end { 
     }
 }
-# write-warning 'Already wrote the code using the dotnet method, its far faster'
 
-if ($false -and $DebugTestMode) {
-    # refactor to use Pester temp drives
-    Push-Location -StackName 'debugStack' 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public'
+# if ($false -and $DebugTestMode) {
+#     # refactor to use Pester temp drives
+#     Push-Location -StackName 'debugStack' 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public'
 
-    $d = Get-Item .
-    Format-RelativePath $d -Debug
+#     $d = Get-Item .
+#     Format-RelativePath $d -Debug
 
 
-    $f1 = Get-Item "$PSScriptRoot\data\unicode_web_query.ps1"
-    $strList = @(
-        '.\native_wrapper\Invoke-IPython.ps1'
-        '.\native_wrapper\'
-    )
+#     $f1 = Get-Item "$PSScriptRoot\data\unicode_web_query.ps1"
+#     $strList = @(
+#         '.\native_wrapper\Invoke-IPython.ps1'
+#         '.\native_wrapper\'
+#     )
 
-    $strList | Format-RelativePath
+#     $strList | Format-RelativePath
 
-    Pop-Location -StackName 'debugStack'
-}
+#     Pop-Location -StackName 'debugStack'
+# }
