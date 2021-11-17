@@ -13,7 +13,7 @@ function ConvertTo-PropertyList {
             Select-Object or *-Csv or *-Json commands
 
         see also:
-            PS> gcm EZOut\ConvertTo-PropertySet
+            PS> gcm ConvertTo-HashtableFromObject
     .notes
         often you can instead use:
             Select-Object or *-Csv or *-Json commands
@@ -58,7 +58,9 @@ function ConvertTo-PropertyList {
     .link
         EZOut\ConvertTo-PropertySet
     #>
-    [alias('Select-ObjectProperty-HashTable')]
+    [alias(
+        # 'Select-ObjectProperty-HashTable'
+    )]
     param (
         # InputObject
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -71,7 +73,10 @@ function ConvertTo-PropertyList {
         [Parameter()][switch]$AsObject
 
     )
-    begin {}
+    begin {
+        Write-Warning "Replace with 'Dev.Nin\New-Hashtable'"
+
+    }
     process {
         $propList = $_ | Select-Object -Property $Property
         $collectedProp = [ordered]@{}

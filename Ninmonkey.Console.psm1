@@ -379,8 +379,12 @@ if ($true) {
     New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
-    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+    # this wasn't loading below, maybe because old system
+    New-Alias 'Select->Property' -Value Select-NinProperty
 
+
+
+    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
     New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
 
     # Set-Alias 'Cd' -Value 'Set-NinLocation' -ea Continue #todo:  make this opt in
@@ -402,11 +406,7 @@ if ($true) {
         'IPython'
 
 
-        # smart alias
-        ## Select-NinProperty
-        'SelectProp'        # Select-NinProperty:
-        'Select-Property'   # Select-NinProperty:
-        'ListProp'          # Select-NinProperty: smart alias
+        'Select->Property' # Select-NinProperty
 
         'HelpHistory' # Find-HelpFromHistory
 

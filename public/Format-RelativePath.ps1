@@ -2,7 +2,7 @@ Export-ModuleMember -Alias 'ConvertTo-RelativePath'
 function Format-RelativePath {
     <#
     .synopsis
-        relative paths, allows you to pipe to commands that expects raw text like 'fzf preview'. 
+        relative paths, allows you to pipe to commands that expects raw text like 'fzf preview'.
     .description
         Transforms both paths as text and (get-item)s
             - convert to the raw File.FullName raw text
@@ -47,9 +47,9 @@ function Format-RelativePath {
         🐒> ls .\My_Gist\ | To->RelativePath
 
             My_Gist\AngleSharp Example
-            My_Gist\Calling-Pwsh-Commands-With-Dynam           
+            My_Gist\Calling-Pwsh-Commands-With-Dynam
             My_Gist\Making regular expressions reada
-            
+
     .outputs
         [string]
     .link
@@ -101,28 +101,36 @@ function Format-RelativePath {
         ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
         #>
         $InputObject | ForEach-Object {
-            $rawItem = $_
+            $rawItem = $_ # maybe always strip ansi ?
             if ($rawItem -is 'string') {
+                $parsedItem = $rawItem | Remove-AnsiEscape
+            } else {
                 $parsedItem = $rawItem
-                | Remove-AnsiEscape
             }
 
-            if (! $LiteralPath) {
-                $curItem = Get-Item $parsedItem
+            try {
+                $curItem = Get-Item $parsedItem -ea stop
+            } catch {
+                Write-Error "Get-Item failed on: '$parsedItem', falling back to text"
+                $curItem = $parsedItem
             }
+
+            # if (! $LiteralPath) {
+            #     $curItem = Get-Item $parsedItem
+            # }
             if ($null -eq $curItem) {
-                Write-Error 'curItem: $null'
-                return 
+                Write-Error 'curItem: $null' -ea Stop #SilentlyContinue
+                return
             }
             if ($null -eq $curDir) {
-                Write-Error 'curDir: $null'
-                return 
+                Write-Error 'curDir: $null' -ea Stop #SilentlyContinue
+                return
             }
-            
+
             [System.IO.Path]::GetRelativePath( $curDir, $parsedItem )
         }
     }
-    end { 
+    end {
     }
 }
 
