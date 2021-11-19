@@ -11,6 +11,12 @@ Function Join-Hashtable {
         Copy and append BaseHash with new values from UpdateHash
     .notes
         future: add valuefrom pipeline to $UpdateHash param
+    .link
+        Ninmonkey.Console\Join-Hashtable
+    .link
+        PSScriptTools\Join-Hashtable
+    .link
+        Ninmonkey.Powershell\Join-Hashtable
     #>
     [cmdletbinding()]
     param(
@@ -24,9 +30,11 @@ Function Join-Hashtable {
     )
 
     # don't mutate $BaseHash
-    $NewHash = [hashtable]::new( $BaseHash )
-    $UpdateHash.GetEnumerator() | ForEach-Object {
-        $NewHash[ $_.Key ] = $_.Value
+    process {
+        $NewHash = [hashtable]::new( $BaseHash )
+        $UpdateHash.GetEnumerator() | ForEach-Object {
+            $NewHash[ $_.Key ] = $_.Value
+        }
+        $NewHash
     }
-    $NewHash
 }

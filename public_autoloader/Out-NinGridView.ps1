@@ -19,7 +19,8 @@ function Out-NinGridView {
     [Alias('Out-Grid')]
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory, v)]
+        # inputobject[s]
+        [Parameter(Mandatory)]
         [object]$InputObject
     )
 
