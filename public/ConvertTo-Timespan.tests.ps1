@@ -27,8 +27,19 @@ Describe 'ConvertTo-Timespan' {
 
         $ts_sum = $total_ms | ForEach-Object { 
             [timespan]::new(0, 0, 0, 0, $_)
-        } 
-        
+        }     
+    }
+    Describe 'Partial Parameters' {
+        It 'OnlyMs' {
+            ConvertTo-Timespan '1m' | ForEach-Object TotalSeconds | Should -Be 60
+        }
+        It 'Single ms' {
+            ConvertTo-Timespan '1ms' | ForEach-Object TotalMilliseconds
+            | Should -Be 1 -Because '"ms" should parse to ms, not the partial match of "s"'
+        }
+        It 'Explicit 0s' {
+            ConvertTo-Timespan '0s1ms' | ForEach-Object TotalMilliseconds | Should -Be 1            
+        }
 
     }
 }

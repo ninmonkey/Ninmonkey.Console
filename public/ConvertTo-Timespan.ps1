@@ -49,7 +49,11 @@ function ConvertTo-Timespan {
     .notes
         - [ ] better verb?
             better name, timespan? ConvertTo ?
-            'New-RelativeTimespan' or 'ConvertTo-Timespan' ?
+            'New-RelativeTimespan' or 'ConvertTo-Timespan' ?          
+        
+
+
+        See also: Szeraax/Get-TimeStuff.ps1
     .link
         https://gist.github.com/Szeraax/43aa193e0759d9b091faaaa2f5a03cc9
 
