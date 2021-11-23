@@ -1,5 +1,16 @@
-﻿function Test-IsContainer {
-    <#
+﻿#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Test-IsContainer'
+    )
+    $experimentToExport.alias += @(
+        'Test-IsDirectory'
+    )
+}
+
+function Test-IsContainer {
+    <#c
     .Synopsis
         Is it a directory, or other container type??'
     .example
@@ -23,7 +34,8 @@
         [Alias('PSPath')]
         [string]$Path
     )
-
+    begin {
+    }
     process {
         <#
          #>
@@ -46,4 +58,11 @@
         $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer)
         return
     }
+    end {
+    }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
