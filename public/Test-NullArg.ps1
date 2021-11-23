@@ -14,20 +14,20 @@ function Test-NullArg {
         [object]$InputObject # Not actually text, but,
     )
     begin {
-
+        # finish mini pass over
     }
 
     process {
         $objIsNull = $null -eq $InputObject
         $meta = [ordered]@{
-            Value              = $objIsNull ? "␀" : $InputObject # ␀
-            Type               = $objIsNull ? "[Null]" : $InputObject.GetType().Name # ␀
+            Value              = $objIsNull ? '␀' : $InputObject # ␀
+            Type               = $objIsNull ? '[Null]' : $InputObject.GetType().Name # ␀
             IsNull             = $null -eq $InputObject
             IsNullOrWhiteSpace = [string]::IsNullOrWhiteSpace( $InputObject )
             IsNullOrEmpty      = [string]::IsNullOrEmpty( $InputObject )
             AsString           = "'$InputObject'"
-            ToString           = $objIsNull ? "␀" : $InputObject.ToString() | Join-String -SingleQuote
-            CastString         = [string]$InputObject  | Join-String -SingleQuote
+            ToString           = $objIsNull ? '␀' : $InputObject.ToString() | Join-String -SingleQuote
+            CastString         = [string]$InputObject | Join-String -SingleQuote
             TestId             = $i++
             IsNullCodepoint    = $objIsNull ? $false : "`u{0}" -eq $InputObject
         }

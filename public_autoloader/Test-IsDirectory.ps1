@@ -1,13 +1,12 @@
 ﻿#Requires -Version 7
+$script:publicToExport.function += @(
+    'Test-IsContainer'
+)
+$script:publicToExport.alias += @(
+    'Test-IsDirectory'
+)
 
-if ( $experimentToExport ) {
-    $experimentToExport.function += @(
-        'Test-IsContainer'
-    )
-    $experimentToExport.alias += @(
-        'Test-IsDirectory'
-    )
-}
+
 
 function Test-IsContainer {
     <#c
@@ -56,6 +55,8 @@ function Test-IsContainer {
 
         $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
         $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer)
+
+        # Wait-Debugger
         return
     }
     end {
@@ -65,4 +66,7 @@ function Test-IsContainer {
 
 if (! $experimentToExport) {
     # ...
+    Get-Item . | Test-IsDirectory | Should -Be $True
+    Get-Item fg:\ | Test-IsDirectory | Should -Be $True
+    Test-IsDirectory '.' | Should -Be $True
 }
