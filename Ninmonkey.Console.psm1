@@ -145,7 +145,7 @@ $public_toDotSource = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'ConvertFrom-NumberedFilepath'
+
     'Format-Hashtable'
     'Format-ControlChar'
 
@@ -251,7 +251,7 @@ $functionsToExport = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'ConvertFrom-NumberedFilepath'
+
     'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 

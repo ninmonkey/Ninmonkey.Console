@@ -1,66 +1,15 @@
-Export-ModuleMember -Alias @(
-    'ConvertTo-RelativePath'
-    'StripNumberedFilepaths'
-)
-Export-ModuleMember -Function 'ConvertFrom-NumberedFilepath'
+#Requires -Version 7
 
-function ConvertFrom-NumberedFilepath {
-    <#
-            .synopsis
-                stripFilepathNumbers |  filepaths from grep or code errors have line numbers appended
-            .description
-                currently strips line numbers, although VSCode can handle it
-                - todo: [ ] returning object with PSPath but line numbers would be ideal
-                    - [ ] already implemented in the Dev.Nin\Format-RipGrepResult()
-                future:
-                    [ ] return VsCode filepath numbers, that are valid objects
-                    [ ] should inputtype fileinfo return same value?
-                        no, caller, like To->RelativePath() will test before passing to this, a low level, stable function
-            .example
-                PS>
-                @(
-                    'foo:bar:cat.PS1:345:4'
-                    'foo:bar:cat.PS1:345'
-                ) | ConvertFrom-NumberedFilepath
-                  .
-            .outputs
-                  [string | None]
-            .link
-                Dev.Nin\Format-RipGrepResult
-
-            #>
-    [Alias('StripNumberedFilepaths')]
-    [CmdletBinding()]
-    param(
-        #piped in text/paths/etc
-        [AllowEmptyCollection()]
-        [AllowEmptyString()]
-        [AllowNull()]
-        [Parameter(Position = 0, ValueFromPipeline)]
-        [string]$Text,
-
-        # toggles regex
-        [switch]$StripLastOnly
+if ( $publicToExport ) {
+    $publicToExport.function += @(
+        'ConvertTo-RelativePath'
     )
-
-    begin {
-        $Regex = @{
-            StripLastNumberOnly = '(:\d+)$'
-            StripAllNumbers     = '(:\d+){1,}$'
-        }
-        $RegexMode = $StriplastOnly ? $Regex.StripLastNumberOnly : $Regex.StripAllNumber
-        Write-Debug "Regex: '$RegexMode'"
-    }
-    process {
-        if ($null -eq $Text) {
-            return
-        }
-        $Text -replace $regex[$regexMode], ''
-    }
-    end {
-    }
+    $publicToExport.alias += @(
+        'To->RelativePatha'
+    )
 }
-function Format-RelativePath {
+
+function ConvertTo-RelativePath {
     <#
     .synopsis
         relative paths, allows you to pipe to commands that expects raw text like 'fzf preview'.
@@ -118,11 +67,11 @@ function Format-RelativePath {
     .link
         https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getfullpath
     #>
-    [Alias('ConvertTo-RelativePath')]
+    [Alias('To->RelativePath')]
     [cmdletbinding()]
     param (
         # Filepath
-        [Alias('PSPath', 'Path', 'To->RelativePath')]
+        [Alias('PSPath', 'Path')]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [object[]]$InputObject,
 
@@ -132,6 +81,7 @@ function Format-RelativePath {
         # $items = "$Env:UserProfile", "$Env:AppData", "$Env:LocalAppData"
         # | ForEach-Object tostring
         # , $items
+        # todo: these completions should be short looking alias names
         [Parameter(Position = 0)]
         [ArgumentCompletions(
             'C:\Users\cppmo_000\SkyDrive\Documents\2021',
@@ -164,37 +114,43 @@ function Format-RelativePath {
 
 
         $InputObject | ForEach-Object {
+            # if *everything* fails, return initial value
             $rawItem = $_ # maybe always strip ansi ?
-            if ($rawItem -is 'string') {
-                $parsedItem = $rawItem | Remove-AnsiEscape
-            } else {
-                $parsedItem = $rawItem
-            }
-
-            $maybeNameList = @(
-                $parsedItem
-                $parsedItem -replace '(:\d+)$', ''
-            )
             try {
-                $curItem = Get-Item $parsedItem -ea stop
+                if ($rawItem -is 'string') {
+                    $parsedItem = $rawItem | Remove-AnsiEscape
+                } else {
+                    $parsedItem = $rawItem
+                }
+
+                $maybeNameList = @(
+                    $parsedItem
+                    $parsedItem -replace '(:\d+)$', ''
+                )
+                try {
+                    $curItem = Get-Item $parsedItem -ea stop
+                } catch {
+                    Write-Error "Get-Item failed on: '$parsedItem', falling back to text"
+                    $curItem = $parsedItem
+                }
+
+                # if (! $LiteralPath) {
+                #     $curItem = Get-Item $parsedItem
+                # }
+                if ($null -eq $curItem) {
+                    Write-Error 'curItem: $null' -ea Stop #SilentlyContinue
+                    return
+                }
+                if ($null -eq $curDir) {
+                    Write-Error 'curDir: $null' -ea Stop #SilentlyContinue
+                    return
+                }
+
+                [System.IO.Path]::GetRelativePath( $curDir, $parsedItem )
             } catch {
-                Write-Error "Get-Item failed on: '$parsedItem', falling back to text"
-                $curItem = $parsedItem
+                Write-Warning "Conversion failed on '$rawItem'. $_"
+                $rawItem
             }
-
-            # if (! $LiteralPath) {
-            #     $curItem = Get-Item $parsedItem
-            # }
-            if ($null -eq $curItem) {
-                Write-Error 'curItem: $null' -ea Stop #SilentlyContinue
-                return
-            }
-            if ($null -eq $curDir) {
-                Write-Error 'curDir: $null' -ea Stop #SilentlyContinue
-                return
-            }
-
-            [System.IO.Path]::GetRelativePath( $curDir, $parsedItem )
         }
     }
     end {
@@ -219,3 +175,8 @@ function Format-RelativePath {
 
 #     Pop-Location -StackName 'debugStack'
 # }
+
+
+if (! $publicToExport) {
+    # ...
+}
