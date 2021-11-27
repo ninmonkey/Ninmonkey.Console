@@ -26,6 +26,10 @@ Describe 'Resolve-CommandName' {
         }
 
     }
+    It 'PreserveAlias' {
+        
+        
+    }
 
     # It 'Runs without error' {
     #     Resolve-CommandName '*'

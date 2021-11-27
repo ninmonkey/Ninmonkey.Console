@@ -19,6 +19,12 @@ function Resolve-CommandName {
         .outputs
             [Management.Automation.CmdletInfo[]] or [string[]]
             zero-to-many [CmdletInfo] or other [Command] types
+        .link
+            Dev.Nin\ResCmd
+        .link
+            Dev.Nin\cmdToFilepath
+        .link
+            Ninmonkey.Console\Resolve-CommandName
         #>
     [CmdletBinding(PositionalBinding = $false)]
     [OutputType([object])]
@@ -106,22 +112,32 @@ function Resolve-CommandName {
                     '{0}\{1}' -f @( $cmd.Source, $cmd.Name )
                 } else {
                     # todo: return a rich type, with this name, where tostring is this?
-                    $meta = [ordered]@{
-                        PSTypeName = 'nin.QualifiedCommand'
-                        Name       = '{0}\{1}' -f @(
-                            $cmd.Source, $cmd.Name
-                        )
-                        BaseName   = $cmd.Name
-                        Source     = $cmd.Source
-                        # $cmd.
-                        # $cmd.comm
+                    $source = if ($cmd -is 'AliasInfo') {
+                        $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
+                    } else {
+                        # $cnds[2] -is 'functioninfo'
+                        $cmd.Source
                     }
-                    [pscustomobject]$meta
-
                 }
-                return
+                $meta = [ordered]@{
+
+                    PSTypeName = 'nin.QualifiedCommand'
+                    Name       = '{0}\{1}' -f @(
+                        $cmd.Source, $cmd.Name
+                    )
+                    BaseName   = $cmd.Name
+                    Source     = $Source
+                    # $cmd.
+                    # $cmd.comm
+                }
+                [pscustomobject]$meta
+
             }
-            $Commands
+            return
         }
+
+        # else
+        $Commands
     }
+
 }
