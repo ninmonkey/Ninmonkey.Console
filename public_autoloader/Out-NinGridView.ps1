@@ -1,10 +1,14 @@
 #Requires -Version 7
-$publicToExport.function += @(
-    'Out-NinGridView'
-)
-$publicToExport.alias += @(
-    'Out-Grid'
-)
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Out-NinGridView'
+    )
+    $experimentToExport.alias += @(
+        'Out-Grid'
+    )
+}
+
 function Out-NinGridView {
     <#
     .synopsis
@@ -35,23 +39,27 @@ function Out-NinGridView {
     end {
         # Label 'status' '=> piping...'
         $objList
-        | Out-GridView #-PassThru
+        | Out-GridView -PassThru
 
         # Label 'status' '=> restore'
         if (Get-Command -ea ignore 'Window->Get') {
 
             $w = Window->Get '*Out-GridView*'
             $w | Minimize-Window
-            # Start-Sleep 0.1
+            Start-Sleep 0.1
             $w | Restore-Window
         }
         # Label 'status' '=> Done'
     }
 }
 
-# works
-if ($false) {
-    Get-ChildItem . | Out-NinGridView
-    Start-Sleep 0.3
-    Get-ChildItem . | Select-Object * | Out-NinGridView
+if (! $experimentToExport) {
+    if ($false) {
+        Get-ChildItem . | Out-NinGridView
+        Start-Sleep 0.3
+        Get-ChildItem . | Select-Object * | Out-NinGridView
+    }
+    # ...
 }
+
+# works

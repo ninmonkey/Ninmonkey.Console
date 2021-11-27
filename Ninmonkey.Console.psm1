@@ -8,14 +8,12 @@ $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
 try {
     Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea Stop #SilentlyContinue
-}
-catch {
+} catch {
     # catch [System.Management.Automation.ParameterBindingValidationException] {
     if ($_.ToString() -match 'Cannot validate argument on parameter ''Function''. The argument "ShowCommandHelp"') {
         "Module PSReadline: version {0} is missing function: 'ShowCommandHelp'" -f @( (Get-Module PSReadLine).Version )
         | Write-Warning
-    }
-    else {
+    } else {
         throw $_
     }
 }
@@ -46,8 +44,7 @@ if ($False) {
         if (Test-Path $FileName ) {
             . $FileName
         }
-    }
-    catch {
+    } catch {
         Write-Error "public_autoloader error: '$fileName'"
 
     }
@@ -84,8 +81,7 @@ if ($psEditor) {
 foreach ($file in $private_seeminglySci) {
     # Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
     }
     . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
@@ -102,8 +98,7 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: private: failed: private: $File"
     }
     . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
@@ -119,8 +114,7 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
     . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
@@ -151,7 +145,7 @@ $public_toDotSource = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'Format-RelativePath'
+    'ConvertFrom-NumberedFilepath'
     'Format-Hashtable'
     'Format-ControlChar'
 
@@ -208,7 +202,7 @@ $public_toDotSource = @(
     'Format-FileSize'
     'Format-NullText'
     # 'ConvertTo-PropertyList'
-    'Test-IsDirectory'
+
     'Get-NinCommandSyntax'
     'Format-TypeName'
     'Format-GenericTypeName'
@@ -232,8 +226,7 @@ $public_toDotSource = @(
 foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
         # good
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public: $File"
     }
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
@@ -258,7 +251,7 @@ $functionsToExport = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'Format-RelativePath'
+    'ConvertFrom-NumberedFilepath'
     'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 
@@ -308,7 +301,7 @@ $functionsToExport = @(
     'Format-ControlChar'
     'Trace-NinCommand'
 
-    'Test-IsDirectory'
+
     'Set-NinLocation'
     'Get-NinCommandSyntax'
     'Get-NinTypeData'
@@ -368,8 +361,7 @@ foreach ($typeName in $formatData) {
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    }
-    else {
+    } else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -464,8 +456,7 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
-}
-else {
+} else {
 
     $curSplat = @{
         # Verbose = -Verbose

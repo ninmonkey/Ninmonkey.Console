@@ -1,4 +1,6 @@
-﻿
+﻿using namespace System.Text
+
+
 
 # todo
 function ConvertTo-Base64String {

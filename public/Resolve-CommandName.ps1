@@ -41,7 +41,12 @@ function Resolve-CommandName {
 
         # Error if not exactly one match is found
         [Alias('Strict')]
-        [Parameter()][switch]$OneOrNone
+        [Parameter()][switch]$OneOrNone,
+
+        # disabled by default for speed
+        [Parameter()][switch]$IncludeAll,
+
+        [parameter()][switch]$PassThru
     )
     begin {
         $NameList = [list[string]]::new()
@@ -58,9 +63,15 @@ function Resolve-CommandName {
     end {
         $getCommandSplat = @{
             Name = $NameList
-            All  = $true
+            All  = $IncludeAll
         }
 
+        <#
+    warning/todo/bug:
+        passing wildcard arguments get weird errors
+
+            gcm '*find*' | rescmd -QualifiedName -PreserveAlias
+    #>
         $commands = Get-Command @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
             if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
@@ -89,12 +100,28 @@ function Resolve-CommandName {
         }
 
         if ($QualifiedName) {
-            # this works
-            $Commands | ForEach-Object {
-                '{0}\{1}' -f @( $_.Source, $_.Name )
+            $Commands | ForEach-Object -ea continue {
+                $cmd = $_
+                if (! $PassThru) {
+                    '{0}\{1}' -f @( $cmd.Source, $cmd.Name )
+                } else {
+                    # todo: return a rich type, with this name, where tostring is this?
+                    $meta = [ordered]@{
+                        PSTypeName = 'nin.QualifiedCommand'
+                        Name       = '{0}\{1}' -f @(
+                            $cmd.Source, $cmd.Name
+                        )
+                        BaseName   = $cmd.Name
+                        Source     = $cmd.Source
+                        # $cmd.
+                        # $cmd.comm
+                    }
+                    [pscustomobject]$meta
+
+                }
+                return
             }
-            return
+            $Commands
         }
-        $Commands
     }
 }

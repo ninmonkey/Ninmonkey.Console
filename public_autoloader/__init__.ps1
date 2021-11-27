@@ -13,36 +13,36 @@
 # hardCoded until created
 # see: <C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\main_import_experimental.ps1>
 
-try {
-    # $fileList = @(
-    #     # 'Get-CommandSummary-OldMethod'
-    #     'Get-CommandSummafry'
-    #     'Find-Exception'
-    # )
+# try {
+# $fileList = @(
+#     # 'Get-CommandSummary-OldMethod'
+#     'Get-CommandSummafry'
+#     'Find-Exception'
+# )
 
-    # Don't dot tests, don't call self.
-    Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
-    | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object {
-        # are these safe? or will it alter where-object?
-        # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$'
-    }
-    | ForEach-Object {
-        # are these safe? or will it alter where-object?
-        # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-        $curScript = $_
-        try {
-            . $curScript
-        }
-        catch {
-            Write-Error -Exception $_ -Message "DotsourceImportFailed: public_autoloader\__init__.ps1: '$($curScript)'" -TargetObject $_ -Category InvalidOperation
-        }
+# Don't dot tests, don't call self.
+Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+| Where-Object { $_.Name -ne '__init__.ps1' }
+| Where-Object {
+    # are these safe? or will it alter where-object?
+    # Write-Debug "removing test: '$($_.Name)'"
+    $_.Name -notmatch '\.tests\.ps1$'
+}
+| ForEach-Object {
+    # are these safe? or will it alter where-object?
+    # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
+    $curScript = $_
+    try {
+        . $curScript
+    } catch {
+        # Write-Error -Exception $_ -Message "DotsourceImportFailed: public_autoloader\__init__.ps1: '$($curScript)'" -TargetObject $_ -Category InvalidOperation
+        Write-Error "todo: correctly throw: '$_'"
     }
 }
-catch {
-    Write-Error -Exception $_ -Message 'public_autoloader\__init__.ps1:  failed'
-}
+# } catch {
+# Write-Error "public_autoloader\__init__.ps1:  failed`ntodo: correctly throw: '$_'"
+# Write-Error -Exception $_ -Message ''
+# }
 
 $script:publicToExport | Join-String -op 'ExperimentToExport' | Write-Debug
 
@@ -59,7 +59,7 @@ if ($script:publicToExport['variable']) {
     Export-ModuleMember -Variable $script:publicToExport['variable']
 }
 
-$meta | Write-Information
+$meta | Format-Table | Out-String | Write-Information
 
 
 
