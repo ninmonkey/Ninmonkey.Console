@@ -25,17 +25,17 @@ function ConvertTo-RelativePath {
     .example
         newestItem🔎 Code-Workspace💻 | StripAnsi | To->RelativePath | pipe->Peek
     .example
-        🐒> ls . -Recurse *.json | Format-RelativePath
+        🐒> ls . -Recurse *.json | ConvertTo-RelativePath
     .example
           🐒> ls $env:APPDATA *code* -Depth 4
-        | select -First 5 | Format-RelativePath -BasePath $env:APPDATA
+        | select -First 5 | ConvertTo-RelativePath -BasePath $env:APPDATA
 
             Code
             Code - Insiders
             vscode-mssql
     .example
         🐒> ls $env:APPDATA *code* -Depth 4
-        | select -First 5 | Format-RelativePath -BasePath $env:UserProfile
+        | select -First 5 | ConvertTo-RelativePath -BasePath $env:UserProfile
 
             AppData\Roaming\Code
             AppData\Roaming\Code - Insiders
@@ -47,7 +47,7 @@ function ConvertTo-RelativePath {
         C:\Users\cppmo_000\.vscode\argv.json
     .example
         # use a specific base path
-        🐒> ls -Force ~\.vscode | Format-RelativePath "$Env:USERPROFILE"
+        🐒> ls -Force ~\.vscode | ConvertTo-RelativePath "$Env:USERPROFILE"
 
             .vscode\extensions
             .vscode\argv.json
@@ -162,7 +162,7 @@ function ConvertTo-RelativePath {
 #     Push-Location -StackName 'debugStack' 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Ninmonkey.Console\public'
 
 #     $d = Get-Item .
-#     Format-RelativePath $d -Debug
+#     ConvertTo-RelativePath $d -Debug
 
 
 #     $f1 = Get-Item "$PSScriptRoot\data\unicode_web_query.ps1"
@@ -171,7 +171,7 @@ function ConvertTo-RelativePath {
 #         '.\native_wrapper\'
 #     )
 
-#     $strList | Format-RelativePath
+#     $strList | ConvertTo-RelativePath
 
 #     Pop-Location -StackName 'debugStack'
 # }

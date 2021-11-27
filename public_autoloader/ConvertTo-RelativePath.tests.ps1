@@ -2,20 +2,20 @@ BeforeAll {
     Import-Module Ninmonkey.Console -Force
 }
 
-Describe 'Format-RelativePath' {
+Describe 'ConvertTo-RelativePath' {
     It 'from IO' -Pending {
         $true | Should -Be $false
-        
+
     }
     It 'from fullname text' -Pending {
         $true | Should -Be $false
     }
-    
+
     It 'from partial name text' -Pending {
-        
+
         $true | Should -Be $false
     }
-    Describe 'Text Vs Object' {        
+    Describe 'Text Vs Object' {
         It 'With Color' {
             {
                 newestItem🔎 -ItemType Pwsh
@@ -25,7 +25,7 @@ Describe 'Format-RelativePath' {
         }
         It 'As Object' {
             {
-                Get-ChildItem 
+                Get-ChildItem
                 | First 4
                 | To->RelativePath
             } | Should -Not -Throw
@@ -35,16 +35,16 @@ Describe 'Format-RelativePath' {
         BeforeAll {
             $target = Get-Item $env:Nin_Dotfiles
             $relativeTo = Get-Item $env:USERPROFILE
-            $expectedText = 'SkyDrive\Documents\2021\dotfiles_git'        
+            $expectedText = 'SkyDrive\Documents\2021\dotfiles_git'
         }
         It 'Baseline True Case' {
             $result = [io.path]::GetRelativePath($relativeTo, $target)
             $result | Should -Be $expectedText
         }
-            
+
         It 'Test True' {
-            $target | Format-RelativePath -BasePath $relativeTo
-            | Should -Be $expectedText            
+            $target | ConvertTo-RelativePath -BasePath $relativeTo
+            | Should -Be $expectedText
         }
     }
 }
