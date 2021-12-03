@@ -7,7 +7,7 @@ $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
 try {
-    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea Stop #SilentlyContinue
+    Set-PSReadLineKeyHandler -Key 'f12' -Function ShowCommandHelp -ea Stop #SilentlyContinue
 } catch {
     # catch [System.Management.Automation.ParameterBindingValidationException] {
     if ($_.ToString() -match 'Cannot validate argument on parameter ''Function''. The argument "ShowCommandHelp"') {

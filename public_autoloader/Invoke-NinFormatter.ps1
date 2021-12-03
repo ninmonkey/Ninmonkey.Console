@@ -15,24 +15,28 @@ function Invoke-NinFormatter {
     .description
        .
     .example
-        currently piped text must be one string, todo: just collect the whole pipe
-          PS> gc (gi .\input1.ps1) | str nl | Invoke-NinFormatter
+          .
     .notes
         future: allow piping from:
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
+    .link
+        PSScriptAnalyzer\Invoke-Formatter
     .outputs
-
           [string]
 
     #>
     [alias('FormatScript🎨')]
     [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'FromPipeOrParam')]
     param(
+
+        # pipe script contents
+        # Must allow null for piping split text
         [Alias('InputObject')]
+        [AllowEmptyString()]
+        [AllowNull()]
         [Parameter(
             ParameterSetName = 'FromPipeOrParam',
             Mandatory, Position = 0, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
         [string[]]$ScriptDefinition,
 
         # Formats Last Command in history
@@ -57,14 +61,10 @@ function Invoke-NinFormatter {
         if ($LastCommand -and $Clipboard) {
             Write-Error 'Choose one of: [ -LastCommand | -Clipboard ]'
         }
-        Write-Debug $ScriptDefinition
 
-    }
-    process {
-        # try {
         switch ($PSCmdlet.ParameterSetName) {
             'FromPipeOrParam' {
-                $scriptContent = $ScriptDefinition | Join-String -sep "`n"
+                $scriptContent = ''
             }
             'FromHistory' {
                 $scriptContent = (Get-History -Count 1 | ForEach-Object CommandLine)
@@ -79,8 +79,31 @@ function Invoke-NinFormatter {
             }
         }
 
+    }
+    process {
+        # try {
+        switch ($PSCmdlet.ParameterSetName) {
+            'FromPipeOrParam' {
+                foreach ($line in $ScriptDefinition) {
+                    $scriptContent += "`n$line"
+                }
+            }
+            'FromHistory' {
+                break
+            }
+            'FromClipboard' {
+                break
+            }
+
+            default {
+                Write-Error -ea stop -Category NotImplemented -Message 'Unhandled ParameterSet' -TargetObject $PSCmdlet.ParameterSetName
+                # throw "Unhandled ParameterSet: $($PSCmdlet.ParameterSetName)"
+            }
+        }
+    }
+    end {
         $invokeFormatterSplat = @{
-            ScriptDefinition = $scriptContent
+            ScriptDefinition = $scriptContent -join "`n"
             # formatter requires path, while Invoke-ScriptAnalyzer doe
             Settings         = try {
                 (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
@@ -103,11 +126,5 @@ function Invoke-NinFormatter {
         # try {}
 
         Invoke-Formatter @invokeFormatterSplat # -Range
-        # }
-        # catch {
-        # $PSCmdlet.WriteError( $_ )
-        # }
-    }
-    end {
     }
 }

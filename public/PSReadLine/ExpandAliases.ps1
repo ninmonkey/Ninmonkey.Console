@@ -2,10 +2,13 @@ using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
 # This example will replace any aliases on the command line with the resolved commands.
-Set-PSReadLineKeyHandler -Key 'Alt+%' `
-    -BriefDescription ExpandAliases `
-    -LongDescription 'Replace all aliases with the full command' `
-    -ScriptBlock {
+$splatKeys = @{
+    Key              = 'Alt+%'
+    BriefDescription = 'Expands aliases'
+    LongDescription  = 'Replace all aliases with the full command'
+}
+
+Set-PSReadLineKeyHandler @splatKeys -ScriptBlock {
     param($key, $arg)
 
     $ast = $null
