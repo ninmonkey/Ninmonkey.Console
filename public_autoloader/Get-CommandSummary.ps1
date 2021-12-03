@@ -75,15 +75,15 @@ function Get-CommandSummary {
                 if ($ResolvedCommand.Source -match $regex) {
                     $AnyMatch = $true;
                     break;
-                }                    
+                }
             }
             if (! $ModuleName) {
                 $AnyMatch = $true
             }
             if (! $AnyMatch) {
-                return 
+                return
             }
-            
+
             if ($false) {
                 [pscustomobject]$cmdSummary
                 return
@@ -126,15 +126,14 @@ function Get-CommandSummary {
         Write-Warning 'Found this old script, still super rough. will dump most of it.'
     }
 }
-if ($false -and $script:publicToExport) {
+if ($false -and (! $script:publicToExport)) {
     # working example
-    
     $f = Get-Module dev.nin | ForEach-Object ExportedCommands | ForEach-Object Keys | Select-Object -First 20
     | Get-CommandSummary -ea ignore -ModuleName dev.nin
-    
+
     $f | ForEach-Object DescStr
-    
-    return 
+
+    return
 
     if ($false -and $EnableDebugInline) {
         Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue

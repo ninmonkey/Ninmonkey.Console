@@ -7,7 +7,6 @@ $script:publicToExport.alias += @(
 )
 
 
-
 function Test-IsContainer {
     <#c
     .Synopsis
@@ -23,6 +22,8 @@ function Test-IsContainer {
             $extraArgs = ($item = Get-Item $Path -ea 0) -and $item.PSIsContainer | ?? { '' } : { '-r' }
             & $code $pathList $extraArgs
         }
+    .link
+        Ninmonkey.Console\Test-IsSubDirectory
     #>
     [Alias('Test-IsDirectory')] # probably a better name
     [outputtype('System.Boolean')]
@@ -40,7 +41,8 @@ function Test-IsContainer {
          #>
         try {
             $item = Get-Item $Path -ea stop
-        } catch {
+        }
+        catch {
             # definitely didn't exist
             Write-Debug 'GI failed'
             $false; return
@@ -54,6 +56,8 @@ function Test-IsContainer {
         }
 
         $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
+        # you could also do -ne 0 at the end to achieve the same thing
+        $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -ne 0
         $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer)
 
         # Wait-Debugger
@@ -64,7 +68,7 @@ function Test-IsContainer {
 }
 
 
-if (! $experimentToExport) {
+if ( $false -and (! $publicToExport)) {
     # ...
     Get-Item . | Test-IsDirectory | Should -Be $True
     Get-Item fg:\ | Test-IsDirectory | Should -Be $True
