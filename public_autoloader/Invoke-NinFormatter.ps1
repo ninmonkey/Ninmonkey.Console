@@ -7,6 +7,7 @@ $script:publicToExport.alias += @(
     'Format.ScriptPs1🎨'
 )
 
+# todo: make it a hotkey, also make it indent
 function Invoke-NinFormatter {
     <#
     .synopsis
@@ -14,7 +15,8 @@ function Invoke-NinFormatter {
     .description
        .
     .example
-          .
+        currently piped text must be one string, todo: just collect the whole pipe
+          PS> gc (gi .\input1.ps1) | str nl | Invoke-NinFormatter
     .notes
         future: allow piping from:
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
@@ -31,7 +33,7 @@ function Invoke-NinFormatter {
             ParameterSetName = 'FromPipeOrParam',
             Mandatory, Position = 0, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string]$ScriptDefinition,
+        [string[]]$ScriptDefinition,
 
         # Formats Last Command in history
         # [Alias('FromLastCommand', 'PrevCommand', 'FromHistory')]
@@ -49,7 +51,6 @@ function Invoke-NinFormatter {
             ParameterSetName = 'FromClipboard'
         )][switch]$Clipboard
 
-
     )
 
     begin {
@@ -63,12 +64,13 @@ function Invoke-NinFormatter {
         # try {
         switch ($PSCmdlet.ParameterSetName) {
             'FromPipeOrParam' {
+                $scriptContent = $ScriptDefinition | Join-String -sep "`n"
             }
             'FromHistory' {
-                $ScriptDefinition = (Get-History -Count 1 | ForEach-Object CommandLine)
+                $scriptContent = (Get-History -Count 1 | ForEach-Object CommandLine)
             }
             'FromClipboard' {
-                $ScriptDefinition = (Get-Clipboard)
+                $scriptContent = (Get-Clipboard)
             }
 
             default {
@@ -78,7 +80,7 @@ function Invoke-NinFormatter {
         }
 
         $invokeFormatterSplat = @{
-            ScriptDefinition = $ScriptDefinition
+            ScriptDefinition = $scriptContent
             # formatter requires path, while Invoke-ScriptAnalyzer doe
             Settings         = try {
                 (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
@@ -106,5 +108,6 @@ function Invoke-NinFormatter {
         # $PSCmdlet.WriteError( $_ )
         # }
     }
-    end {}
+    end {
+    }
 }

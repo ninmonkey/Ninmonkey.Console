@@ -22,6 +22,8 @@ function Get-ObjectTypeHelp {
           [string | None]
     .link
         Ninmonkey.Console\Format-TypeName
+    .link
+        Ninmonkey.Console\Get-ObjectTypeHelp
 
     #>
     [Alias('HelpFromType')]
@@ -37,14 +39,14 @@ function Get-ObjectTypeHelp {
 
     begin {
         # list of full type nam;es1
-        $x 
+        $x
         $NameList = [list[string]]::new()
-        $TemplateUrl = 'https://docs.microsoft.com/en-us/dotnet/api/{0}'        
+        $TemplateUrl = 'https://docs.microsoft.com/en-us/dotnet/api/{0}'
     }
     process {
         if ( [string]::IsNullOrWhiteSpace($InputObject) ) {
             return
-        }        
+        }
         # if generics cause problems, try another method
         if ($InputObject -is 'PSMethod') {
             $funcName = $InputObject.Name
@@ -53,15 +55,15 @@ function Get-ObjectTypeHelp {
         > $InputObject.TypeNameOfValue
 
             System.Management.Automation.PSMethod
-        
+
         > $InputObject.GeTType() | %{ $_.Namespace, $_.Name -join '.'}
-            
+
             System.Management.Automation.PSMethod`1
 
         > $InputObject.Name
-            
+
             Round
-    
+
     #>
             $maybeFullNameForUrl = $InputObject.GetType().Namespace, $InputObject.Name -join '.'
             # maybe full url:
@@ -70,7 +72,7 @@ function Get-ObjectTypeHelp {
                 $funcName | Write-Color yellow
                 $InputObject.TypeNameOfValue | Write-Color orange
                 $InputObject.GeTType() | ForEach-Object { $_.Namespace, $_.Name -join '.' } | Write-Color blue
-            ) | wi 
+            ) | wi
             $NameList.add($maybeFullNameForUrl)
             return
 
