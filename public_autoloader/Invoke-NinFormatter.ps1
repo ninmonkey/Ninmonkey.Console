@@ -15,7 +15,8 @@ function Invoke-NinFormatter {
     .description
        .
     .example
-          .
+        # formats and saves file
+          PS> Invoke-NinFormatter -Path 'c:\foo\bar.ps1' -WriteBack
     .notes
         future: allow piping from:
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
@@ -26,7 +27,11 @@ function Invoke-NinFormatter {
 
     #>
     [alias('FormatScript🎨')]
-    [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'FromPipeOrParam')]
+    [CmdletBinding(
+        PositionalBinding = $false, DefaultParameterSetName = 'FromPipeOrParam',
+
+        SupportsShouldProcess, ConfirmImpact = 'high'
+    )]
     param(
 
         # pipe script contents
@@ -38,6 +43,21 @@ function Invoke-NinFormatter {
             ParameterSetName = 'FromPipeOrParam',
             Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$ScriptDefinition,
+
+        # modify file in place
+        [alias('InputFile')]
+        [Parameter(
+            Mandatory, ParameterSetName = 'FromFile'
+        )]
+        [string]$Path,
+
+        # What's the current config?
+        [Parameter(ParameterSetName = 'GetConfig')]
+        [switch]$GetConfig,
+
+        # replace original file with formatting
+        [Parameter(ParameterSetName = 'FromFile')]
+        [switch]$WriteBack,
 
         # Formats Last Command in history
         # [Alias('FromLastCommand', 'PrevCommand', 'FromHistory')]
@@ -72,6 +92,12 @@ function Invoke-NinFormatter {
             'FromClipboard' {
                 $scriptContent = (Get-Clipboard)
             }
+            'FromFile' {
+                $scriptContent = Get-Content ( Get-Item $Path -ea stop)
+            }
+            'GetConfig' {
+                break
+            }
 
             default {
                 Write-Error -ea stop -Category NotImplemented -Message 'Unhandled ParameterSet' -TargetObject $PSCmdlet.ParameterSetName
@@ -88,10 +114,16 @@ function Invoke-NinFormatter {
                     $scriptContent += "`n$line"
                 }
             }
+            'GetConfig' {
+                break
+            }
             'FromHistory' {
                 break
             }
             'FromClipboard' {
+                break
+            }
+            'FromFile' {
                 break
             }
 
@@ -106,7 +138,7 @@ function Invoke-NinFormatter {
             ScriptDefinition = $scriptContent -join "`n"
             # formatter requires path, while Invoke-ScriptAnalyzer doe
             Settings         = try {
-                (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
+(Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
             }
             catch {
                 Write-Error -m (
@@ -120,11 +152,29 @@ function Invoke-NinFormatter {
         'using: $__ninConfig.Config.PSScriptAnalyzerSettings = "{0}"' -f @(
             $__ninConfig.Config.PSScriptAnalyzerSettings
         ) | Write-Debug
+
+        if ($GetConfig) {
+            [PSCustomObject]@{
+                Settings   = Get-Content $invokeFormatterSplat.Settings
+                Path       = $invokeFormatterSplat.Settings
+                EnvVarPath = $__ninConfig.Config.PSScriptAnalyzerSettings
+            }
+
+            # Wait-Debugger
+            return
+        }
+
         $invokeFormatterSplat | Format-dict | Write-Debug
 
 
         # try {}
 
+        if ($WriteBack) {
+            if ($PSCmdlet.ShouldProcess("$($Path.Name)", 'Replace')) {
+                Invoke-Formatter @invokeFormatterSplat | Set-Content $Path
+                return
+            }
+        }
         Invoke-Formatter @invokeFormatterSplat # -Range
     }
 }

@@ -49,18 +49,18 @@ function Test-IsContainer {
         }
         $isType = $Item -is 'System.IO.DirectoryInfo'
         $meta = @{
-            IsDirInfo   = $isDir
-            HasAttr     = $hasAttribute
-            IsContainer = [bool]$Item.PSIsContainer
-
+            IsDirInfo         = $isDir
+            HasAttr           = $hasAttribute
+            IsContainer       = [bool]$Item.PSIsContainer
+            PathTypeContainer = Test-Path -PathType Container -Path $Path
         }
+        $meta | Format-Table | Out-String | Write-Debug
 
-        $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
+        # $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
         # you could also do -ne 0 at the end to achieve the same thing
         $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -ne 0
-        $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer)
-
-        # Wait-Debugger
+        $isContainer = Test-Path -PathType Container -Path $Path
+        $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer) -or $isContainer
         return
     }
     end {
