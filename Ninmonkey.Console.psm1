@@ -468,4 +468,7 @@ if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Build-CustomCompleter @curSplat
     Import-CustomCompleter @curSplat
     Import-GeneratedCompleter @curSplat
+
+    # this version works, run it last.
+    . (Get-Item (Join-Path $PSScriptRoot '/public/PSReadLine/native-dotnet-completer.ps1'))
 }
