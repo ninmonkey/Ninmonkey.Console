@@ -1,22 +1,29 @@
-﻿using namespace System.Text
+#Requires -Version 7
+using namespace System.Text
+
+$script:publicToExport.function += @(
+    'ConvertFrom-Base64String'
+)
+$script:publicToExport.alias += @(
+    'From->Base64'
+)
 
 
 
 # todo
-function ConvertTo-Base64String {
+function ConvertFrom-Base64String {
     <#
     .synopsis
-        originally from: <Utility\ConvertTo-Base64String>
+        originally from: <Utility\ConvertFrom-Base64String>
     .notes
         currently the same, separate same. separate for dependency clarity
     .example
         # For more see:
-            <./test/public/ConvertTo-Base64String.tests.ps1>
+            <./test/public/ConvertFrom-Base64String.tests.ps1>
     .link
-        Utility\ConvertTo-Base64String
+        Utility\ConvertFrom-Base64String
     #>
-    [Alias('Base64')]
-
+    [Alias('From->Base64')]
     [OutputType([System.String])]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -43,6 +50,24 @@ function ConvertTo-Base64String {
         if ([string]::IsNullOrEmpty($InputObject)) {
             return
         }
+
+        $decoded_bytes = [convert]::FromBase64String($InputObject)
+        return $userEncoding.GetString( $decoded_bytes )
+        return
+
+        # see: $userEncoding.GetString | fm * -Force | Get-Parameter -ea Ignore | ft -AutoSize
+
+        $byteStr = [convert]::FromBase64String($b64)
+        [System.Text.UTF8Encoding]::UTF8.GetString( $byteStr )
+        $userEncoding.GetString(
+            <# bytes: #> $byteStr)
+
+        $userEncoding.GetString(
+            $InputObject
+        )
+
+        return
+
 
         return [convert]::ToBase64String($userEncoding.GetBytes($InputObject))
     }
