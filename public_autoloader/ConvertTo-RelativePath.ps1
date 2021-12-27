@@ -112,7 +112,6 @@ function ConvertTo-RelativePath {
         ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
         #>
 
-
         $InputObject | ForEach-Object {
             # if *everything* fails, return initial value
             $rawItem = $_ # maybe always strip ansi ?
@@ -130,19 +129,21 @@ function ConvertTo-RelativePath {
                 try {
                     $curItem = Get-Item $parsedItem -ea stop
                 } catch {
-                    Write-Error "Get-Item failed on: '$parsedItem', falling back to text"
+                    # Write-Error "Get-Item  failed on: '$parsedItem', falling back to text"
+                    Write-Debug "Get-Item failed on: '$parsedItem', falling back to text"
                     $curItem = $parsedItem
                 }
 
                 # if (! $LiteralPath) {
                 #     $curItem = Get-Item $parsedItem
                 # }
+                # h1 'end of rel path' | Write-Host
                 if ($null -eq $curItem) {
-                    Write-Error 'curItem: $null' -ea Stop #SilentlyContinue
+                    Write-Debug 'curItem: $null' -ea Stop #SilentlyContinue
                     return
                 }
                 if ($null -eq $curDir) {
-                    Write-Error 'curDir: $null' -ea Stop #SilentlyContinue
+                    Write-Debug 'curDir: $null' -ea Stop #SilentlyContinue
                     return
                 }
 
@@ -152,6 +153,7 @@ function ConvertTo-RelativePath {
                 $rawItem
             }
         }
+
     }
     end {
     }
