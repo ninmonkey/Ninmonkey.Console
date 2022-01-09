@@ -9,6 +9,62 @@ Describe 'Get-HelpFromTypeName' {
             'DateTime' = 'https://docs.microsoft.com/en-us/dotnet/api/System.DateTime'
         }
     }
+    Context 'ManuallyCreatedUrls' -Tag 'manual' {
+        $Text = '[Math]'
+        $Expected = @(
+
+        )
+
+        It 'TypeInfo' -Pending {
+            '[Math]'
+            | HelpFromType -PassThru | Should -BeIn @(
+                'https://docs.microsoft.com/en-us/dotnet/api/system.math'
+            )
+
+
+        }
+        It 'MethodInfo -> on TypeInfo' -Pending {
+            <#
+                Maybe help in
+                [math] | fm round
+
+            #>
+            [math]::Round
+            | HelpFromType -PassThru | Should -BeIn @(
+                'https://docs.microsoft.com/en-us/dotnet/api/system.math.round'
+            )
+
+        }
+        It 'Type: Field on static class' -Pending {
+            [Math]::pi
+            | HelpFromType -PassThru
+            | shoudld -be 'https://docs.microsoft.com/en-us/dotnet/api/system.math.pi'
+        }
+        It 'Env Var type' -Pending {
+            Get-ChildItem env: | s -first 1
+            | HelpFromType
+            | Should -BeIn @(
+                'System.Collections.DictionaryEntry'
+            ) -Because 'maybe'
+
+
+
+
+            <#
+                PSTypeNames:
+                    'System.Collections.DictionaryEntry'
+                    'System.Object'
+                    'System.ValueType'
+                #>
+        }
+
+
+        # '[Math]'
+        # | HelpFromType -PassThru | Should -BeIn @(
+
+        #     https://docs.microsoft.com/en-us/dotnet/api/system.math.round
+        # }
+    }
     It 'From String' {
         'System.TimeSpan' | Get-HelpFromTypeName -PassThru
         | Should -Be $Url.TimeSpan

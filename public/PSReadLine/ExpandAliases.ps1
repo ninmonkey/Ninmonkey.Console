@@ -21,6 +21,7 @@ Set-PSReadLineKeyHandler @splatKeys -ScriptBlock {
     foreach ($token in $tokens) {
         if ($token.TokenFlags -band [TokenFlags]::CommandName) {
             $alias = $ExecutionContext.InvokeCommand.GetCommand($token.Extent.Text, 'Alias')
+            # edit: why did the original not compare with null on LHS ? Accident? error?
             if ($alias -ne $null) {
                 $resolvedCommand = $alias.ResolvedCommandName
                 if ($resolvedCommand -ne $null) {
@@ -37,5 +38,8 @@ Set-PSReadLineKeyHandler @splatKeys -ScriptBlock {
                 }
             }
         }
+    }
+    if ($ENV:NinEnableToastDebug) {
+        New-BurntToastNotification -Text ($Tokens | str csv ' ' )
     }
 }
