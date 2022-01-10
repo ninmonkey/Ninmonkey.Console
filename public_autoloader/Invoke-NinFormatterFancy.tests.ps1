@@ -1,7 +1,7 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 
 
-Describe Invoke-NinFormatter {
+Describe Invoke-NinFormatterFancy {
     BeforeAll {
         Import-Module Ninmonkey.Console -Force
         # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
@@ -12,20 +12,20 @@ Describe Invoke-NinFormatter {
     }
     Describe 'FromPipeOrParam' {
         It 'FromPipe' {
-            $Sample | Invoke-NinFormatter | Should -Be $expected
+            $Sample | Invoke-NinFormatterFancy | Should -Be $expected
         }
         It 'FromParam' {
-            Invoke-NinFormatter -ScriptDefinition $Sample | Should -Be $Expected
+            Invoke-NinFormatterFancy -ScriptDefinition $Sample | Should -Be $Expected
         }
     }
     It 'From Clipboard' {
         $sample | Set-Clipboard
-        Invoke-NinFormatter -FromClipboard | Should -Be $expected
+        Invoke-NinFormatterFancy -FromClipboard | Should -Be $expected
     }
     It 'From History' -Skip {
         # Maybe testing history isn't easy
         $sample;
-        Invoke-NinFormatter -FromLastCommand | Should -Be $expected
+        Invoke-NinFormatterFancy -FromLastCommand | Should -Be $expected
     }
 
 }

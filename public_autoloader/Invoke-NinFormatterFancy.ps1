@@ -1,14 +1,14 @@
 # using namespace Management.Automation
 
 $script:publicToExport.function += @(
-    'Invoke-NinFormatter'
+    'Invoke-NinFormatterFancy'
 )
 $script:publicToExport.alias += @(
     'Format.ScriptPs1🎨'
 )
 
 # todo: make it a hotkey, also make it indent
-function Invoke-NinFormatter {
+function Invoke-NinFormatterFancyFancy {
     <#
     .synopsis
         Automatically format using user's custom rules, from the cli
@@ -16,7 +16,7 @@ function Invoke-NinFormatter {
        .
     .example
         # formats and saves file
-          PS> Invoke-NinFormatter -Path 'c:\foo\bar.ps1' -WriteBack
+          PS> Invoke-NinFormatterFancy -Path 'c:\foo\bar.ps1' -WriteBack
     .notes
         future: allow piping from:
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
@@ -165,7 +165,6 @@ function Invoke-NinFormatter {
         }
 
         $invokeFormatterSplat | Format-dict | Write-Debug
-
 
         # try {}
 
