@@ -4,7 +4,7 @@ $script:publicToExport.function += @(
     'Invoke-NinFormatterFancy'
 )
 $script:publicToExport.alias += @(
-    'Format.ScriptPs1🎨'
+    # 'Format.ScriptPs1🎨'
 )
 
 # todo: make it a hotkey, also make it indent
@@ -22,6 +22,10 @@ function Invoke-NinFormatterFancyFancy {
             [HistoryInfo] | [Microsoft.PowerShell.PSConsoleReadLine+HistoryItem]
     .link
         PSScriptAnalyzer\Invoke-Formatter
+    .link
+        Ninmonkey.Console\Invoke-FormatterFancy
+    .link
+        Dev.Nin\Invoke-Formatter
     .outputs
           [string]
 
