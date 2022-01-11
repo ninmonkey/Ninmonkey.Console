@@ -1,4 +1,6 @@
 #Requires -Version 7
+using namespace System.Management.Automation.PSMethod
+
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
@@ -48,7 +50,13 @@ function Get-ObjectTypeHelp {
             return
         }
         # if generics cause problems, try another method
-        if ($InputObject -is 'PSMethod') {
+
+        # Management.Automation
+        # if ($InputObject -is 'Management.Automation.PSMethod') {
+        # todo: refactor to a ProcessTypeInfo -Passthru
+        # This function just asks on that
+        if ($InputObject -is 'System.Management.Automation.PSMethod') {
+            'methods not completed yet' | Write-Host -fore green
             $funcName = $InputObject.Name
             <#
     example state from: [math]::round | HelpFromType
