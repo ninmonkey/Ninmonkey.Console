@@ -5,7 +5,7 @@ function Format-Predent {
     .synopsis
         Adds indentation to code, ex: to post on a forum
     .description
-        compare/merge with: 
+        compare/merge with:
             C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Format-IndentText.ps1
     .example
         # use clipboard, predent it, then save to clipbard
@@ -18,8 +18,11 @@ function Format-Predent {
         PS> $sampleText | Format-Predent -PassThru
         # prints result
     .notes
+        Dev.Nin\Format-IndentText probably replaces this function, after using smart alias
+    .LINK
+        Dev.Nin\Format-IndentText
     #>
-    [alias('Format-Indent')]
+    # [alias('Format-Indent')]
     param (
         # Text to transform
         [Parameter(ValueFromPipeline)]

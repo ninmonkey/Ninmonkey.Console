@@ -8,7 +8,7 @@ $script:publicToExport.alias += @(
 )
 
 # todo: make it a hotkey, also make it indent
-function Invoke-NinFormatterFancyFancy {
+function Invoke-NinFormatterFancy {
     <#
     .synopsis
         Automatically format using user's custom rules, from the cli

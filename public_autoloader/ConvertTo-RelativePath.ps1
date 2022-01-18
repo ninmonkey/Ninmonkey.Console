@@ -14,6 +14,8 @@ function ConvertTo-RelativePath {
     .synopsis
         relative paths, allows you to pipe to commands that expects raw text like 'fzf preview'.
     .description
+        todo: #1 #6
+
         Transforms both paths as text and (get-item)s
             - convert to the raw File.FullName raw text
             - convert to relative path
@@ -61,7 +63,7 @@ function ConvertTo-RelativePath {
             My_Gist\Making regular expressions reada
 
     .outputs
-        [string]
+        [string] , or $null if emptystring/nulls are passed
     .link
         https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getrelativepath
     .link
@@ -72,6 +74,8 @@ function ConvertTo-RelativePath {
     param (
         # Filepath
         [Alias('PSPath', 'Path')]
+        [AllowEmptyString()]
+        [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [object[]]$InputObject,
 
@@ -84,10 +88,16 @@ function ConvertTo-RelativePath {
         # todo: these completions should be short looking alias names
         [Parameter(Position = 0)]
         [ArgumentCompletions(
-            'C:\Users\cppmo_000\SkyDrive\Documents\2021',
-            'C:\Users\cppmo_000\AppData\Roaming',
-            'C:\Users\cppmo_000\AppData\Local',
-            'C:\Users\cppmo_000'
+            '$Env:AppData',
+            '$Env:LocalAppData',
+            '$Env:Nin_Dotfiles',
+            '$Env:Nin_Home',
+            '$Env:Nin_PSModulePath',
+            '$Env:NinEnableToastDebug',
+            '$Env:NinNow',
+            '$Env:UserProfile',
+            '$Env:UserProfile\SkyDrive\Documents\2021',
+            '2021-github-downloads'
         )]
         [string]$BasePath,
 
@@ -105,9 +115,10 @@ function ConvertTo-RelativePath {
         if (! [string]::IsNullOrWhiteSpace( $BasePath) ) {
             $curDir = Get-Item $BasePath
         }
-        $curDir ??= Get-Location
+        $curDir = Get-Location | Get-Item
     }
     process {
+
         <#
         ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
         #>
@@ -115,17 +126,23 @@ function ConvertTo-RelativePath {
         $InputObject | ForEach-Object {
             # if *everything* fails, return initial value
             $rawItem = $_ # maybe always strip ansi ?
+
+            if ($null -eq $rawItem) {
+                return
+            }
+
             try {
+                # Write-Warning "WIP $PSSCommand"
                 if ($rawItem -is 'string') {
                     $parsedItem = $rawItem | Remove-AnsiEscape
                 } else {
                     $parsedItem = $rawItem
                 }
 
-                $maybeNameList = @(
-                    $parsedItem
-                    $parsedItem -replace '(:\d+)$', ''
-                )
+                # $maybeNameList = @(
+                #     $parsedItem
+                #     $parsedItem -replace '(:\d+)$', ''
+                # )
                 try {
                     $curItem = Get-Item $parsedItem -ea stop
                 } catch {
@@ -139,11 +156,11 @@ function ConvertTo-RelativePath {
                 # }
                 # h1 'end of rel path' | Write-Host
                 if ($null -eq $curItem) {
-                    Write-Debug 'curItem: $null' -ea Stop #SilentlyContinue
+                    Write-Debug 'curItem: $null'
                     return
                 }
                 if ($null -eq $curDir) {
-                    Write-Debug 'curDir: $null' -ea Stop #SilentlyContinue
+                    Write-Debug 'curDir: $null'
                     return
                 }
 
