@@ -10,9 +10,9 @@ BeforeAll {
 
 Describe 'Resolve-CommandName' {
     It 'Temp test to flag bug' {
-        
+
         { Get-Command '?str' | resCmd -q } | Should -Not -Throw
-        # output: 
+        # output:
         # gc: @splat:
         #   error the term jstr is not a command
     }
@@ -27,8 +27,12 @@ Describe 'Resolve-CommandName' {
 
     }
     It 'PreserveAlias' {
-        
-        
+        # todo: need to add command when preserve alias is true
+        rescmd rescmd -QualifiedName -PreserveAlias | ForEach-Object Name | Should -be @(
+            'Ninmonkey.Console\rescmd'
+            'Ninmonkey.Console\Resolve-CommandName'
+        )
+
     }
 
     # It 'Runs without error' {
