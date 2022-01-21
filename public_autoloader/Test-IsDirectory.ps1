@@ -29,39 +29,49 @@ function Test-IsContainer {
     [outputtype('System.Boolean')]
     [CmdletBinding()]
     param(
-        # File object or path to test
+        # File object or path to test. False for whitespace or nulls.
+        [allowEmptyString()]
+        [allowNull()]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [Alias('PSPath')]
-        [string]$Path
+        [Alias('PSPath', 'Path')]
+        [object]$InputObject
     )
     begin {
     }
     process {
         <#
          #>
-        try {
-            $item = Get-Item $Path -ea stop
+        if ( [string]::IsNullOrEmpty( $InputObject )) {
+            return $false;
         }
-        catch {
-            # definitely didn't exist
-            Write-Debug 'GI failed'
-            $false; return
+
+        $item = Get-Item $InputObject -ea ignore
+        if ($null -eq $item) {
+            return $false
         }
+        # try {
+        #     $item = Get-Item $InputObject -ea stop
+        # } catch {
+        #     # definitely didn't exist
+        #     Write-Debug 'GI failed'
+        #     return $false;
+        # }
         $isType = $Item -is 'System.IO.DirectoryInfo'
         $meta = @{
             IsDirInfo         = $isDir
             HasAttr           = $hasAttribute
             IsContainer       = [bool]$Item.PSIsContainer
-            PathTypeContainer = Test-Path -PathType Container -Path $Path
+            PathTypeContainer = Test-Path -PathType Container -Path $InputObject
         }
         $meta | Format-Table | Out-String | Write-Debug
 
         # $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
         # you could also do -ne 0 at the end to achieve the same thing
         $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -ne 0
-        $isContainer = Test-Path -PathType Container -Path $Path
+        $isContainer = Test-Path -PathType Container -Path $InputObject
+
+        #  return [bool]:
         $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer) -or $isContainer
-        return
     }
     end {
     }
