@@ -18,6 +18,9 @@ function Get-ObjectTypeHelp {
         Opens the docs for the current type, in your default browser
     .description
        It uses 'Get-Unique -OnType' so you only get 1 result for duplicated types
+    .notes
+        you can always fallback to the url
+            https://docs.microsoft.com/en-us/dotnet/api/
     .example
           .
     .outputs
