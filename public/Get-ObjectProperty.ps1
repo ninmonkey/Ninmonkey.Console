@@ -99,12 +99,18 @@ function Get-ObjectProperty {
         Dev.Nin\_enumerateProperty
     .link
         Dev.Nin\iProp
+    .link
+        Ninmonkey.Console\Get-ObjectProperty
     .example
         ,(1..4) | prop -IncludeTypeTitle
         1..4 | prop -IncludeTypeTitle
     #>
     [cmdletbinding(PositionalBinding = $false)]
-    [Alias('Prop')]
+    [Alias(
+        'Prop',
+        'Inspect->Property'
+        # 'Inspect-Object'
+    )]
     param(
         # any object with properties to inspect
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -180,7 +186,7 @@ function Get-ObjectProperty {
             $curObject = $_
 
             if ($IncludeTypeTitle) {
-                $curObject.GetType() | Format-TypeName -Brackets | Join-String -op  "`nTypeName: "
+                $curObject.GetType() | Format-TypeName -Brackets | Join-String -op "`nTypeName: "
                 # | Label 'TypeName' # todo: once label is fixed
             }
             Write-Debug "Object: $($_.GetType().FullName)"
@@ -193,8 +199,7 @@ function Get-ObjectProperty {
                 $ValueIsNull = $null -eq $curProp.Value
                 if ($ValueIsNull) {
                     $DisplayedValueType = $Config.SymbolNull
-                }
-                else {
+                } else {
                     $DisplayedValueType = $curProp.Value.GetType() | Format-TypeName @splat_FormatType
                 }
 
@@ -205,8 +210,7 @@ function Get-ObjectProperty {
                 $curTypeInstance = $DisplayedValueType
                 if ($curType -eq $curTypeInstance) {
                     $typeAbbrString = $curType
-                }
-                else {
+                } else {
                     $typeAbbrString = '{0} ⇾  {1}' -f @(
                         $curType
                         $curTypeInstance

@@ -57,7 +57,7 @@ function Set-ConsoleEncoding {
         # Which encoding to use?
         # [string] or [encoding]
         [Parameter(Mandatory, Position = 0)]
-        [ValidateSet('Utf8', 'Utf16-LE', 'Unicode')]
+        [ArgumentCompletions('Utf8', 'Utf16-LE', 'Unicode')]
         [string]$EncodingName
 
     )
@@ -72,6 +72,7 @@ function Set-ConsoleEncoding {
             break
         }
         default {
+            Write-Error "Not recognized: '$EncodingName', falling back to utf8"
             $global:OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
             break
         }

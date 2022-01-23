@@ -52,12 +52,25 @@ function Write-ConsoleLabel {
         [AllowEmptyString()] # simplifies users errors?
         [string]$Label,
 
+
+
+
+
+        <#
+            Null is allowed for the user's conveinence.
+            allowing null makes it easier for the user to pipe, like:
+            'gc' without -raw or '-split' on newlines
+
+        #>
+        # Text is not required. defaults to no color.
         # Text / content
         [Alias('Text')]
         [Parameter(
             ParameterSetName = 'TextFromPipe',
             Mandatory = $false, ValueFromPipeline)]
-        # Text is not required. defaults to no color.
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [Parameter(
             ParameterSetName = 'TextFromParam',
             Mandatory = $false, Position = 1)]
@@ -138,6 +151,7 @@ function Write-ConsoleLabel {
             # Separator = 'x'
             LeaveColor      = $LeaveColor
             IgnoreEntities  = $true
+            Object          = $InputObject
             # Object          = $Text # both are set later anyway
         }
 
@@ -161,7 +175,7 @@ function Write-ConsoleLabel {
         $newTextSplat_Label | Format-Table | Out-String | Write-Debug
         $StrLabel = New-Text @newTextSplat_Label
 
-        return
+
         # if ($LinesBefore -gt 0) {
         #     '' * $LinesBefore
         # }
@@ -172,7 +186,7 @@ function Write-ConsoleLabel {
         # tofix: It's actually type object unless no property param
         if ($PropertyName) {
             # $newTextSplat_Text['Object'] = $Text.psobject.properties.$PropertyName
-            $newTextSplat_Text['Object'] = $Text.$PropertyName
+            $newTextSplat_Text['Object'] = $InputObject.$PropertyName
             if ($null -eq $Text.PropertyName) {
                 # allow the user the option to continue with null value
                 # future: test if property exist, then if null,
@@ -180,28 +194,14 @@ function Write-ConsoleLabel {
                 Write-Error "Property '$PropertyName' is invalid or = $null"
                 $newTextSplat_Text['Object'] = $strConst.Null
             }
-        }
-        else {
+        } else {
             $newTextSplat_Text['Object'] = $InputObject
         }
-
-        #      = $Text
-        #         $StrText = New-Text @newTextSplat_Text
-        #     }
-        #     else {
-
-        #     }
-        # }
-        # $InputObject ??= $strConst.Null
-        # if ($null -eq $newTextSplat_Text.Object) {
-        if (
-            [string]::IsNullOrWhiteSpace( $newTextSplat_Text.Object) ) {
-            $StrText = New-Text @newTextSplat_Text
+        if ($null -eq $newTextSplat_Text['Object'] ) {
+            $newTextSplat_Text['Object'] = '[␀]'
         }
-        else {
-            $StrText = ''
-            Write-Error "-Object was $null"
-        }
+
+        $strText = New-Text @newTextSplat_Text
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
         Br -Count $LinesAfter
@@ -212,17 +212,6 @@ function Write-ConsoleLabel {
 
     }
     end {
-        # Write-Debug 'todo: rewrite to call Write-ConsoleText'
     }
 
 }
-
-# Write-Warning "Error: rewrite: '$PSCommandPath'" # fix paramset when "label 'a' 'b'" fails
-
-@'
-Label missing fail case:
-
-    Label 'Final Query' $joinedQuery | Write-Information
-
-'@
-Write-Warning 'either: label or format-dict has a depth overflow'

@@ -61,63 +61,6 @@ param()
     [section]: main
 #>
 
-function ConvertTo-SciBitString {
-    [Alias('Bits')]
-    [CmdletBinding(PositionalBinding = $false)]
-    param(
-        [Parameter(ValueFromPipeline)]
-        [psobject[]] $InputObject,
-
-        [Parameter(Position = 0)]
-        [ValidateRange(1, [int]::MaxValue)]
-        [int] $Padding,
-
-        [Parameter(Position = 1)]
-        [ValidateNotNull()]
-        [AllowEmptyString()]
-        [string] $ByteSeparator = ' ',
-
-        [Parameter(Position = 2)]
-        [ValidateNotNull()]
-        [AllowEmptyString()]
-        [string] $HalfByteSeparator = '.'
-    )
-    begin {
-        function GetBinaryString([psobject] $item) {
-            $numeric = number $item
-            if ($null -eq $numeric) {
-                return
-            }
-
-            $bits = [convert]::ToString($numeric, <# toBase: #> 2)
-            if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey((nameof { $Padding }))) {
-                $padAmount = $Padding * 8
-                if ($padAmount -ge $bits.Length) {
-                    return $bits.PadLeft($Padding * 8, [char]'0')
-                }
-            }
-
-            $padAmount = 8 - ($bits.Length % 8)
-            if ($padAmount -eq 8) {
-                return $bits
-            }
-
-            return $bits.PadLeft($padAmount + $bits.Length, [char]'0')
-        }
-    }
-    process {
-        foreach ($currentItem in $InputObject) {
-            $binaryString = GetBinaryString $currentItem
-
-            # yield
-            $binaryString -replace
-            '[01]{8}(?=.)', "`$0$ByteSeparator" -replace
-            '[01]{4}(?=[01])', "`$0$HalfByteSeparator"
-        }
-    }
-}
-
-
 filter decimal { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([decimal]) } }
 filter double { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([double]) } }
 filter single { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([single]) } }

@@ -87,9 +87,9 @@ function Measure-NinChildItem {
 
 $splatForceIgnore = @{ Force = $true; 'Ea' = 'Ignore' }
 
-
+# refactor: This should be in a autoloader script block, or consolidated as a type
 Update-TypeData -TypeName 'Nin.DiskUsageSummary' -MemberType ScriptProperty -MemberName 'RelativePath' -Value {
     $this.Path | Format-RelativePath -BasePath (Get-Item . )
-} @splatForceIgnore
+} @splatForceIgnore | Out-Null
 
-Update-TypeData -TypeName 'Nin.DiskUsageSummary' -DefaultDisplayPropertySet RelativePath, SizeStr, FileCount, DirectoryCount @splatForceIgnore
+Update-TypeData -TypeName 'Nin.DiskUsageSummary' -DefaultDisplayPropertySet RelativePath, SizeStr, FileCount, DirectoryCount @splatForceIgnore | Out-Null

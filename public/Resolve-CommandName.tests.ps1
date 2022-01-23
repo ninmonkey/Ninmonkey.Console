@@ -9,7 +9,13 @@ BeforeAll {
 }
 
 Describe 'Resolve-CommandName' {
+    It 'Temp test to flag bug' {
 
+        { Get-Command '?str' | resCmd -q } | Should -Not -Throw
+        # output:
+        # gc: @splat:
+        #   error the term jstr is not a command
+    }
     Describe 'Resolve Source Name' {
         It '<Query> returns <Expected>' -ForEach @(
             @{ Query = 'ls'; Expected = 'Microsoft.PowerShell.Management\Get-ChildItem' }
@@ -18,6 +24,14 @@ Describe 'Resolve-CommandName' {
             Resolve-CommandName -QualifiedName -CommandName $Query
             | Should -Be $Expected
         }
+
+    }
+    It 'PreserveAlias' {
+        # todo: need to add command when preserve alias is true
+        rescmd rescmd -QualifiedName -PreserveAlias | ForEach-Object Name | Should -be @(
+            'Ninmonkey.Console\rescmd'
+            'Ninmonkey.Console\Resolve-CommandName'
+        )
 
     }
 
@@ -47,8 +61,7 @@ Describe 'Resolve-CommandName' {
 
             if ($null -eq $ExpectedType) {
                 $result.count | Should -Be 0
-            }
-            else {
+            } else {
                 $result | Select-Object -First 1 | Should -BeOfType $ExpectedType
             }
         }
@@ -105,8 +118,7 @@ Describe 'Resolve-CommandName' {
             if ($ExpectThrow) {
                 { Resolve-CommandName -CommandName $Name -Ea:$ErrorAction }
                 | Should -Throw -Because $Because
-            }
-            else {
+            } else {
                 { Resolve-CommandName -CommandName $Name -Ea:$ErrorAction }
                 | Should -Not -Throw -Because $Because
             }

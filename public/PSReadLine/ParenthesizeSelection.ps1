@@ -12,17 +12,29 @@ Set-PSReadLineKeyHandler -Key 'Alt+(' `
 
     $selectionStart = $null
     $selectionLength = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetSelectionState([ref]$selectionStart, [ref]$selectionLength)
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetSelectionState(
+        [ref]$selectionStart, [ref]$selectionLength
+    )
 
     $line = $null
     $cursor = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState(
+        [ref]$line, [ref]$cursor
+    )
+
     if ($selectionStart -ne -1) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($selectionStart, $selectionLength, '(' + $line.SubString($selectionStart, $selectionLength) + ')')
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($selectionStart + $selectionLength + 2)
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(
+            $selectionStart, $selectionLength,
+            '(' + $line.SubString($selectionStart, $selectionLength) + ')'
+        )
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition(
+            $selectionStart + $selectionLength + 2
+        )
     }
     else {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, '(' + $line + ')')
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(
+            0, $line.Length, '(' + $line + ')'
+        )
         [Microsoft.PowerShell.PSConsoleReadLine]::EndOfLine()
     }
 }

@@ -3,10 +3,7 @@
         {
             "path": ".",
             "name": "Ninmonkey.Console"
-        },
-        // {
-        //     // "path": "..\\..\\..\\dotfiles_git\\powershell\\Ninmonkey.Profile"
-        // }
+        }
     ],
     "settings": {
         /*
@@ -34,10 +31,7 @@
         */
         // "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
         "terminal.integrated.drawBoldTextInBrightColors": true,
-        "terminal.integrated.fontSize": 18,
-        "editor.fontSize": 18,
-        "debug.console.fontSize": 18,
-        "editor.suggestFontSize": 14,
+        "editor.fontSize": 16,
         "markdown.preview.fontSize": 12,
         // "screencastMode.fontSize": 56,
         // "window.zoomLevel": 0,
@@ -72,7 +66,67 @@
                 "front_matter_title": ""
             }
         },
-        "terminal.integrated.fontFamily": "'consolas'"
+        "workbench.colorCustomizations": {
+            "errorLens.warningMessageBackground": "#fff00005",
+            "errorLens.warningBackground": "#ff942f10",
+            "errorLens.errorForeground": "#f77777",
+            "errorLens.errorMessageBackground": "#e4545405",
+            "errorLens.errorBackground": "#e454540a",
+            "errorLens.warningForeground": "#fa973a70",
+            "errorLens.infoForeground": "#ea00ff",
+            "minimap.findMatchHighlight": "#1ef029",
+            "minimap.warningHighlight": "#ee6f8a6b",
+            "minimap.foregroundOpacity": "#ff000081",
+            "minimap.selectionHighlight": "#264f78",
+            "minimap.selectionOccurrenceHighlight": "#feef2e",
+            "minimap.unicodeHighlight": "#d18616",
+            "minimapGutter.addedBackground": "#587c0c",
+            "minimapGutter.deletedBackground": "#94151b",
+            "minimapGutter.modifiedBackground": "#0c7d9d",
+            "minimapSlider.activeBackground": "#bfbfbf33",
+            "minimapSlider.background": "#79797933",
+            "minimapSlider.hoverBackground": "#64646459",
+            "editorBracketMatch.border": "#888888",
+            "editorLineNumber.foreground": "#4e4e4ea1",
+            "editorLineNumber.activeForeground": "#929292",
+            "list.hoverBackground": "#ff00ff18",
+            "peekView.border": "#ff00ff",
+            "tab.lastPinnedBorder": "#2472c8",
+            "terminal.ansiBlack": "#000000",
+            "terminal.ansiBlue": "#2472c8",
+            "terminal.ansiBrightBlack": "#666666",
+            "terminal.ansiBrightBlue": "#569cd6",
+            "terminal.ansiBrightCyan": "#9cdcfe",
+            "terminal.ansiBrightGreen": "#b5cea8",
+            "terminal.ansiBrightMagenta": "#d38bcd",
+            "terminal.ansiBrightRed": "#f14c4c",
+            "terminal.ansiBrightWhite": "#e5e5e5",
+            "terminal.ansiBrightYellow": "#ecec6a",
+            "terminal.ansiCyan": "#11a8cd",
+            "terminal.ansiGreen": "#6a9955",
+            "terminal.ansiMagenta": "#C586C0",
+            "terminal.ansiRed": "#cd3131",
+            "terminal.ansiWhite": "#e5e5e5",
+            "terminal.ansiYellow": "#CE9178",
+            "terminal.background": "#1E1E1E",
+            "terminal.foreground": "#D4D4D4",
+            "editor.lineHighlightBackground": "#1073cf2d",
+            "editor.lineHighlightBorder": "#9fced11f",
+            "editorBracketHighlight.foreground1": "#ffd780",
+            "editorBracketHighlight.foreground2": "#da70d686",
+            "editorBracketHighlight.foreground3": "#179f80",
+            "editorBracketHighlight.foreground4": "#ffffff80",
+            "testing.message.error.decorationForeground": "#ff646440",
+            "testing.message.error.lineBackground": "#e4545405",
+            "testing.peekBorder": "#F14C4C",
+            "testing.peekHeaderBackground": "#F14C4C1a",
+            "testing.iconFailed": "#cd3131",
+            "testing.iconPassed": "#6a9955",
+            "testing.iconQueued": "#CCA700",
+            "testing.iconSkipped": "#ff00ff",
+            "testing.iconErrored": "#bb600c",
+            "testing.iconUnset": "#848484"
+        }
     },
     "launch": {
         // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387

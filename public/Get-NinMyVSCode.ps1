@@ -7,9 +7,8 @@ function Get-NinMyVSCode {
        This isn't a VSCode wrapper, that's "Invoke-VsCode"
 
     .notes
-        future:
-        - [ ] save or autocomplete '--user-data-dir'
-        - [ ] future: use env an env var
+        replaced by Dev.Nin/Code-Venv
+
     .example
           .
     .link
@@ -25,6 +24,7 @@ function Get-NinMyVSCode {
         # [Parameter(Mandatory, Position = 0)]
         # [string]$Name
     )
+    Write-Error 'replaced by Dev.Nin/Code-Venv'
 
     # $Env:__ninVsCode = 'code-insiders'
     $DefaultBin = 'code-insiders'

@@ -1,9 +1,18 @@
-﻿
+#Requires -Version 7.0
+
 BeforeAll {
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+    Import-Module Ninmonkey.Console -Force
 }
 
-Describe "Test-IsDirectory" {
+Describe 'Test-IsDirectory' {
+    It 'Regular filesystem' {
+        Get-Item . | Test-IsDirectory | Should -Be $True
+        # todo : '
+    }
+    It 'Using Pansi''s Providor' {
+        Get-Item fg:\ | Test-IsDirectory | Should -Be $True
+    }
+
     It 'Dot Path' {
         Test-IsDirectory '.' | Should -Be $True
         '.' | Test-IsDirectory | Should -Be $True

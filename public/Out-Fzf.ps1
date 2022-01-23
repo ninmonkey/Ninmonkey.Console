@@ -89,6 +89,11 @@ function Out-Fzf {
         [Parameter()][switch]$Cycle,
 
 
+        # fzf's preview command like:
+        # --preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
+        [Parameter()]
+        [ArgumentCompletions("--preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'")]
+        [string]$PreviewCommand,
         <#
         relative path selection for user's readability.
         Strips path's prefix on input, prefix it back on for output.
@@ -188,8 +193,7 @@ function Out-Fzf {
         if (! $relativePath) {
             $Selection = $inputList | & $binFzf @fzfArgs
             $Selection
-        }
-        else {
+        } else {
             $prefixPattern = '^{0}' -f @(
                 [regex]::escape( ( Get-Item '.' | ForEach-Object FullName  ) )
             )
@@ -225,12 +229,12 @@ function Out-Fzf {
         $debugMeta += @{
             InputListCount = $inputList.Count
             SelectionCount = $Selection.Count
-            Selection      = $Selection | Join-String -sep ', ' -SingleQuote | Label  'Selection'
+            Selection      = $Selection | Join-String -sep ', ' -SingleQuote | Label 'Selection'
 
         }
         $debugMeta | Format-HashTable -Title '@debugMeta' | Write-Debug
         $debugMeta.SelectionCount | Label 'Num Selected' | Write-Debug
-        $Selection | Join-String -sep ', ' -SingleQuote | Label  'Selection' | Write-Debug
+        $Selection | Join-String -sep ', ' -SingleQuote | Label 'Selection' | Write-Debug
 
         $fzfArgs | Join-String -sep "`n-" -SingleQuote | Label 'FzfArgs' | Write-Debug
     }

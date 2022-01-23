@@ -76,6 +76,16 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 🐒> $bytes | Base64
 ```
 
+# Frequently used
+
+```ps1
+# Jump to modules
+🐒> Get-Module PSKoans | Goto 
+    pwd
+
+C:\Users\monkey\Documents\PowerShell\Modules\PSKoans\0.67.1
+```
+
 # Console Encoding
 
 ```powershell

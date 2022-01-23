@@ -13,6 +13,23 @@
         - parameter type that is not an array [obj]
         - process returns array ', $array'
         - then optionally enumerate on [obj] if I want to inspect child element
+
+
+    .example
+        $f = ls . -File | first 1
+        $d = gi . 
+        $time = get-date
+        $ps = ps * | first 1
+
+        $f, $d, $time, $ps | typeof
+        
+        'see also'
+        $otherCommands = @(
+            'Dev.Nin\Get-DevInspectObject'
+            'Dev.Nin\What-TypeInfo'
+            'Ninmonkey.Console\Get-ObjectType'
+                [me] : 'TypeOf'
+        ) | resCmd -QualifiedName
     #>
     param(
         # InputObject[s] to get type[s] of
@@ -33,6 +50,7 @@
 
     )
     begin {
+
         # if ($PassThru) {
         #     throw "NotImplementedError: -PassThru"
         # }
@@ -43,11 +61,11 @@
 
     }
     process {
-        Write-Error 'rewrite from scratch'
+        # Write-Error 'rewrite from scratch'
         $typeList.Add( $InputObject )
     }
     end {
-        Write-Error 'rewrite from scratch'
+        # Write-Error 'rewrite from scratch'
         # $
 
         switch ($Format) {
@@ -202,15 +220,13 @@ function old_Get-ObjectType {
         if ($InputObject -is 'type') {
             $curTypeInfo = $InputObject
             $curTypeObj = $InputObject
-        }
-        elseif ($InputObject -is [string]) {
+        } elseif ($InputObject -is [string]) {
             $curTypeInfo = $InputObject -as [type]
             if ($null -eq $curTypeInfo) {
                 throw "Failed on typeName: '$curTypeInfo'"
             }
             $curTypeObj = $null
-        }
-        else {
+        } else {
             $curTypeInfo = $InputObject.GetType()
             $curTypeObj = $InputObject
         }

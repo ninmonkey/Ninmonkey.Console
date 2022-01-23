@@ -1,5 +1,6 @@
 using namespace System.Collections.Generic
 
+
 function Resolve-CommandName {
     <#
         .synopsis
@@ -18,6 +19,12 @@ function Resolve-CommandName {
         .outputs
             [Management.Automation.CmdletInfo[]] or [string[]]
             zero-to-many [CmdletInfo] or other [Command] types
+        .link
+            Dev.Nin\ResCmd
+        .link
+            Dev.Nin\cmdToFilepath
+        .link
+            Ninmonkey.Console\Resolve-CommandName
         #>
     [CmdletBinding(PositionalBinding = $false)]
     [OutputType([object])]
@@ -33,9 +40,19 @@ function Resolve-CommandName {
         # Returns the source and command as text, ex: 'ls' outputs: 'Microsoft.PowerShell.Management\Get-ChildItem'
         [Parameter()][switch]$QualifiedName,
 
+        # preserves alias's original names in the output
+        [Parameter()][switch]$PreserveAlias,
+
+
+
         # Error if not exactly one match is found
         [Alias('Strict')]
-        [Parameter()][switch]$OneOrNone
+        [Parameter()][switch]$OneOrNone,
+
+        # disabled by default for speed
+        [Parameter()][switch]$IncludeAll,
+
+        [parameter()][switch]$PassThru
     )
     begin {
         $NameList = [list[string]]::new()
@@ -52,15 +69,20 @@ function Resolve-CommandName {
     end {
         $getCommandSplat = @{
             Name = $NameList
-            All  = $true
+            All  = $IncludeAll
         }
 
+        <#
+    warning/todo/bug:
+        passing wildcard arguments get weird errors
+
+            gcm '*find*' | rescmd -QualifiedName -PreserveAlias
+    #>
         $commands = Get-Command @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
-            if ($_.CommandType -eq 'Alias') {
+            if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
                 $_.ResolvedCommand
-            }
-            else {
+            } else {
                 $_
             }
         }
@@ -78,19 +100,44 @@ function Resolve-CommandName {
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
-            }
-            else {
+            } else {
                 "Match count 1 != $($Commands.count)" | Write-Warning
             }
         }
 
         if ($QualifiedName) {
-            # this works
-            $Commands | ForEach-Object {
-                '{0}\{1}' -f @( $_.Source, $_.Name )
+            $Commands | ForEach-Object -ea continue {
+                $cmd = $_
+                if (! $PassThru) {
+                    '{0}\{1}' -f @( $cmd.Source, $cmd.Name )
+                } else {
+                    # todo: return a rich type, with this name, where tostring is this?
+                    $source = if ($cmd -is 'AliasInfo') {
+                        $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
+                    } else {
+                        # $cnds[2] -is 'functioninfo'
+                        $cmd.Source
+                    }
+                }
+                $meta = [ordered]@{
+
+                    PSTypeName = 'nin.QualifiedCommand'
+                    Name       = '{0}\{1}' -f @(
+                        $cmd.Source, $cmd.Name
+                    )
+                    BaseName   = $cmd.Name
+                    Source     = $Source
+                    # $cmd.
+                    # $cmd.comm
+                }
+                [pscustomobject]$meta
+
             }
             return
         }
+
+        # else
         $Commands
     }
+
 }

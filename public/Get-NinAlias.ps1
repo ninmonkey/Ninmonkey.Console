@@ -26,9 +26,12 @@ function Get-NinAlias {
         PS> Get-NinAlias -List
 
     .notes
-
     future:
         - [ ] dynamic completer the modules from -list
+    .link
+        Dev.Nin\Find-CommandWithParameterAlias
+    .link
+        Ninmonkey.Console\Get-NinAlias
     #>
     [CmdletBinding(DefaultParameterSetName = 'Search')]
     param (
@@ -54,6 +57,7 @@ function Get-NinAlias {
 
     }
     process {
+        # Next: [AliasInfo] type always shows the [Resolve-Command -Qualified]
         $meta = @{
             MyModule = @()
             NoSource = Get-Alias * | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source  ) }

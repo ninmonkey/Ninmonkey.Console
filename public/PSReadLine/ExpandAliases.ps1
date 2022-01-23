@@ -2,10 +2,13 @@ using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
 # This example will replace any aliases on the command line with the resolved commands.
-Set-PSReadLineKeyHandler -Key 'Alt+%' `
-    -BriefDescription ExpandAliases `
-    -LongDescription 'Replace all aliases with the full command' `
-    -ScriptBlock {
+$splatKeys = @{
+    Key              = 'Alt+%'
+    BriefDescription = 'Expands aliases'
+    LongDescription  = 'Replace all aliases with the full command'
+}
+
+Set-PSReadLineKeyHandler @splatKeys -ScriptBlock {
     param($key, $arg)
 
     $ast = $null
@@ -18,6 +21,7 @@ Set-PSReadLineKeyHandler -Key 'Alt+%' `
     foreach ($token in $tokens) {
         if ($token.TokenFlags -band [TokenFlags]::CommandName) {
             $alias = $ExecutionContext.InvokeCommand.GetCommand($token.Extent.Text, 'Alias')
+            # edit: why did the original not compare with null on LHS ? Accident? error?
             if ($alias -ne $null) {
                 $resolvedCommand = $alias.ResolvedCommandName
                 if ($resolvedCommand -ne $null) {
@@ -34,5 +38,8 @@ Set-PSReadLineKeyHandler -Key 'Alt+%' `
                 }
             }
         }
+    }
+    if ($ENV:NinEnableToastDebug) {
+        New-BurntToastNotification -Text ($Tokens | str csv ' ' )
     }
 }

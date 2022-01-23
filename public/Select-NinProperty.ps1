@@ -1,5 +1,6 @@
 using namespace System.Collections.Generic
 
+
 function Select-NinProperty {
     <#
     .synopsis
@@ -14,7 +15,10 @@ function Select-NinProperty {
     .example
         PS>
     #>
-    [Alias('SelectProp', 'Select-Property', 'PropList')]
+    [Alias(
+        'Select->Prop' # select not Dive. dive would actually be the dive->member (not property) command
+        # 'SelectProp', 'Select-Property', 'PropList'
+    )]
     [CmdletBinding(  PositionalBinding = $false)]
     param (
         # source objects

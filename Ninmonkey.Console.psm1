@@ -6,19 +6,14 @@
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
-try {
-    Set-PSReadLineKeyHandler -Key 'f5' -Function ShowCommandHelp -ea Stop #SilentlyContinue
-}
-catch {
-    # catch [System.Management.Automation.ParameterBindingValidationException] {
-    if ($_.ToString() -match 'Cannot validate argument on parameter ''Function''. The argument "ShowCommandHelp"') {
-        "Module PSReadline: version {0} is missing function: 'ShowCommandHelp'" -f @( (Get-Module PSReadLine).Version )
-        | Write-Warning
-    }
-    else {
-        throw $_
+
+& {
+    $hasFunc = (Get-PSReadLineKeyHandler -Bound -Unbound | ForEach-Object Function ) -contains 'ShowCommandHelp'
+    if ($hasFunc) {
+        Set-PSReadLineKeyHandler -Key 'f12' -Function ShowCommandHelp
     }
 }
+
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
 }
@@ -46,8 +41,7 @@ if ($False) {
         if (Test-Path $FileName ) {
             . $FileName
         }
-    }
-    catch {
+    } catch {
         Write-Error "public_autoloader error: '$fileName'"
 
     }
@@ -84,8 +78,7 @@ if ($psEditor) {
 foreach ($file in $private_seeminglySci) {
     # Write-Warning "file: seeminglySci -> : $File"
     if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: private_seeminglySci: private: $File"
     }
     . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
@@ -102,8 +95,7 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: private: failed: private: $File"
     }
     . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
@@ -119,8 +111,7 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
     . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
@@ -151,7 +142,7 @@ $public_toDotSource = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'Format-RelativePath'
+
     'Format-Hashtable'
     'Format-ControlChar'
 
@@ -167,7 +158,7 @@ $public_toDotSource = @(
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
-    'ConvertTo-BitString'
+
     'ConvertTo-PropertyList'
 
     # inspection
@@ -208,7 +199,7 @@ $public_toDotSource = @(
     'Format-FileSize'
     'Format-NullText'
     # 'ConvertTo-PropertyList'
-    'Test-IsDirectory'
+
     'Get-NinCommandSyntax'
     'Format-TypeName'
     'Format-GenericTypeName'
@@ -232,8 +223,7 @@ $public_toDotSource = @(
 foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
         # good
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public: $File"
     }
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
@@ -258,7 +248,7 @@ $functionsToExport = @(
     'Write-ConsoleLabel'
     'Write-ConsoleHeader'
     'Write-ConsoleNewline'
-    'Format-RelativePath'
+
     'Find-GitRepo'
     'Write-ConsoleHorizontalRule'
 
@@ -272,7 +262,7 @@ $functionsToExport = @(
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
-    'ConvertTo-BitString'
+
     'ConvertTo-PropertyList'
 
 
@@ -308,7 +298,7 @@ $functionsToExport = @(
     'Format-ControlChar'
     'Trace-NinCommand'
 
-    'Test-IsDirectory'
+
     'Set-NinLocation'
     'Get-NinCommandSyntax'
     'Get-NinTypeData'
@@ -331,7 +321,7 @@ $functionsToExport = @(
     'Test-Net'
     # seemingly-sci
     # 'Get-ElementName'
-    'ConvertTo-BitString'
+
     'ConvertTo-Number'
     'ConvertTo-HexString'
     'ConvertTo-Base64String'
@@ -368,8 +358,7 @@ foreach ($typeName in $formatData) {
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    }
-    else {
+    } else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -379,8 +368,12 @@ if ($true) {
     New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
-    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+    # this wasn't loading below, maybe because old system
+    New-Alias 'Select->Property' -Value Select-NinProperty
 
+
+
+    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
     New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
 
     # Set-Alias 'Cd' -Value 'Set-NinLocation' -ea Continue #todo:  make this opt in
@@ -402,11 +395,7 @@ if ($true) {
         'IPython'
 
 
-        # smart alias
-        ## Select-NinProperty
-        'SelectProp'        # Select-NinProperty:
-        'Select-Property'   # Select-NinProperty:
-        'ListProp'          # Select-NinProperty: smart alias
+        'Select->Property' # Select-NinProperty
 
         'HelpHistory' # Find-HelpFromHistory
 
@@ -464,8 +453,7 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
-}
-else {
+} else {
 
     $curSplat = @{
         # Verbose = -Verbose
@@ -477,4 +465,7 @@ else {
     Build-CustomCompleter @curSplat
     Import-CustomCompleter @curSplat
     Import-GeneratedCompleter @curSplat
+
+    # this version works, run it last.
+    . (Get-Item (Join-Path $PSScriptRoot '/public/PSReadLine/native-dotnet-completer.ps1'))
 }
