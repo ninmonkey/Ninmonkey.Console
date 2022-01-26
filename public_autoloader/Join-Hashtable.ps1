@@ -119,14 +119,26 @@ Function Join-Hashtable {
         [hashtable]$OtherHash,
 
         # normal is to not modify left, return a new hashtable
-        [Parameter()][switch]$MutateLeft
+        [Parameter()][switch]$MutateLeft,
 
         # default Left wins if they share a key name
-        # [Parameter()][switch]$PrioritizeRight
+        [Parameter()][switch]$PrioritizeRight
     )
 
     # don't mutate $BaseHash
     process {
+        if ($PrioritizeRight) {
+            Throw 'Next to implement'
+        }
+        if ($False) {
+
+            # git branch -m master main
+            # git fetch origin
+            # git branch -u origin/main main
+            # git remote set-head origin -a
+        }
+
+
         # $NewHash = [hashtable]::new( $BaseHash )
         if (! $MutateLeft ) {
             $TargetHash = [hashtable]::new( $BaseHash )

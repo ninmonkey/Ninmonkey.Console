@@ -52,7 +52,6 @@
         $InputHash.GetEnumerator() | Sort-Object @splatSort
         | ForEach-Object {
             $OrderedHash.Add( $_.Key, $_.Value )
-            # $OrderedHash[ $_.Key ] = $_.Value
         }
         $OrderedHash
     }
