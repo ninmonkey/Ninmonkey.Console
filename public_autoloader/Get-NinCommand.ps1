@@ -2,19 +2,22 @@
 
 if (! $__debugInlineNin) {
 
-    $script:publicToExport.function += @(
-        'Get-NinCommand'
-    )
-    $script:publicToExport.alias += @(
-        # 'MyGcm🐒'
-        'Find-Command🐒'
-        # 'MyGet-Command🐒'
-    )
+    if ($script:publicToExport) {
+        $script:publicToExport.function += @(
+            'Find-NinCommand'
+        )
+        $script:publicToExport.alias += @(
+            # 'MyGcm🐒'
+            'Find-MyCommand🐒'
+            # 'MyGet-Command🐒'
+        )
+    }
 }
 
-function Get-NinCommand {
+function Find-NinCommand {
     <#
     .synopsis
+        Custom queries on nin commands, **not** sugar for gcm -m (_enumerateMyModules)
         Does far more than wrapping Get-Command. For that check out 'Ninmonkey.Console\Get-NinCommandProxy
     .notes
         maybe this should be Find-NinCommand?
@@ -45,14 +48,14 @@ function Get-NinCommand {
                     DevTool💻-Params-TestTabExpansionResults
 
     .example
-        PS> Get-NinCommand -ListKeys
+        PS> Find-NinCommand -ListKeys
     .example
-        🐒> Get-NinCommand -Category DevTool💻 -Name *prop*
+        🐒> Find-NinCommand -Category DevTool💻 -Name *prop*
 
             DevTool💻-iProp
 
     .example
-        🐒> Get-NinCommand -Category DevTool💻
+        🐒> Find-NinCommand -Category DevTool💻
 
             DevTool💻-GetArgumentCompleter
             DevTool💻-GetHiddenArgumentCompleter
@@ -66,8 +69,7 @@ function Get-NinCommand {
         [string[]] | [hashtable]
     #>
     [Alias(
-        # 'MyGcm🐒',
-        'Find-Command🐒'
+        'Find-MyCommand🐒'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -90,7 +92,7 @@ function Get-NinCommand {
         [Parameter()][switch]$ListKeys
     )
     begin {
-        Write-Warning 'is there a recursive loop or something hang?'    
+        Write-Warning 'is there a recursive loop or something hang?'
         @(
             @(
                 'make commands from VALIDATESET'
@@ -98,7 +100,7 @@ function Get-NinCommand {
                 'commands with string "todo"'
                 'commands with "exception NYI"'
                 'commands with "throw"'
-            ) | str ul 
+            ) | str ul
         ) | str prefix 'Stuff todo:'
         | Write-Warning
 
@@ -120,7 +122,7 @@ function Get-NinCommand {
             # | Join-String -sep ', ' -SingleQuote
             return
         }
-        
+
 
         $cached_MyModules = _enumerateMyModule # future: todo: only caches current run
 
@@ -159,23 +161,45 @@ function Get-NinCommand {
 
         # $AllFuncInfo = gcm * -m ($cached_MyModules) | editfunc -PassThru | % File | %{ Get-IndentedFunctionInfo $_ }
         $CategoriesMapping = @{
-            'DevTool💻'         = $AllCmds | ?str -Starts 'DevTool💻' Name
-            'Conversion📏'      = $AllCmds | ?Str 'ConvertTo|ConvertFrom' Name
-            'Style🎨'           = $AllCmds | ?Str '🎨' Name
-            'Format🎨'          = $AllCmds | ?Str '🎨|format' Name
-            'ArgCompleter🧙‍♂️' = $AllCmds | ?Str 'ArgumentCompleter|Argument|Completer|Completion' Name
-            'NativeApp💻'       = $nativeApp_Cmds
+            'Custom_Nin_ArrowVerbs'   = $AllCmds | Where-Object {
+                $_.Name -Match '->'
+            }
+            'Cli_AllNativeCommands💻' = $AllCmds | ForEach-Object {
+                'match any of: "gh|git|fzf|fd|bat|ripgrep|code"'
+                throw "NYI: search scripblock's AST -> command includes 'fzf' or 'invoke-nativecommand' with fzf"
+            }
+            'Cli_Fzf💻'               = $AllCmds | ForEach-Object {
+                throw "NYI: search scripblock's AST -> command includes 'fzf' or 'invoke-nativecommand' with fzf"
+            }
+            'Cli_Fd💻'                = $AllCmds | ForEach-Object {
+                throw "NYI: search scripblock's AST -> command includes 'binary' or 'invoke-nativecommand'"
+            }
+            'Completer'               = $allCmds | Where-Object { $_.Name -match '-' }
+
+            'DevTool💻'               = $AllCmds | ?str -Starts 'DevTool💻' Name
+            'Conversion📏'            = $AllCmds | ?Str 'ConvertTo|ConvertFrom' Name
+            'Style🎨'                 = $AllCmds | ?Str '🎨' Name
+            'Format🎨'                = $AllCmds | ?Str '🎨|format' Name
+            'ArgCompleter🧙‍♂️'       = $AllCmds | ?Str 'ArgumentCompleter|Argument|Completer|Completion' Name
+            'NativeApp💻'             = $nativeApp_Cmds
             # 'NativeApp💻'       = $AllFuncInfo | ?{   ($_ | ?str 'native.*app' ScriptBlock) -or
             # ($_ | ?str 'native.*app' Definition) } | % Name
-            'ExamplesRef📚'     = $AllCmds | ?Str 'Example🔖|Example|Template|Cheatsheet' Name
-            'TextProcessing📚'  = @()
-            'Experimental🧪'    = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
-            'Regex🔍'           = $AllCmds | ?str 'Regex' Name
-            'Todo🚧'            = $todoCommands
-            'NYI🚧'             = $NYICommands
-            'Prompt💻'          = $AllCmds | ?str 'Prompt' Name
-            'UnderPublic🕵️‍♀️' = $AllCmds | ?str -Starts '_' 'Name'
-            'My🐒'              = $AllCmds | ?str '🐒'
+            'ExamplesRef📚'           = $AllCmds | ?Str 'Example🔖|Example|Template|Cheatsheet' Name
+            'TextProcessing📚'        = @()
+            'Experimental🧪'          = $AllCmds | Where-Object { $_.Module -in @('dev.nin') }
+            'Regex🔍'                 = $AllCmds | ?str 'Regex' Name
+            'Todo🚧'                  = $todoCommands
+            'NYI🚧'                   = $NYICommands
+            'Prompt💻'                = $AllCmds | ?str 'Prompt' Name
+            'UnderPublic🕵️‍♀️'       = $AllCmds | ?str -Starts '_' 'Name'
+            'My'                      = $AllCmds | Where-Object {
+                $_.Name -match '^My' -or $_.Name
+                # $_ | ?str '🐒' -Property
+            }
+            'MyOr🐒'                  = $AllCmds | Where-Object {
+                $_.Name -match '^My' -or $_.name -match '🐒'
+                # $_ | ?str '🐒' -Property
+            }
             # 'Cli_Interactive🖐' = @()
         }
     }
@@ -232,6 +256,6 @@ function Get-NinCommand {
 
 
 if ( $false -and $__debugInlineNin) {
-    Get-NinCommand -ListKeys
-    Get-NinCommand -Category DevTool💻
+    Find-NinCommand -ListKeys
+    Find-NinCommand -Category DevTool💻
 }

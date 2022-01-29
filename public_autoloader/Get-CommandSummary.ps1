@@ -4,6 +4,7 @@
     )
     $script:publicToExport.alias += @(
         'HelpCommmand'
+        'Help->Commmand'
     )
 }
 function Get-CommandSummary {
@@ -16,9 +17,9 @@ function Get-CommandSummary {
 
             ft | Module, Command, Synopsis
     .example
-        Get-NinCommand *template* | Get-CommandSummary
+        Find-NinCommand *template* | Get-CommandSummary
     #>
-    [Alias('HelpCommand')]
+    [Alias('HelpCommand', 'Help->Command')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # CommandName[s]
@@ -126,35 +127,35 @@ function Get-CommandSummary {
         Write-Warning 'Found this old script, still super rough. will dump most of it.'
     }
 }
-if ($false -and (! $script:publicToExport)) {
-    # working example
-    $f = Get-Module dev.nin | ForEach-Object ExportedCommands | ForEach-Object Keys | Select-Object -First 20
-    | Get-CommandSummary -ea ignore -ModuleName dev.nin
+# if ($false -and (! $script:publicToExport)) {
+#     # working example
+#     return
+#     $f = Get-Module dev.nin | ForEach-Object ExportedCommands | ForEach-Object Keys | Select-Object -First 20
+#     | Get-CommandSummary -ea ignore -ModuleName dev.nin
 
-    $f | ForEach-Object DescStr
+#     $f | ForEach-Object DescStr
 
-    return
 
-    if ($false -and $EnableDebugInline) {
-        Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
-        # | ForEach-Object {
+#     if ($false -and $EnableDebugInline) {
+#         Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
+#         # | ForEach-Object {
 
-        Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
-        Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
+#         Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
+#         Get-CommandSummary dev-Printtabletemplate -ea Continue -Verbose -Debug -infa Continue
 
-        # Get-Command *console* -Module Ninmonkey.Console | ForEach-Object name | Sort-Object |
+#         # Get-Command *console* -Module Ninmonkey.Console | ForEach-Object name | Sort-Object |
 
-        # Get-Alias -Definition 'write-consoleheader' | ForEach-Object name
-        $sample = Get-Command 'ls', 'Get-ConsoleEncoding', 'ls.exe'
+#         # Get-Alias -Definition 'write-consoleheader' | ForEach-Object name
+#         $sample = Get-Command 'ls', 'Get-ConsoleEncoding', 'ls.exe'
 
-        $getCommandSummarySplat = @{
-            InformationAction = 'Continue'
-            CommandName       = 'ls', 'Get-ConsoleEncoding', 'ls.exe', 'write-consolecolor', 'Write-ConsoleHeader'
-        }
+#         $getCommandSummarySplat = @{
+#             InformationAction = 'Continue'
+#             CommandName       = 'ls', 'Get-ConsoleEncoding', 'ls.exe', 'write-consolecolor', 'Write-ConsoleHeader'
+#         }
 
-        $test1 = Get-CommandSummary @getCommandSummarySplat
-        $test1
+#         $test1 = Get-CommandSummary @getCommandSummarySplat
+#         $test1
 
-    }
+#     }
 
-}
+# }
