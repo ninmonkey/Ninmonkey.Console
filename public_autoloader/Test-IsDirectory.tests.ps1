@@ -5,6 +5,14 @@ BeforeAll {
 }
 
 Describe 'Test-IsDirectory' {
+    Context 'Pansies' {
+        It 'IsContainer Strict' {
+            Get-Item fg:\ | Ninmonkey.Console\Test-IsDirectory -IsContainer $False | Should -Be $false
+        }
+        It 'IsContainer loose' {
+            Get-Item fg:\ | Ninmonkey.Console\Test-IsDirectory -IsContainer $true | Should -Be $true
+        }
+    }
     It 'Regular filesystem' {
         Get-Item . | Test-IsDirectory | Should -Be $True
         # todo : '

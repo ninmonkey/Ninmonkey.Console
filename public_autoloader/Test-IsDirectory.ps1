@@ -34,20 +34,25 @@ function Test-IsContainer {
         [allowNull()]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [Alias('PSPath', 'Path')]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # looser definition ,  use to test containers in providers other than filesystems
+        [switch]$IsContainer
     )
     begin {
     }
     process {
         <#
          #>
+        $item = Get-Item $InputObject -ea ignore
         if ( [string]::IsNullOrEmpty( $InputObject )) {
             return $false;
         }
-
-        $item = Get-Item $InputObject -ea ignore
         if ($null -eq $item) {
             return $false
+        }
+        if ($IsContainer -and $Item.PSIsContainer) {
+            return $True;
         }
         # try {
         #     $item = Get-Item $InputObject -ea stop
@@ -75,12 +80,4 @@ function Test-IsContainer {
     }
     end {
     }
-}
-
-
-if ( $false -and (! $publicToExport)) {
-    # ...
-    Get-Item . | Test-IsDirectory | Should -Be $True
-    Get-Item fg:\ | Test-IsDirectory | Should -Be $True
-    Test-IsDirectory '.' | Should -Be $True
 }
