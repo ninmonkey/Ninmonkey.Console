@@ -1,3 +1,7 @@
+Export-ModuleMember -Alias @(
+    'Fmt->Rule'
+)
+
 function Write-ConsoleHorizontalRule {
     <#
     .SYNOPSIS
@@ -9,7 +13,7 @@ function Write-ConsoleHorizontalRule {
         "line1"; hr -ExtraLines 3;  "line2"
 
     #>
-    [alias('Hr')]
+    [alias('Hr', 'Fmt->Rule')]
     [cmdletbinding(PositionalBinding = $false
         #,  DefaultParameterSetName = 'NoPipelineInput'
     )]

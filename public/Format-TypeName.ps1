@@ -6,7 +6,7 @@
         PesterGreen  = '#3EBC77'
         PesterPurple = '#A35BAA'
 
-    }    
+    }
 }
 
 
@@ -27,7 +27,7 @@ function _writeTypeNameString {
         [alias('Name')]
         [Parameter(
             # ParameterSetName = '',
-            Mandatory, Position = 0, 
+            Mandatory, Position = 0,
             ValueFromPipeline,
             ValueFromPipelineByPropertyName
         )]
@@ -44,7 +44,7 @@ function _writeTypeNameString {
         [Parameter()]
         [switch]$WithBrackets,
 
-        # ansi color? 
+        # ansi color?
         [Alias('WithColor')]
         [Parameter()]
         [switch]$Color
@@ -55,7 +55,7 @@ function _writeTypeNameString {
             - show a bunch of (visual only) tests of Format-TYpeNameColor
             colorize brackets, namespace, typename
         #>
-        
+
     }
     process {
         if (! $WithBrackets) {
@@ -65,10 +65,10 @@ function _writeTypeNameString {
 
         if (! $Color ) {
             '[{0}]' -f @($TypeName)
-            return 
+            return
         }
 
-        
+
         '[{0}]' -f @($TypeName) | Write-Color $__ninColor.Default.PesterGreen
         return
     }
@@ -84,7 +84,7 @@ function Format-TypeName {
         PS> $cat.pstypenames | Format-TypeName | join-string -sep ', ' { "[$_]" }
 
             [Selected.System.Management.Automation.PSCustomObject], [Nin.Animal], [PSCustomObject], [Object]
-    
+
     .notes
     see also:
         [ParameterMetadata](https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.parametermetadata?view=powershellsdk-7.0.0)]
@@ -134,7 +134,7 @@ function Format-TypeName {
         [Alias('Brackets')]
         [Parameter()][switch]$WithBrackets,
 
-        # PassThru formatted typename 
+        # PassThru formatted typename
         [Parameter()][switch]$PassThru
 
 
@@ -143,7 +143,7 @@ function Format-TypeName {
     )
     begin {
         # $x = 10
-        # return 
+        # return
         $Config = @{
             # WithoutBrackets
         }
@@ -163,7 +163,7 @@ function Format-TypeName {
             Write-Warning 'currently ignoring: -IgnorePrefix'
         }
         if ($Colorize) {
-            Write-Error 'Format.ps1xml Ansi Escape NYI' 
+            Write-Error 'Format.ps1xml Ansi Escape NYI'
             # also use ENV:NO_COLOR
         }
         $Str = @{
@@ -171,7 +171,7 @@ function Format-TypeName {
             EmptyStr       = 'EmptyStr'
             EmptySet       = '∅'
             OnlyWhitespace = 'StringIsBlank'
-        }        
+        }
 
         $wb = @{
             WithBrackets = $WithBrackets
@@ -205,36 +205,46 @@ function Format-TypeName {
             return
         }
 
-        $startedAsString = $InputObject -is 'string'     
-        $startedAsType = $InputObject -is 'type'   
+        $startedAsString = $InputObject -is 'string'
+        # $startedAsType = $InputObject -is 'type'
+        $startedAsType = $InputObject -is 'type'
         $tinfo = ($InputObject)?.GetType()
 
+        if($startedAsString) {
+            $tinfo = $InputObject -as 'type'
+        } elseif( $InputObject -is 'type' ){
+            $tinfo = $InputObject
+        } else {
+            write-warning "maybe shouldn't reach here? '$PSCommandPath'"
+            $tinof = $InputObject
+        }
 
-        if ($InputObject -is 'type') { 
+
+        if ($InputObject -is 'type') {
             $tinfo = $InputObject
         } else {
             $tinfo = ($InputObject)?.GetType()
         }
-        
+
         if ($startedAsString) {
             # todo: next: PR: auto cast using -as
             $parsed = $InputObject -replace '^System\.', ''
-            # $nameSpace = 
+            # $nameSpace =
         } else {
             $parsed = $tinfo.FullName -replace '^System\.', ''
         }
-        
+
         $parsedInfo = [ordered]@{
-            PSTypeName        = 'nin.ParsedTypeName' 
+            PSTypeName        = 'nin.ParsedTypeName'
             <#
             duties:
                 external code/type has 'nin.TypeInfo' and other inspection
 
                 Format-TypeName:
-                    least amount of info, and dependencies as possible. 
-                    otherwise recursion 
+                    least amount of info, and dependencies as possible.
+                    otherwise recursion
             #>
-            # RenderName        = # plus, here, it's recursive. visual, maybe not? $tinfo | Format-TypeName -WithBrackets 
+            # RenderName        = # plus, here, it's recursive. visual, maybe not? $tinfo | Format-TypeName -WithBrackets
             FullName          = $tinfo.FullName
             Name              = $tinfo.Name # would be format style / compute some
             NameSpace         = $tinfo.NameSpace
@@ -245,7 +255,7 @@ function Format-TypeName {
             [pscustomobject]$parsedInfo
             return
         }
- 
+
         # -replace '^System\.', ''
         _writeTypeNameString @wb -Name $parsedInfo.Name -Namespace $parsedInfo.NameSpace
         # _writeTypeNameString @wb -TypeNameString $ninTypeInfo -Namespace ($tinfo.Namespace ?? '')
@@ -283,29 +293,29 @@ function Format-TypeName {
 
 
 
-        
+
         Write-Debug 'skipping  logic'
         if ($InputObject -is 'type') {
             $tinfo = $InputObject
         }
-        # is a str, but is a valid type? 
+        # is a str, but is a valid type?
         $maybeFromStr = $InputObject -as 'type'
         $resolvedFromStringFailed = $null -eq $maybeFromStr
-       
+
         # if (($null -eq $InputObject) -or ($null -eq $tinfo)) {
         if (($null -eq $InputObject) -or ($null -eq $tinfo)) {
             # might need to move out
             Write-Debug "I think valid str-resolve-types fall here, but shouldn't '$tinfo', '$resolvedFromStringFailed'"
             Write-Debug 'if type doesn''t resolve, and get type isn''t non-string, then return self'
             _writeTypeNameString @wb $str.NullSymbol
-            return 
+            return
         }
         # string-y null?
         if ([string]::IsNullOrWhiteSpace( $InputObject ) ) {
             _writeTypeNameString @wb $str.OnlyWhitespace
             return
         }
-       
+
         @{
             InputObject              = $InputObject
             tinfo                    = $tinfo
@@ -315,17 +325,17 @@ function Format-TypeName {
 
         if (! $resolvedFromStringFailed) {
             # good, keep it
-            $parsed = 
+            $parsed =
 
             # if($)
-            
-            $finalString = $tinfo.GetType().FullName            
+
+            $finalString = $tinfo.GetType().FullName
         } else {
 
-            $finalString 
+            $finalString
             $maybeFromStr.GetType().FullName
         }
-        
+
         if ($maybeFromStr) {
             $tinfo = $maybeFromStr
             $finalString = ''
@@ -339,7 +349,7 @@ function Format-TypeName {
         } else {
             $parsed = $tinfo.FullNames
         }
-        
+
         $dbgMeta = @{
             ParameterSetName         = $PSCmdlet.ParameterSetName
             Name                     = $tinfo.Name
@@ -360,7 +370,7 @@ function Format-TypeName {
 
         _writeTypeNameString @wb $parsed # this part, actually goes into rendering? no?
 
-        return 
+        return
 
         $PSCmdlet.ParameterSetName
         | str prefix 'parameterSetName'
@@ -390,7 +400,9 @@ function Format-TypeName {
                 $TypeAsString = $TypeInstance.FullName
                 break
             }
-            default { Write-Error "not implemented parameter set: '$switch'" }
+            default {
+                Write-Error "not implemented parameter set: '$switch'"
+            }
         }
 
         $filteredName = $TypeAsString
@@ -423,7 +435,7 @@ function NestedOrNot( [type]$TypeInfo ) {
         $true -eq $typeinfo.IsNested | Label 'IsNested?: '
         $nestedTypeName = $typeinfo.DeclaringType.Name, $typeinfo.Name -join '+'
         ( $typeinfo.namespace), $nestedTypeName -join '.'
-    }    
+    }
 }
 
 <#

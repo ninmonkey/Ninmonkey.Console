@@ -5,7 +5,7 @@ if ( $publicToExport ) {
         'ConvertTo-RelativePath'
     )
     $publicToExport.alias += @(
-        'To->RelativePath'
+        'To->RelativePath' # compare with 'To->VariablePath'
     )
 }
 
