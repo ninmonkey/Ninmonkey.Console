@@ -80,8 +80,12 @@ function Resolve-CommandName {
     #>
         $commands = Get-Command @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
-            if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
+            # if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
+            if ($_.CommandType -eq 'Alias') {
                 $_.ResolvedCommand
+                if ($PreserveAlias) {
+                    $_
+                }
             } else {
                 $_
             }
@@ -95,6 +99,7 @@ function Resolve-CommandName {
             }
             $true
         }
+        # | Sort-Object -p { $_.ModuleName, $_.Name } # simple way to remove overlapping results
         | Sort-Object -Unique -p { $_.ModuleName, $_.Name } # simple way to remove overlapping results
 
         if ($OneOrNone) {
@@ -105,25 +110,37 @@ function Resolve-CommandName {
             }
         }
 
+        # refactor command
+        # if (!(Test-IsNotBlank $Source)) {
+        #     $Source = $cmd.Source
+        # }
+        # $Source = $cmd.Source
+
+        # make tostring be itself
         if ($QualifiedName) {
             $Commands | ForEach-Object -ea continue {
                 $cmd = $_
                 if (! $PassThru) {
-                    '{0}\{1}' -f @( $cmd.Source, $cmd.Name )
+                    '{0}\{1}' -f @(
+                        $cmd.Name
+                        $cmd.Source
+                    )
                 } else {
                     # todo: return a rich type, with this name, where tostring is this?
-                    $source = if ($cmd -is 'AliasInfo') {
+                    $source = if ($cmd -is 'Management.Automation.AliasInfo') {
                         $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
                     } else {
                         # $cnds[2] -is 'functioninfo'
                         $cmd.Source
                     }
                 }
+                # Wait-Debugger
                 $meta = [ordered]@{
 
                     PSTypeName = 'nin.QualifiedCommand'
                     Name       = '{0}\{1}' -f @(
-                        $cmd.Source, $cmd.Name
+                        $cmd.ModuleName
+                        $cmd.Name
                     )
                     BaseName   = $cmd.Name
                     Source     = $Source
