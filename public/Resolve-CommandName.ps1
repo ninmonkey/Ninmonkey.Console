@@ -17,6 +17,7 @@ function Resolve-CommandName {
                 Ninmonkey.Console\Set-NinLocation
                 Utility\Select-ObjectIndex
         .outputs
+            [nin.QualifiedCommand[]] or [CommandInfo] or [AliasInfo]
             [Management.Automation.CmdletInfo[]] or [string[]]
             zero-to-many [CmdletInfo] or other [Command] types
         .link
@@ -52,6 +53,8 @@ function Resolve-CommandName {
         # disabled by default for speed
         [Parameter()][switch]$IncludeAll,
 
+        # is there any point to use passthrough?
+        # disabling it as a soft-deletion
         [parameter()][switch]$PassThru
     )
     begin {
@@ -67,6 +70,9 @@ function Resolve-CommandName {
         }
     }
     end {
+        if ($PassThru) {
+            Write-Warning 'is now obsolete?'
+        }
         $getCommandSplat = @{
             Name = $NameList
             All  = $IncludeAll
@@ -120,21 +126,13 @@ function Resolve-CommandName {
         if ($QualifiedName) {
             $Commands | ForEach-Object -ea continue {
                 $cmd = $_
-                if (! $PassThru) {
-                    '{0}\{1}' -f @(
-                        $cmd.Name
-                        $cmd.Source
-                    )
+                $source = if ($cmd -is 'Management.Automation.AliasInfo') {
+                    $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
                 } else {
-                    # todo: return a rich type, with this name, where tostring is this?
-                    $source = if ($cmd -is 'Management.Automation.AliasInfo') {
-                        $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
-                    } else {
-                        # $cnds[2] -is 'functioninfo'
-                        $cmd.Source
-                    }
+                    # $cnds[2] -is 'functioninfo'
+                    $cmd.Source
                 }
-                # Wait-Debugger
+
                 $meta = [ordered]@{
 
                     PSTypeName = 'nin.QualifiedCommand'
