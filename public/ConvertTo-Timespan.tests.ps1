@@ -1,45 +1,44 @@
-#Requires -Module @{ ModuleName = 'Pester'; ModuleVersion = '5.0' }
-#Requires -Version 7
-
-BeforeAll {
-    Import-Module Ninmonkey.Console -Force
+﻿BeforeAll {
+    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 }
 
 Describe 'ConvertTo-Timespan' {
-    It 'first' {
-        $tslist = @(
-            2 | days
-            3 | hours
-        )
-
-        $ts_sum = $tslist | Measure-Object TotalMilliSeconds -Sum | ForEach-Object Sum | ForEach-Object { 
-            [timespan]::new(0, 0, 0, 0, $_)
-        } 
-
-        $ts_sum | Should -Be (RelativeTs 2d3h -Debug)
-
-        $tslist = @(
-            2 | days
-            3 | hours
-        )
-
-        $total_ms = $tslist | Measure-Object TotalMilliSeconds -Sum | ForEach-Object Sum
-
-        $ts_sum = $total_ms | ForEach-Object { 
-            [timespan]::new(0, 0, 0, 0, $_)
-        }     
+    # BeforeAll {
+    #     $SampleData = @(
+    #         '3d1m'
+    #         '3d1a'
+    #         '-3d1m'
+    #         '-3d1a'
+    #         '1d3s'
+    #         '1d3-s'
+    #         '1d3h4m1s'
+    #         '3d'
+    #     )
+    # }
+    BeforeAll {
+        # $ErrorActionPreference = 'break'
     }
-    Describe 'Partial Parameters' {
-        It 'OnlyMs' {
-            ConvertTo-Timespan '1m' | ForEach-Object TotalSeconds | Should -Be 60
+    Describe 'Empty Values' {
+        It 'Zero is Valid' {
+            { RelativeTs '0s' -ZeroIsValid:$True } | Should -Not -Throw
         }
-        It 'Single ms' {
-            ConvertTo-Timespan '1ms' | ForEach-Object TotalMilliseconds
-            | Should -Be 1 -Because '"ms" should parse to ms, not the partial match of "s"'
+        It 'Zero Should Throw' {
+            { RelativeTs '0s' -ZeroIsValid:$false } | Should -Throw
         }
-        It 'Explicit 0s' {
-            ConvertTo-Timespan '0s1ms' | ForEach-Object TotalMilliseconds | Should -Be 1            
-        }
-
     }
+    It 'Returns <expected> (<name>)' -ForEach @(
+        # I think some values go out of range or precision errors
+        @{ Name = '3d1m'; Expected = ([timespan]::new(3, 0, 1, 0, 0)) }
+        @{ Name = '9d3h'; Expected = ([timespan]::new(9, 3, 0, 0, 0)) }
+        @{ Name = '9d3h1d'; Expected = ([timespan]::new(9, 3, 0, 0, 0)) }
+        @{ Name = '9d1m3h'; Expected = ([timespan]::new(9, 0, 1, 0, 0)) }
+        # @{ Name = '-4d2h9s299ms'; Expected = ([timespan]::new(9, 3, 0, 0, 0)) }
+
+    ) {
+        ConvertTo-Timespan $name
+        | Should -Be $expected
+        # Get-Emoji -Name $name | Should -Be $expected
+    }
+
+
 }

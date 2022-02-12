@@ -8,6 +8,8 @@ function Format-Predent {
         compare/merge with:
             C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Format-IndentText.ps1
     .example
+        # #  wip -> Replace with Dev.Nin\Format-IndentText
+
         # use clipboard, predent it, then save to clipbard
         PS> Format-Predent
         # the implicit command is:

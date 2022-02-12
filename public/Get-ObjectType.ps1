@@ -17,12 +17,12 @@
 
     .example
         $f = ls . -File | first 1
-        $d = gi . 
+        $d = gi .
         $time = get-date
         $ps = ps * | first 1
 
         $f, $d, $time, $ps | typeof
-        
+
         'see also'
         $otherCommands = @(
             'Dev.Nin\Get-DevInspectObject'
@@ -99,7 +99,9 @@
                 break
             }
 
-            default { Throw "UnhandledCase: $Format" }
+            default {
+                Throw "UnhandledCase: $Format" 
+            }
         }
     }
 }
