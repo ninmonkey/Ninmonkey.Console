@@ -6,9 +6,9 @@ function ConvertTo-Timespan {
     .description
         by default the value 0 is an error, or when the regex does not match
         throw errors when no value is created, user may ignore it.
-        
-        next: force a full regex match, $RelativeText has any non-matched text, 
-            after splitting, then there's an error.            
+
+        next: force a full regex match, $RelativeText has any non-matched text,
+            after splitting, then there's an error.
             next: decent deterministic parse decetection is
                 1] attempt to grab matches in the orignal string:
                     "[day]? [hour]? [minute]? [second]?"
@@ -26,9 +26,9 @@ function ConvertTo-Timespan {
             3 | hours
         )
 
-        $ts_sum = $tslist | Measure-Object TotalMilliSeconds -Sum | % Sum | %{ 
+        $ts_sum = $tslist | Measure-Object TotalMilliSeconds -Sum | % Sum | %{
             [timespan]::new(0,0,0,0,$_)
-        } 
+        }
 
         $ts_sum | Should -be (RelativeTs 2d3h -debug)
 
@@ -39,9 +39,9 @@ function ConvertTo-Timespan {
 
         $total_ms = $tslist | Measure-Object TotalMilliSeconds -Sum | % Sum
 
-        $ts_sum = $total_ms  | %{ 
+        $ts_sum = $total_ms  | %{
           [timespan]::new(0,0,0,0,$_)
-        } 
+        }
 
         $ts_sum | Should -be (RelativeTs 2d3h)
     .outputs
@@ -49,8 +49,8 @@ function ConvertTo-Timespan {
     .notes
         - [ ] better verb?
             better name, timespan? ConvertTo ?
-            'New-RelativeTimespan' or 'ConvertTo-Timespan' ?          
-        
+            'New-RelativeTimespan' or 'ConvertTo-Timespan' ?
+
 
 
         See also: Szeraax/Get-TimeStuff.ps1
@@ -77,20 +77,25 @@ function ConvertTo-Timespan {
 (?x)
         ^
         (
-            (?<Days>\-?\d+)
-        d)?
+            (?<Days>[\d\.\-]+)
+            d
+        )?
         (
-            (?<Hours>\-?\d+)
-        h)?
+            (?<Hours>[\d\.\-]+)
+            h
+        )?
         (
-            (?<Minutes>\-?\d+)
-        m)?
+            (?<Minutes>[\d\.\-]+)
+            m
+        )?
         (
-            (?<Seconds>\-?\d+)
-        s)?
+            (?<Seconds>[\d\.\-]+)
+            s
+        )?
         (
-            (?<Milliseconds>\-?\d+)
-        ms)?
+            (?<Milliseconds>[\d\.\-]+)
+            ms
+        )?
         (?<Rest>.*)
         $
 '@
@@ -114,7 +119,7 @@ function ConvertTo-Timespan {
             | Join-String -sep ', ' -op 'Timespan args: ' | Write-Debug
 
             $ts = [timespan]::new($Days, $Hours, $Minutes, $Seconds, $Milliseconds)
-            if ($ts -eq 0 -or $null -eq $ts) {            
+            if ($ts -eq 0 -or $null -eq $ts) {
                 $splatError = @{}
                 if (! $ZeroIsValid) {
                     $splatError = @{
@@ -125,7 +130,7 @@ function ConvertTo-Timespan {
             }
             $ts
         } catch {
-            Write-Error -Message "Failed parsing string '$RelativeText'"
+            Write-Error -Message "Failed parsing string '$RelativeText'" -Category 'InvalidData'
             # throw [System.MissingFieldException]::new('Could not access field', $_.Exception)
         }
     }
