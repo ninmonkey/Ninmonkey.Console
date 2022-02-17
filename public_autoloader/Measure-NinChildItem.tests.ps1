@@ -1,15 +1,16 @@
-#requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
-$SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+# # requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
+# # $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
-Describe "$__PesterFunctionName" -Tag Unit {
+Describe 'Measure-NinChildItem' -Tag Unit {
     BeforeAll {
         Import-Module Ninmonkey.Console -Force
         # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
-        $ErrorActionPreference = 'break'
+        # $ErrorActionPreference = 'break'
     }
-    It 'Runs without error' {
-        . $__PesterFunctionName .
+    It 'Runs without error' -Skip -Tag 'SlowIO' {
+        { Measure-NinChildItem -InputPath '.' }
+        | Should -Not -Throw
     }
     Describe 'Bytes Match Get-ChildItem' {
         # It '"<Directory>" Returns "<bytes>"' -ForEach @(

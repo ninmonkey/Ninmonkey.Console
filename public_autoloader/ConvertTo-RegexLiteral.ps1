@@ -1,10 +1,13 @@
 using namespace System.Collections
-$script:publicToExport.function += @(
-    'ConvertTo-RegexLiteral'
-)
-$script:publicToExport.alias += @(
-    'ReLit', 'RegexLiteral'
-)
+
+if ($script:publicToExport) {
+    $script:publicToExport.function += @(
+        'ConvertTo-RegexLiteral'
+    )
+    $script:publicToExport.alias += @(
+        'ReLit', 'RegexLiteral'
+    )
+}
 
 function ConvertTo-RegexLiteral {
     <#
@@ -61,17 +64,16 @@ function ConvertTo-RegexLiteral {
         # Use Regex literal format for vscode (javascript)
         [Parameter()][switch]$AsVSCode
     )
-    begin {}
+    begin {
+    }
     process {
         $Text | ForEach-Object {
             if ((! $AsRipgrepPattern) -and (! $AsVSCode)) {
                 [regex]::Escape($_)
-            }
-            elseif ($AsRipgrepPattern) {
+            } elseif ($AsRipgrepPattern) {
                 [regex]::Escape($_) -replace
                 '\\ ', ' '
-            }
-            elseif ($AsVSCode) {
+            } elseif ($AsVSCode) {
                 [regex]::Escape($_) -replace
                 '\\ ', ' ' -replace
                 '\\#', '#' -replace
@@ -79,5 +81,6 @@ function ConvertTo-RegexLiteral {
             }
         }
     }
-    end {}
+    end {
+    }
 }

@@ -43,10 +43,19 @@ function Get-ObjectTypeHelp {
     )
 
     begin {
+
         # list of full type nam;es1
         $x
         $NameList = [list[string]]::new()
         $TemplateUrl = 'https://docs.microsoft.com/en-us/dotnet/api/{0}'
+        @'
+    bug:
+
+        https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0
+
+
+'@ | Out-Null
+
     }
     process {
         if ( [string]::IsNullOrWhiteSpace($InputObject) ) {
