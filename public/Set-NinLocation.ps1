@@ -59,6 +59,8 @@ function Set-NinLocation {
     }
 
     $DestItem = Get-Item $Path
+    # todo; maybe test that item is container, before throwing for others
+    # see Test-IsDirectory
     $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
     if ($DestItem.PSProvider.Name -ne 'filesystem') {
         $PSCmdlet.WriteError(
@@ -70,12 +72,13 @@ function Set-NinLocation {
         )
         return
         # todo: future: pass command to Push-Location for providers like registry
-    } 
+    }
 
     if (! (Test-Path -Path $Path)) {
         'Invalid path: {0}' -f $Path | Write-Error -Category 'InvalidArgument'
         return
     }
+
 
 
     # $cust = 'Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -replace (), 'HKCU:\'
