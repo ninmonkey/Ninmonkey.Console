@@ -86,7 +86,7 @@ function Format-HashTable {
         [Parameter()][switch]$NoSortKeys,
 
         # Force Format-Table to render (so Write-Debug prints as expected) -AsString
-        [Alias('AsString')]
+        [Alias('AsString', 'Out-String')]
         [Parameter()][switch]$Force,
 
         # LinesBefore
@@ -98,7 +98,7 @@ function Format-HashTable {
 
     begin {
         # Format-HashTable: Can't use it here, self-referencing
-        $PSBoundParameters | Format-Table |  Out-String -w 9999 | Write-Debug
+        $PSBoundParameters | Format-Table | Out-String -w 9999 | Write-Debug
     }
 
     Process {
@@ -107,12 +107,10 @@ function Format-HashTable {
         if ($InputHash -is 'System.Collections.Specialized.OrderedDictionary' ) {
             Label 'isOrderedDictionary' 'true' | Write-Debug
             $SortedHash = $InputHash
-        }
-        else {
+        } else {
             if ($NoSortKeys) {
                 $SortedHash = $InputHash
-            }
-            else {
+            } else {
                 $SortedHash = $InputHash | Sort-Hashtable
             }
         }
@@ -149,8 +147,7 @@ function Format-HashTable {
                 | Format-Table -Wrap -AutoSize
                 if ($Force) {
                     $formatted | Out-String -Width 9999
-                }
-                else {
+                } else {
                     $formatted
                 }
                 break
