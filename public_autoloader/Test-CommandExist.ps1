@@ -4,16 +4,24 @@ $script:publicToExport.function += @(
     'Assert-CommandExists'
 )
 $script:publicToExport.alias += @(
-    'Assert-CommandExists' # 'Test-CommandExists'
 )
 
 function Test-CommandExists {
+    [OutputType('System.Boolean')]
     param(
         <#
         .synopsis
             Does command exist? Returns bool
+        .notes
+            warning: performance wise, it is slow, because of Resolve-CommandName
+        .link
+            Ninmonkey.Console\Resolve-CommandName
+        .link
+            Ninmonkey.Console\Assert-CommandExists
+        .link
+            Ninmonkey.Console\Test-CommandExists
         #>
-        [Paramerter(mandatory, position = 0)]
+        [Parameter(mandatory, position = 0)]
         $InputObject
     )
 
@@ -32,16 +40,24 @@ function Assert-CommandExists {
     .synopsis
         Does command exist? otherwise Raise exception
     .notes
-        I'm not sure if I want to return the [cmdinfo] on success or nothing?
+        warning: performance wise, it is slow, because of Resolve-CommandName
+    .notes
+        Should I return [cmdinfo] on success or nothing? Not unless -PassThru
+    .link
+        Ninmonkey.Console\Resolve-CommandName
+    .link
+        Ninmonkey.Console\Assert-CommandExists
+    .link
+        Ninmonkey.Console\Test-CommandExists
     #>
     param(
-        [Paramerter(mandatory, position = 0)]
+        [Parameter(mandatory, position = 0)]
         $InputObject
     )
 
     process {
         try {
-            Ninmonkey.Console\Resolve-CommandName -CommandName $InputObject -ea stop
+            Ninmonkey.Console\Resolve-CommandName -CommandName $InputObject -ea stop | Out-Null
         } catch {
             throw [System.Exception]"Command could not be found: '$InputObject'"
         }
