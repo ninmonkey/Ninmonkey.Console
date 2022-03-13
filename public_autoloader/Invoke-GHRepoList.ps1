@@ -6,18 +6,24 @@ if ( $publicToExport ) {
         '_enumerateGhProperty' # to test
     )
     $publicToExport.alias += @(
-        'gh->RepoList' # forgive me, for my verbing naming sins
+        'gh->RepoList' # forgive me,  my verbing naming sins, and the += operator
     )
 }
 
 function _enumerateGhProperty {
     <#
     .synopsis
-        sugar to dynamically generate json property names
+        sugar to dynamically generate '--json' property names, for api calls
     .notes
         currently generates names from 'gh repo list'.
         I need to test what other properties
+    .link
+        https://cli.github.com/manual/gh_repo
+    .link
+        Ninmonkey.Console\Out-Fzf
     #>
+    # [RequiresCommandAttribute('Name' = 'gh', 'optional' = $false)] # future metadata attribute
+    [CmdletBinding()]
     param(
         # future: [Parameter(Position = 0)][string]$CommandName
     )
@@ -27,24 +33,24 @@ function _enumerateGhProperty {
 function Invoke-GhRepoList {
     <#
     .synopsis
-        invokes 'gh repo list' using dynamically generated properties
+        invokes 'gh repo list' and  dynamically generates property names
     .description
         it's sugar for using json properties '--json=<propertyList>'
     .notes
         future: [ArgumentCompletions( _enumGhProperty )]
+    .link
+        https://cli.github.com/manual
+    .link
+        Ninmonkey.Console\Out-Fzf
     #>
+    # [RequiresCommandAttribute('Name' = 'gh', 'optional' = $false)] # future metadata attribute
     [Alias('gh->RepoList')] # forgive me, for my verbing naming sins
     [CmdletBinding()]
     param(
-        # list of strings of properties
+        # list of strings of property names for 'gh --json=<propList>
         [Alias('Property')]
         [string[]]$selectedProps
     )
-
-    # $ghArg = $Property -join ','
-    # & 'gh' @(
-    #     'repo', 'list', "--json=${ghArgs}"
-    # )
 
     & 'gh' @(
         'repo'
@@ -54,10 +60,9 @@ function Invoke-GhRepoList {
 }
 
 
-
 if (! $publicToExport) {
-    # ...
-    # gh implicitly uses your CWD , if you don't specify a repo
+    # example usage
+    # gh implicitly uses your CWD, or else yourself --  when you don't specify an <owner>
     Push-Location 'G:\2021-github-downloads\Power-BI\dfinke🧑\NameIT\'
 
     # You can get 'fzf' from 'choco' or: https://github.com/junegunn/fzf
