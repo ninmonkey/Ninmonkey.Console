@@ -42,6 +42,12 @@ function Invoke-GhRepoList {
         https://cli.github.com/manual
     .link
         Ninmonkey.Console\Out-Fzf
+    .link
+        Ninmonkey.Console\_enumerateGhProperty
+    .link
+        https://cli.github.com/manual/gh_help_formatting
+    .link
+        https://github.blog/2021-03-11-scripting-with-github-cli/
     #>
     # [RequiresCommandAttribute('Name' = 'gh', 'optional' = $false)] # future metadata attribute
     [Alias('gh->RepoList')] # forgive me, for my verbing naming sins
