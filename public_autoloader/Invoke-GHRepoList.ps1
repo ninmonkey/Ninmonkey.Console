@@ -49,12 +49,24 @@ function Invoke-GhRepoList {
     param(
         # list of strings of property names for 'gh --json=<propList>
         [Alias('Property')]
-        [string[]]$selectedProps
+        [Parameter(Mandatory, Position = 0)]
+        [string[]]$selectedProps,
+
+        [Alias('OwnerName')]
+        [Parameter(Position = 1)]
+        [ArgumentCompletions(
+            'dfinke', 'EvotecIT', 'IISResetMe', 'IndentedAutomation',
+            'Ninmonkey', 'Jaykul', 'JustinGrote', 'SeeminglyScience', 'StartAutomating'
+        )]
+        [string]$GitRepoOwner
     )
 
     & 'gh' @(
         'repo'
         'list'
+        if ($GitRepoOwner) {
+            $GitRepoOwner # implicit, but why not be explicit
+        }
         $selectedProps | Join-String -sep ',' -op '--json='
     )
 }
