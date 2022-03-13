@@ -8,8 +8,8 @@ function Invoke-Wget {
         based on defaults from:
             - <https://gist.github.com/stvhwrd/985dedbe1d3329e68d70#1st-way>
             - <https://simpleit.rocks/linux/how-to-download-a-website-with-wget-the-right-way/>
-
-    see also:
+    .notes
+        see also:
 
         --level=NUMBER
             max depth
@@ -37,9 +37,7 @@ function Invoke-Wget {
 
         VERBOSE: wget args: --limit-rate=200k --no-clobber --convert-links --random-wait --recursive --page-requisites --adjust-extension -e robots=off --user-agent=mozilla https://<some-url-with-cats>.com -P 'c:\export\cats'
 
-        What if: Performing the operation "wget: https://<some-url-with-cats>.com" on target "c:\export\cats".
-    .NOTES
-    General notes
+        What if: Performing the operation "wget: https://<some-url-with-cats>.com" on target "c:\export\cats".   
     .link
         Invoke-NativeCommand
     .link
@@ -79,8 +77,7 @@ function Invoke-Wget {
     $wget_args += $RemainingArgs
 
     'wget args: ' + ($wget_args -join ' ') | Write-Verbose
-
-    # if ($PSCmdlet.ShouldProcess($uri, "wget: $Path")) {
+    
     if ($PSCmdlet.ShouldProcess($Path, "wget: $uri")) {
         Invoke-NativeCommand 'wget' -ArgumentList $wget_args
     }
