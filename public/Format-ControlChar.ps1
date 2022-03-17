@@ -47,10 +47,21 @@ function Format-ControlChar {
 
         # Preserve \r\n, otherwise replace all other whitespace
         [Alias('AllowNewline')]
-        [Parameter()][switch]$PreserveNewline
+        [Parameter()][switch]$PreserveNewline,
+
+        # extra options
+        [Parameter()][hashtable]$Options
 
     )
     begin {
+        # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
+        [hashtable]$Config = @{
+            # AlignKeyValuePairs = $true
+            # Title              = 'Default'
+            # DisplayTypeName    = $true
+        }
+
+
         # these are inclusive ranges, ie: [x, y]
         $Filters = @{
 
@@ -80,6 +91,8 @@ function Format-ControlChar {
         $controlMax = $Filters.'ControlChars_C0'.max + 1 # Because space isn't in C0
         $NullStr = "`u{2400}"
         $bufferSB = [StringBuilder]::new()
+
+        $Config = Join-Hashtable $Config ($Options ?? @{})
     }
 
     process {

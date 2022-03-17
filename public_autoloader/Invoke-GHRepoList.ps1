@@ -35,7 +35,7 @@ function Invoke-GhRepoList {
     .synopsis
         invokes 'gh repo list' and  dynamically generates property names
     .description
-        it's sugar for using json properties '--json=<propertyList>'
+        it's sugar for using json properties '--json <propertyList>'
     .notes
         future: [ArgumentCompletions( _enumGhProperty )]
     .link
@@ -67,14 +67,19 @@ function Invoke-GhRepoList {
         [string]$GitRepoOwner
     )
 
-    & 'gh' @(
+    $ghArgs = @(
         'repo'
         'list'
         if ($GitRepoOwner) {
             $GitRepoOwner # implicit, but why not be explicit
         }
-        $selectedProps | Join-String -sep ',' -op '--json='
+        '--json'
+        $selectedProps | Join-String -sep ',' -op "'" -os "'"
     )
+    $ghArgs | Join-String -op 'gh ' -sep ' '
+    # | label 'gh: ' | Write-Information
+
+    & 'gh' @ghArgs
 }
 
 

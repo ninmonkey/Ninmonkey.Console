@@ -93,6 +93,11 @@ function Set-NinLocation {
     Push-Location -Path $DestItem -StackName 'NinLocation'
 
     if ($AlwaysLsAfter) {
+        if (Get-Command 'lsNew' -ea ignore) {
+            LsNew
+
+        }
+        hr
         Get-NinChildItem
     }
 }
