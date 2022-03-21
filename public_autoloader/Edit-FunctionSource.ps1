@@ -18,9 +18,20 @@ function Edit-FunctionSource {
     .description
         minimal function to find function source. Optionally keep the helper func 'Resolve-CommandName'
     .example
-        PS> editfunc 'goto'
+        # opens in an editor
+        PS> editfunc 'prompt'
+
+        # return object / [ScriptExtent]
         PS> editfunc 'goto' -PassThru
+
+        # return filepath only
+        PS> editfunc 'goto' -NameOnly
+
+    .example
         PS> gcm *-Table* | editFunc -PassThru
+        editfunc nls -PassThru
+        editfunc nls -NameOnly
+        editfunc len -infa continue
     .link
         Ninmonkey.Console\Resolve-CommandName
     .link
@@ -33,7 +44,10 @@ function Edit-FunctionSource {
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$CommandName,
 
-        # return path to the source
+        # return fullname
+        [switch]$NameOnly,
+
+        # returns object with source metadadata
         [switch]$PassThru
     )
     begin {
@@ -59,12 +73,18 @@ function Edit-FunctionSource {
                 )
             )
 
-            $codeArgs | Join-String -sep ' ' -op ($binCode.Name + ' ')
-            $codeArgs | Write-Debug
+            $codeArgs | Join-String -sep ' ' -op ($binCode.Name + ' ') | Write-Debug
+            if ($NameOnly) {
+                return $cmd.ScriptBlock.Ast.Extent.File | Get-Item | ForEach-Object FullName
+            }
             if ($PassThru) {
-                return $cmd.ScriptBlock.Ast.Extent.File | Get-Item
+                return $cmd.ScriptBlock.Ast.Extent
             }
             # todo: simplify using Ninmonkey.Console\Code-Venv
+
+            $cmd.ScriptBlock.Ast.Extent.File
+            | Join-String -op 'loading:... <' -os '>' { $_ }
+            | Write-Information
             Start-Process -path $binCode -args $codeArgs -WindowStyle Hidden
         }
     }
