@@ -4,6 +4,7 @@ using namespace System.Collections.Generic
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Test-SameObjectType'
+        'Test-ShareAnyValue'
 
     )
     $publicToExport.alias +=
@@ -23,6 +24,47 @@ if ( $publicToExport ) {
     )
 }
 
+
+function Test-ShareAnyValue {
+    <#
+    .synopsis
+        Test if two lists share at least one value
+    .description
+        tests whether anything matches, to find out which elements match
+        see: Compare-ShareAnyValue
+    .example
+        $l1 = 'a', 'e', 'cat', 'dog'
+        $l2 = 'b', 'gaf', 'cat'
+        PS> Test-ShareAnyValue $l1 $l2
+
+            $true
+    #>
+    [OutputType([Boolean])]
+    [cmdletbinding()]
+    param(
+        [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [object]$LeftList,
+
+        [ValidateNotNull()]
+        [Parameter(Mandatory)]
+        [object]$RightList
+    )
+    # assert ienumerable or something?
+
+    if ($LeftList.count -eq 0 -or $RightList.count -eq 0) {
+        return $false
+    }
+
+    # At least one common element
+    [bool]$equalityTest = @( foreach ($item in $LeftList) {
+            $item -in $RightList
+        }).Where({ $_ }).count -gt 0
+
+    return $equalityTest # redundantly explicit
+}
+
+
 function Test-SameObjectType {
     <#
     .synopsis
@@ -38,28 +80,24 @@ function Test-SameObjectType {
     param(
         # pass objects, type info, names of types, anything
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
-        $Left,
+        [Parameter(Mandatory, Position = 0)]
+        $LeftObject,
 
         # pass objects, type info, names of types, anything
         [ValidateNotNullOrEmpty()]
-        [Parameter(Mandatory)]
-        $Right,
+        [Parameter(Mandatory, Position = 1)]
+        $RightObject,
 
         # Assert instead of bool
         [Parameter()]
         [switch]$Strict
     )
-    $OriginalPSTypeNames = @{
-        Left  = $Left.PSTypeNames
-        Right = $Right.PSTypeNames
-    }
     if ($PSCmdlet.MyInvocation.InvocationName -eq 'Assert-SameObjectType') {
         $Strict = $True
     }
 
-    $Left_tinfo = Resolve-TypeInfo
-    $Right_tinfo = Resolve-TypeInfo
+    $tinfo_left = Resolve-TypeInfo -InputObject $LeftObject
+    $tinfo_right = Resolve-TypeInfo -InputObject $RightObject
     [bool]$areEqual = $Left_tinfo.FullName -eq $Right_tinfo.FullName
     if (! $Strict) {
         return $areEqual
@@ -75,7 +113,11 @@ function Test-SameObjectType {
             $Right_tinfo
         )
     }
-    Write-Error @writeErrorSplat
     'Potential matching types: '
     $OriginalPSTypeNames | Format-Table | Out-String | Write-Debug
+
+    # [bool]($LeftObject.PSTypeNames -contains $
+    $RightObject.PSTypeNames
+
+    Write-Error @writeErrorSplat
 }
