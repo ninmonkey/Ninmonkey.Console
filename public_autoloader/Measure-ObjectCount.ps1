@@ -49,7 +49,9 @@ function Measure-ObjectCount {
 
         # do not count 'Blank' values
         [Alias('IgnoreNull')]
-        [Parameter()][switch]$IgnoreBlank
+        [Parameter()][switch]$IgnoreBlank,
+
+        [switch]$PassThru
 
     )
     begin {
@@ -60,13 +62,27 @@ function Measure-ObjectCount {
 
     }
     end {
-        if ($IgnoreBlank) {
+        if ($PassThru) {
             $objectList
-            | Dev.Nin\Where-IsNotBlank
-            | Measure-Object | ForEach-Object Count
-        } else {
-            $objectList
-            | Measure-Object | ForEach-Object Count
+            | ForEach-Object {
+                if ($IgnoreNull) {
+                    $_ | Dev.Nin\Where-IsNotBlank
+                } else {
+                    $_
+                }
+
+            }
+            | Measure-Object
+            | ForEach-Object Count
+
         }
+        # if ($IgnoreBlank) {
+        #     $objectList
+        #     | Dev.Nin\Where-IsNotBlank
+        #     | Measure-Object | ForEach-Object Count
+        # } else {
+        #     $objectList
+        #     | Measure-Object | ForEach-Object Count
+        # }
     }
 }
