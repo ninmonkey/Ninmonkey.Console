@@ -1,6 +1,6 @@
 ﻿using namespace System.Collections.Generic
 
-__countDuplicateLoad -key 'Nimonkey.Console.psm1'
+# __countDuplicateLoad -key 'Nimonkey.Console.psm1'
 # using namespace System.Management.Automation
 <# init
     todo: better config system, than copying my profile

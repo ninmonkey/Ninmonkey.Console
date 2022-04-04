@@ -7,20 +7,10 @@ if ( $publicToExport ) {
         'Test-ShareAnyValue'
 
     )
-    $publicToExport.alias +=
-    @(
+    $publicToExport.alias += @(
 
         'isA' # 'Test-SameObjectType'
         'Assert-SameObjectType' # 'Test-SameObjectType'
-        # '__'  # 'Find-UnderlineMember
-        '_'  # 'Find-UnderlineMember
-        'Dunder'  # 'Find-UnderlineMember
-        'Inspect->FindUnderline' # 'Find-UnderlineMember
-        # 'Under'  # 'Find-UnderlineMember
-
-        # '_' # 'Find-UnderlineMember
-        # 'Find-UnderMember' # 'Find-UnderlineMember
-        # 'Under' # 'Find-UnderlineMember
     )
 }
 
@@ -42,12 +32,12 @@ function Test-ShareAnyValue {
     [OutputType([Boolean])]
     [cmdletbinding()]
     param(
-        [ValidateNotNull()]
-        [Parameter(Mandatory)]
+        # first list
+        [ValidateNotNull()][Parameter(Mandatory)]
         [object]$LeftList,
 
-        [ValidateNotNull()]
-        [Parameter(Mandatory)]
+        # first second list
+        [ValidateNotNull()][Parameter(Mandatory)]
         [object]$RightList
     )
     # assert ienumerable or something?
@@ -56,13 +46,29 @@ function Test-ShareAnyValue {
         return $false
     }
 
-    # At least one common element
+    <#
+
+    # method1 = At least one common element
     [bool]$equalityTest = @( foreach ($item in $LeftList) {
             $item -in $RightList
         }).Where({ $_ }).count -gt 0
+    # method2 = At least one common element
+    [bool]$equalityTest = @( foreach ($item in $LeftList) {
+            $item -in $RightList
+        })
+    | Dev.Nin\Test-AnyTrue
+
+    # method 3
+    @( foreach ($item in $LeftList) {
+            $item -in $RightList
+        })
+    | Dev.Nin\Test-AnyTrue
+    #>
 
     return $equalityTest # redundantly explicit
 }
+
+
 
 
 function Test-SameObjectType {
@@ -121,3 +127,5 @@ function Test-SameObjectType {
 
     Write-Error @writeErrorSplat
 }
+
+# "almost :  Test-ShareAnyValue $PSCommandPath" | Write-Warning

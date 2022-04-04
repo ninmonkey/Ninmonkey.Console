@@ -33,6 +33,7 @@
         "terminal.integrated.drawBoldTextInBrightColors": true,
         "terminal.integrated.fontSize": 14,
         "editor.fontSize": 16,
+        "editor.fontSize": 14,
         // "editor.fontFamily": "'arial'",
         "debug.console.fontSize": 14,
         "editor.suggestFontSize": 14,
@@ -41,7 +42,7 @@
         // "window.zoomLevel": 0,
         "[powershell]": {
             "editor.fontSize": 16,
-            "editor.fontSize": 16,
+            "editor.fontSize": 14,
             // "editor.formatOnSave": true,
             // "editor.formatOnPaste": true,
             // "editor.autoIndent": "advanced",

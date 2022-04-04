@@ -1,0 +1,35 @@
+if ($script:publicToExport) {
+    $script:publicToExport.function += @(
+        'Set-WtWindowTabTitle'
+    )
+    $script:publicToExport.alias += @(
+        'wt->Title' # 'Set-WtWindowTabTitle'
+    )
+}
+
+
+function Set-WtWindowTabTitle {
+    <#
+    .synopsis
+        set title for 'wt, or any term'
+    .notes
+        .
+    .example
+        PS> wt->Title 'hi world'
+    .example
+        PS> get-date | wt->NewTab
+    .link
+        https://docs.microsoft.com/en-us/windows/terminal/command-line-arguments
+    #>
+    [Alias('wt->Title')]
+    param(
+        # title
+        [alias('Name')]
+        [string[]]$Title
+    )
+
+    $newTitle = $Title -join ''
+    $Host.UI.RawUI.WindowTitle = $newTitle
+}
+
+# 'never reached here' | New-Text -fg magenta | ForEach-Object tostring | Write-Warning

@@ -18,6 +18,10 @@ function Test-NullArg {
     }
 
     process {
+        $test_isTrue = $true -eq $InputObject
+        $test_isFalse = $false -eq $InputObject
+
+
         $objIsNull = $null -eq $InputObject
         $meta = [ordered]@{
             Value              = $objIsNull ? '␀' : $InputObject # ␀
@@ -25,6 +29,9 @@ function Test-NullArg {
             IsNull             = $null -eq $InputObject
             IsNullOrWhiteSpace = [string]::IsNullOrWhiteSpace( $InputObject )
             IsNullOrEmpty      = [string]::IsNullOrEmpty( $InputObject )
+            IsTrue             = $test_isTrue
+            IsFalse            = $test_isFalse
+            TrueFalse_AreOpposite    = (! $test_isTrue) -eq $test_isFalse
             AsString           = "'$InputObject'"
             ToString           = $objIsNull ? '␀' : $InputObject.ToString() | Join-String -SingleQuote
             CastString         = [string]$InputObject | Join-String -SingleQuote
