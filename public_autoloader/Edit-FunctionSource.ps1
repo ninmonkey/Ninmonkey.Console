@@ -9,7 +9,11 @@ if ( $publicToExport ) {
     $publicToExport.alias += @(
         'editFunc' # 'Edit-FunctionSource'
     )
+    $publicToExport.variable += @(
+        'ninLastPath' # from: 'Ninmonkey.Console\Edit-FunctionSource'
+    )
 }
+
 
 function Edit-FunctionSource {
     <#
@@ -73,14 +77,21 @@ function Edit-FunctionSource {
                 )
             )
 
+            # Write-Debug 'wrote $global:ninLastPath'
+            $global:ninLastPath = $cmd.ScriptBlock.Ast.Extent.File | Get-Item
+
             $codeArgs | Join-String -sep ' ' -op ($binCode.Name + ' ') | Write-Debug
             if ($NameOnly) {
                 return $cmd.ScriptBlock.Ast.Extent.File | Get-Item | ForEach-Object FullName
             }
+
+
+
             if ($PassThru) {
                 return $cmd.ScriptBlock.Ast.Extent
             }
             # todo: simplify using Ninmonkey.Console\Code-Venv
+
 
             $cmd.ScriptBlock.Ast.Extent.File
             | Join-String -op 'loading:... <' -os '>' { $_ }

@@ -34,6 +34,7 @@ function Format-ControlChar {
             allowing null makes it easier for the user to pipe, like:
             'gc' without -raw or '-split' on newlines
         #>
+        [Alias('Text')]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [AllowNull()]
         [AllowEmptyCollection()]

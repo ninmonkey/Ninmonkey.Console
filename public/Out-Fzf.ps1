@@ -10,8 +10,11 @@ function Out-Fzf {
         PS> $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
         PS> ls . -recurse | Out-Fzf
     .notes
-        selected items are returned **in-order** that they are selected in 'fzf'
 
+        future:
+            - [ ] use 'Where-Fzf' to -PassThru ie: file item instances, filtered by fzf on property
+
+        selected items are returned **in-order** that they are selected in 'fzf'
 
         'fzf' is documented here:
 
@@ -44,6 +47,8 @@ function Out-Fzf {
             FZF_CTRL_T_COMMAND
             FZF_CTRL_T_OPTS
     #>
+
+
     param (
         # show help
         [Parameter()][switch]$Help,
@@ -122,7 +127,7 @@ function Out-Fzf {
     begin {
         $debugMeta = @{}
 
-
+        # Wait-Debugger
 
         if ($Help) {
             '<https://github.com/junegunn/fzf#tips> and ''fzf --help'''
@@ -240,19 +245,19 @@ function Out-Fzf {
     }
 }
 
-if ($false) {
-    Goto $nin_paths.GithubDownloads
-    <# examples
+# if ($false) {
+<# examples
         Out-Fzf -Debug -Help
         Out-Fzf -Debug -PromptText 'cat' -Help
         # $x = Out-Fzf
         #>
 
-    Get-ChildItem | Select-Object -First 3
-    | Out-Fzf -Debug
+# # Goto $nin_paths.GithubDownloads
+# Get-ChildItem | Select-Object -First 3
+# | Out-Fzf -Debug
 
-    # Get-ChildItem -Name | Out-Fzf -MultiSelect -Debug
-}
+# Get-ChildItem -Name | Out-Fzf -MultiSelect -Debug
+# }
 
 <#
 NYI args:
