@@ -51,6 +51,7 @@ function ConvertFrom-Base64String {
             return
         }
 
+        Write-Warning "finish function: '$PSCommandPath' "
         $decoded_bytes = [convert]::FromBase64String($InputObject)
         return $userEncoding.GetString( $decoded_bytes )
         return
@@ -66,9 +67,8 @@ function ConvertFrom-Base64String {
             $InputObject
         )
 
+        Write-Warning "finish function: '$PSCommandPath' "
         return
-
-
         return [convert]::ToBase64String($userEncoding.GetBytes($InputObject))
     }
 }

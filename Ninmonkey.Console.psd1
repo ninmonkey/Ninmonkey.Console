@@ -46,8 +46,8 @@
     RequiredModules   = @(
         'Pansies'
         'ClassExplorer'
-        'Utility'           # hard dependency for now
-        'functional'
+        # 'Utility'           # hard dependency for now
+        # 'functional'
     )
 
     # Assemblies that must be loaded prior to importing this module
