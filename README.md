@@ -7,6 +7,8 @@ Tools for a better console experience
   - [`Fzf` : Select Values like a simplified `Out-GridView -PassThru`](#fzf--select-values-like-a-simplified-out-gridview--passthru)
   - [Text output](#text-output)
   - [Conversions](#conversions)
+- [Custom Verbs](#custom-verbs)
+- [Frequently used](#frequently-used)
 - [Console Encoding](#console-encoding)
 - [AppxPackages : Windows Apps](#appxpackages--windows-apps)
 - [Types](#types)
@@ -56,7 +58,6 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 | `Hr`    | Horizontal Rule with padding |
 
 
-
 ## Conversions
 
 ```powershell
@@ -75,6 +76,14 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 
 🐒> $bytes | Base64
 ```
+
+# Custom Verbs
+
+| Name                  | Description                                                                                                                                                                                                                                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Ensure->`            | ensure condition is true, else make it so, <br>like: `Ensure-FileExists`, `Ensure-CurrentDirIs`, etc.<br>The intent is non-fatal asserts on a state, which are silently resolved -- if needed                                                                                                                                      |
+| `Resolve->`           | ConvertType to another type -- if needed.<Br>Like: `Resolve-TypeInfo`, ..<br/>`Resolve->FileInfo` attempts to return a `Get-Item`. If it fails, return the original string, instead of errors or nothing. <br>`Resolve->` Is similar to `Ensure->`, the difference is `Resolve->` returns objects . Ensure is about a valid state. |
+| `To->`  and  `From->` | Sugar for `ConvertTo-Type` and `ConvertFrom-Type` / load from                                                                                                                                                                                                                                                                      |
 
 # Frequently used
 
