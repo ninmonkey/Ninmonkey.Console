@@ -27,6 +27,7 @@ function Resolve-CommandName {
         .link
             Ninmonkey.Console\Resolve-CommandName
         #>
+    [Alias('Resolve->Cmd')]
     [CmdletBinding(PositionalBinding = $false)]
     [OutputType([object])]
     param(

@@ -1,4 +1,5 @@
-#Requires -Version 7.1.0
+#Requires -Version 7.1
+
 function Get-NinMyVSCode {
     <#
     .synopsis

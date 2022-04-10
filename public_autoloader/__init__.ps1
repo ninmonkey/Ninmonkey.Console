@@ -20,6 +20,8 @@
 #     'Find-Exception'
 # )
 
+Write-Warning 'here ->> todo: shared __findImportableChildItems...'
+# todo: shared clean and required conditions 2022-03-30
 # Don't dot tests, don't call self.
 Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
 | Where-Object { $_.Name -ne '__init__.ps1' }

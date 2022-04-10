@@ -9,6 +9,8 @@ $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
 
+. (Get-Item -ea stop  (Join-Path $PSScriptRoot 'private/safe_prompt.ps1'))
+
 & {
     $hasFunc = (Get-PSReadLineKeyHandler -Bound -Unbound | ForEach-Object Function ) -contains 'ShowCommandHelp'
     if ($hasFunc) {
@@ -108,7 +110,7 @@ foreach ($file in $private) {
 #>
 
 $public_NativeWrapper = @(
-    'Invoke-IPython'
+    # 'Invoke-IPython'
     # 'Invoke-RipGrepChildItem'
 )
 foreach ($file in $public_NativeWrapper) {
@@ -353,6 +355,52 @@ see also:
     } -Verbose -PSHost
 #>
 
+function Enable-NinCoreAlias {
+    <#
+    .synopsis
+        loads the "core" / main set of aliases. Call this in your profile.
+    .example
+        PS> Import-Module Ninmonkey.Console;  Enable-NinCoreAlias
+    .notes
+        future: Move more 'aliasesToExport' aliases below, to either here, or Ninmonkey.Profile
+    #>
+    $splat = @{
+        ErrorAction = 'ignore'
+        Force       = $true
+        PassThru    = $true
+        Scope       = 'global'
+    }
+
+    @(
+        # group: builtins
+        Set-Alias @splat -Name 'ls' -Value 'Microsoft.PowerShell.Management\Get-ChildItem'
+        Set-Alias @splat -Name 'impo' -Value 'Microsoft.PowerShell.Core\Import-Module'
+        Set-Alias @splat -Name 'jStr' -Value 'Microsoft.PowerShell.Utility\Join-String'
+        Set-Alias @splat -Name 'Sc' -Value 'Microsoft.PowerShell.Management\Set-Content'
+        Set-Alias @splat -Name 'Gcl' -Value 'Microsoft.PowerShell.Management\Get-Clipboard'
+        Set-Alias @splat -Name 'Cl' -Value 'Microsoft.PowerShell.Management\Set-Clipboard'
+        Set-Alias @splat -Name 'Touch' -Value 'Microsoft.PowerShell.Management\New-Item'
+        # Set-Alias @splat -Name 'rolve->Cmd' -Value 'Ninmonkey.Console\Resolve-CommandName'
+
+        # group: external modules
+        Set-Alias @splat -Name 'Fm' -Value 'ClassExplorer\Find-Member'
+
+        # internal funcs
+        Set-Alias @splat -Name 'Label' -Value 'Ninmonkey.Console\Write-ConsoleLabel'
+
+        if ($False) {
+            'missing, NYI merged into here '
+            Set-Alias @splat -Name 'Str' -Value 'Join-StringStyle'
+        }
+    )
+    # | _sortBy_Get-Alias
+    | Write-Information
+    Write-Warning 'remember to import: "_sortBy_Get-Alias"'
+
+}
+
+Export-ModuleMember -Function 'Enable-NinCoreAlias'
+
 foreach ($typeName in $formatData) {
 
     $FileName = ('{0}\public\FormatData\{1}.Format.ps1xml' -f $psscriptroot, $typeName)
@@ -396,6 +444,7 @@ if ($true) {
         'Here'
         'IPython'
 
+        'Resolve->Cmd'
 
         'Select->Property' # Select-NinProperty
 
@@ -405,8 +454,6 @@ if ($true) {
         'Format-Indent'
         'Label'
         'Br'
-        'Br'
-
         'Import-NinKeys' # Import-NinPSReadLineKeyHandler
 
         # misc
@@ -446,8 +493,6 @@ if ($true) {
         )
         Export-ModuleMember -Alias $aliasesUnicode_ToExport
     }
-
-
 }
 
 $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1')
@@ -456,6 +501,7 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
 } else {
+    Write-Warning '[w] root ⟹ Completer-Loader: Invoke-Build...'
 
     $curSplat = @{
         # Verbose = -Verbose
