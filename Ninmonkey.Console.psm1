@@ -39,22 +39,24 @@ $__Config = @{
     includePSReadline     = $false
 }
 
-if ($False) {
-    try {
-        $FileName = ('{0}\public_autoloader\__init__.ps1' -f $psscriptroot)
-        if (Test-Path $FileName ) {
-            . $FileName
-        }
-    } catch {
-        Write-Error "public_autoloader error: '$fileName'"
+. (Get-Item -ea stop (Join-Path $base 'root_autoloader.ps1'))
 
-    }
-}
-if ($true) {
-    # $base = $psscriptroot ?? ('C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Ninmonkey.Console')
-    # . (Get-Item -ea Stop (Join-Path $base 'public_autoloader\__init__.ps1'))
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_autoloader\__init__.ps1'))
-}
+# if ($False) {
+#     try {
+#         $FileName = ('{0}\public_autoloader\__init__.ps1' -f $psscriptroot)
+#         if (Test-Path $FileName ) {
+#             . $FileName
+#         }
+#     } catch {
+#         Write-Error "public_autoloader error: '$fileName'"
+
+#     }
+# }
+# if ($true) {
+# $base = $psscriptroot ?? ('C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Ninmonkey.Console')
+# . (Get-Item -ea Stop (Join-Path $base 'public_autoloader\__init__.ps1'))
+# . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_autoloader\__init__.ps1'))
+# }
 
 
 $psreadline_extensions = @(
@@ -233,6 +235,10 @@ foreach ($file in $public_toDotSource) {
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
 }
 
+if ($public_toDotSource.count -ge 1 ) {
+    Write-Warning 'Imports not fully merged into autoloader: $public_ToDotSource '
+}
+
 $functionsToExport = @(
     # misc
     'Get-NinMyVSCode'
@@ -338,6 +344,11 @@ $functionsToExport = @(
 
 )
 Export-ModuleMember -Function $functionsToExport
+
+if ($functionsToExport.count -ge 1 ) {
+    Write-Warning 'Imports not fully merged into autoloader: $functionsToExport '
+}
+
 
 <#
     section: FormatData
