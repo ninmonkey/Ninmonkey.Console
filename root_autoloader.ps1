@@ -1,3 +1,6 @@
+#Requires -Version 7.0
+
+using namespace system.collections.generic
 # __init__.ps1
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:publicToExport = @{
@@ -9,6 +12,82 @@
     # 'formatData' = @()
 }
 
+class ModuleExportRecord {
+    # future:// param that auto-logs when property is changed
+    # maybe this is one instance per file
+    # which gets appended to global state?
+    [List[object]]$function = [List[object]]::new()
+    [List[object]]$alias = [List[object]]::new()
+    [List[object]]$cmdlet = [List[object]]::new()
+    [List[object]]$variable = [List[object]]::new()
+    [List[object]]$typeData = [List[object]]::new()   # nyi
+    [List[object]]$formatData = [List[object]]::new() # nyi
+
+    # store source filename etc?
+
+    [List[object]]$meta = [List[object]]::new() # nyi
+}
+
+$ModuleExportRecord = [ModuleExportRecord]::new()
+
+class NinModuleInfo {
+    # global state
+    #  PSRealine Exports
+    # command line completers
+    [ModuleExportRecord[]]$ExportInfo = [list[ModuleExportRecord]]::new()
+    [object]$PSReadlineHandlers # or hooks
+    [object]$NativeCommand
+}
+
+$script:ninModuleInfo
+
+$strUL = @{
+    'sep' = "`n  - "
+    'op'  = "`n  - "
+    'os'  = "`n"
+}
+
+function Get-DirectChildItem {
+    <#
+    .synopsis
+        Find all children of a type, includes hidden
+    .description
+        sugar for:
+            Get-ChildItem -Directory
+            | ForEach-Object{ Get-ChildItem $_ -Directory }
+    #>
+    [OutputType([System.IO.DirectoryInfo], [System.IO.FileInfo] )]
+    [cmdletbinding()]
+    param(
+        # root dir to search. maybe allow paths pipeled
+        [Alias('PSPath')]
+        [parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [string]$Path = '.',
+
+        # only folders
+        [switch]$Directory,
+        # only files
+        [switch]$File
+    )
+    process {
+        if ($Directory) {
+            $lsArgs = @{ 'Directory' = $true }
+        }
+        if ($File) {
+            $lsArgs = @{ 'File' = $true }
+        }
+        Get-ChildItem -Path $Path -Force
+        | ForEach-Object { Get-ChildItem $_ -Force }
+    }
+}
+
+# $ModuleExportRecord.function.Add( 'Get-DirectChildItem' )
+
+[ModuleExportRecord]@{
+    'function' = 'Get-DirectChildItem'
+}
+
+$ninModuleInfo
 
 # hardCoded until created
 # see: <C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\main_import_experimental.ps1>
@@ -19,7 +98,28 @@
 #     'Get-CommandSummafry'
 #     'Find-Exception'
 # )
-$dirsToLoad = Get-ChildItem '.' '__init__.ps1' -Recurse
+
+
+# $x = $null
+# return
+$dirsToLoad = Get-ChildItem '.' '__init__.ps1' -Recurse -Force
+| ForEach-Object Directory
+
+$dirsToLoad | Write-Host -foreg Green
+$dirsToLoad
+| Sort-Object { $_.FullName -match 'beforeAll' }-Descending  # future will allow sort order from '__init__.ps1'
+# |  % fullname
+
+$DirsToLoad | Join-String @strUL | Write-Verbose
+$DirsToLoad | Join-String @strUL { $_.Name } | Write-Debug
+# | Write-Information
+'before'
+
+$ModuleExportRecord | ConvertTo-Json -Depth 50 | Set-Content temp:\last_ModuleExportRecord.json -Encoding utf8
+Get-Content temp:\last_ModuleExportRecord.json -Encoding utf8 | bat -l json -f -p | Write-Information
+$z = $Null
+
+return
 
 Write-Warning 'here ->> todo: shared __findImportableChildItems...'
 # todo: shared clean and required conditions 2022-03-30
