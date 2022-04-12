@@ -327,24 +327,6 @@ $newTest
     $parseResultSummary.Add( $parseResult )
 }
 
-$destPrefix = $PSScriptRoot
-$destPrefix = Get-Item 'C:\nin_temp\1234'
-
-$parseResultSummary
-| ConvertTo-Json -Depth 20
-| Set-Content -Path (Join-String $destPrefix 'parseResultSummary.json') -Encoding utf8
-
-$NinModuleInfo
-| ConvertTo-Json -Depth 20
-| Set-Content -Path (Join-String $destPrefix 'ninModuleInfo.json') -Encoding utf8
-
-$NinModuleInfo.ExportInfo
-| ConvertTo-Json -Depth 20
-| Set-Content -Path (Join-String $destPrefix 'ninModuleInfo-exportInfo.json') -Encoding utf8
-# todo: shared clean and required conditions 2022-03-30
-
-
-# Wait-Debugger
 # Don't dot tests, don't call self.
 # Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
 # | Where-Object { $_.Name -ne '__init__.ps1' }
@@ -420,6 +402,78 @@ if ($true) {
         Write-Warning 'not all variables are using ninModuleInfo'
         $publicToExport.variable | Join-String @strUl | Write-Debug
     }
+}
+$devNinRoot = '~\.dev-nin\dump'
+$__exportPaths = @{
+    DevNinRoot                               = $devNinRoot
+    LogExportBase                            = $devvNinRoot #'~\.dev-nin\dump' #'\console-last_import.json'
+    Export_moduleExports_FromList            = Join-Path $devNinRoot 'console-last_list_import.json'
+    Export_moduleExports_FromClass           = Join-Path $devNinRoot 'console-last_class_import.json'
+    Export_moduleExports_FromClass_Expand    = Join-Path $devNinRoot 'console-last_class_import-ExportInfo.json'
+    Export_moduleExports_parseResult         = Join-Path $devNinRoot 'console-last_parse_result.json'
+    Export_moduleExports_parseResult_summary = Join-Path $devNinRoot 'console-last_parse_result-summary.json'
+
+}
+
+if ($true) {
+}
+
+
+
+if ($true) {
+    # dump json logs
+    $publicToExport
+    | ConvertTo-Json -Depth 9 -EnumsAsStrings #-EscapeHandling Default
+    | Set-Content -Path $__exportPaths['Export_moduleExports_FromList'] -Encoding utf8
+
+    $ninModuleInfo
+    | ConvertTo-Json -Depth 9 -EnumsAsStrings #-EscapeHandling Default
+    | Set-Content -Path $__exportPaths['Export_moduleExports_FromClass'] -Encoding utf8
+
+    $ninModuleInfo.ExportInfo
+    | ConvertTo-Json -Depth 9 -EnumsAsStrings #-EscapeHandling Default
+    | Set-Content -Path $__exportPaths['Export_moduleExports_FromClass_Expand'] -Encoding utf8
+
+    $parseResult
+    | ConvertTo-Json -Depth 4 -EnumsAsStrings #-EscapeHandling Default
+    | Set-Content -Path $__exportPaths['Export_moduleExports_parseResult'] -Encoding utf8
+
+    $parseResult
+    | ConvertTo-Json -Depth 4 -EnumsAsStrings #-EscapeHandling Default
+    | Set-Content -Path $__exportPaths['Export_moduleExports_parseResult_Summary'] -Encoding utf8
+
+    @(
+        $__exportPaths['Export_moduleExports_FromList']
+        $__exportPaths['Export_moduleExports_FromClass']
+        $__exportPaths['Export_moduleExports_FromClass_Expand']
+        $__exportPaths['Export_moduleExports_parseResult']
+        $__exportPaths['Export_moduleExports_parseResult_Summary']
+    ) | Join-String @strUL
+    | Join-String -op "Wrote files`n"
+    | Write-Warning
+
+    Write-Warning 'finish formatter, replaces all file info with strings, datetime with string, process as string, etc'
+}
+
+if ($false) {
+
+    # $destPrefix = $PSScriptRoot
+    $destPrefix = Get-Item 'C:\nin_temp\1234'
+
+    $parseResultSummary
+    | ConvertTo-Json -Depth 20
+    | Set-Content -Path (Join-String $destPrefix 'parseResultSummary.json') -Encoding utf8
+
+    $NinModuleInfo
+    | ConvertTo-Json -Depth 20
+    | Set-Content -Path (Join-String $destPrefix 'ninModuleInfo.json') -Encoding utf8
+
+    $NinModuleInfo.ExportInfo
+    | ConvertTo-Json -Depth 20
+    | Set-Content -Path (Join-String $destPrefix 'ninModuleInfo-exportInfo.json') -Encoding utf8
+    # todo: shared clean and required conditions 2022-03-30
+
+
 }
 # $fileList | ForEach-Object {
 #     $RelativePath = "$_.ps1"
