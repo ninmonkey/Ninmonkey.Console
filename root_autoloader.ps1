@@ -285,8 +285,9 @@ $DirsToLoad | Join-String @strUL { $_.Name } | Write-Debug
 # | Write-Information
 'before'
 
-$NinModuleInfo | ConvertTo-Json -Depth 50 | Set-Content temp:\last_NinModuleInfo.json -Encoding utf8
-Get-Content temp:\last_NinModuleInfo.json -Encoding utf8 | bat -l json -f -p | Write-Information
+$NinModuleInfo | ConvertTo-Json -Depth 50 | Set-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
+Get-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
+| bat -l json -f -p | Write-Information
 
 
 # $origTest = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
@@ -327,7 +328,8 @@ $newTest
 }
 
 $destPrefix = $PSScriptRoot
-$destPrefix = gi 'C:\nin_temp\1234'
+$destPrefix = Get-Item 'C:\nin_temp\1234'
+
 $parseResultSummary
 | ConvertTo-Json -Depth 20
 | Set-Content -Path (Join-String $destPrefix 'parseResultSummary.json') -Encoding utf8
@@ -340,6 +342,9 @@ $NinModuleInfo.ExportInfo
 | ConvertTo-Json -Depth 20
 | Set-Content -Path (Join-String $destPrefix 'ninModuleInfo-exportInfo.json') -Encoding utf8
 # todo: shared clean and required conditions 2022-03-30
+
+
+# Wait-Debugger
 # Don't dot tests, don't call self.
 # Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
 # | Where-Object { $_.Name -ne '__init__.ps1' }
