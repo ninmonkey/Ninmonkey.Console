@@ -2,6 +2,7 @@
 
 using namespace system.collections.generic
 # __init__.ps1
+
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:publicToExport = @{
     'function' = @()
@@ -10,6 +11,12 @@ using namespace system.collections.generic
     'variable' = @()
     'meta'     = @()
     # 'formatData' = @()
+}
+
+$strUL = @{
+    'sep' = "`n  - "
+    'op'  = "`n  - "
+    'os'  = "`n"
 }
 
 class ModuleExportRecord {
@@ -105,16 +112,43 @@ function Find-AutoloadChildItem {
                 Write-Debug "test: '($curFile.Name)' -match '$pattern'"
                 $curFile.Name -match $pattern
             }
-            -not [bool](Test-Any $match_tests)
+
+            $answer = [bool](Test-Any $match_tests)
+            'answer: ', $answer -join '' | Write-Information
+
+            return -not $answer
         }
 
-        $filesQuery | Join-String -op 'BeforeFilter = ' -sep ', ' -DoubleQuote
-        | Out-String | Write-Debug
+        if ($true) {
+            # super gross, quick hack, because because Test-Any (where list) didn't seem to be matching correctly
+            # prints: 'answer: False' 100% Of the time
 
-        $filteredQuery | Join-String -op 'AfterFilter = ' -sep ', ' -DoubleQuote
-        | Out-String | Write-Debug
+            $doubleFilter = $filteredQuery
+            | Where-Object { $_.Name -ne '__init__.ps1' }
+            | Where-Object { $_.Name -ne '__init__.first.ps1' }
+            | Where-Object { $_.Name -match '\.ps1$' }
+            | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
-        $filteredQuery
+            $filesQuery
+            | Join-String @strUl -DoubleQuote
+            | Join-String -op '1->filesQuery'
+            | Out-String | Write-Debug
+            # | Join-String -op 'BeforeFilter = ' -sep ', ' -DoubleQuote
+            # | Out-String | Write-Debug
+
+            $filteredQuery
+            | Join-String @strUl -DoubleQuote
+            | Join-String -op '2->filteredQuery'
+            | Out-String | Write-Debug
+            # | Join-String -op 'AfterFilter = ' -sep ', ' -DoubleQuote
+            # | Out-String | Write-Debug
+
+            $doubleFilter
+            | Join-String @strUl -DoubleQuote
+            | Join-String -op '3->DoubleFilter'
+            | Out-String | Write-Debug
+            return $doubleFilter
+        }
 
     }
     end {
@@ -124,11 +158,6 @@ function Find-AutoloadChildItem {
 
 Export-ModuleMember -Function 'Find-AutoloadChildItem'
 
-$strUL = @{
-    'sep' = "`n  - "
-    'op'  = "`n  - "
-    'os'  = "`n"
-}
 
 
 # $ModuleExportRecord.function.Add( 'Get-DirectChildItem' )
@@ -195,7 +224,7 @@ $origTest = Get-ChildItem -File -Path $dirsToLoad
 | Where-Object { $_.Name -match '\.ps1$' }
 | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
-$newTest = Find-AutoloadChildItem -InputPath $dirsToLoad
+$newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa continue
 
 $z = $Null
 $z = $Null
