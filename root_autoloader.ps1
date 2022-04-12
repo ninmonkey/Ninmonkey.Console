@@ -35,11 +35,94 @@ class NinModuleInfo {
     #  PSRealine Exports
     # command line completers
     [ModuleExportRecord[]]$ExportInfo = [list[ModuleExportRecord]]::new()
-    [object]$PSReadlineHandlers # or hooks
-    [object]$NativeCommand
+
+    [object]$PSReadlineHandlers = @() # or hooks
+    [object]$NativeCommand = @()
 }
 
-$script:ninModuleInfo
+$script:ninModuleInfo = [NinModuleInfo]::new()
+
+
+function Find-AutoloadChildItem {
+    <#
+    .synopsis
+        filter out auto runner
+    .example
+        Find-AutoloadChildItem -path 'public_autoloader'
+    #>
+    [cmdletbinding()]
+    param(
+        # root dir to search. maybe allow paths piped
+        [Alias('Path', 'PSPath')]
+        [parameter(Mandatory)]
+        [string[]]$InputPath,
+
+        # names that will be converted to regex-literalsregex literals
+        [parameter()]
+        [string[]]$ignoreNamesLiteral = @(
+            '.visual_tests.ps1',
+            '.Interactive.ps1',
+            '__init__.ps1',
+            # '__init__.first.ps1'
+            '.tests.ps1'
+        ),
+        # [parameter()]
+        # [string[]]$ignoreNamesRegex = @()
+
+        [hashtable]$Options = @{}
+    )
+    begin {
+        $Config = @{
+            RootFilter = '*.ps1'
+            FilterFile = $true
+            Recurse    = $false
+        }
+        # $Config = $Config | Join-Hashtable $Options
+
+        $ignoreNamesLiteral = $ignoreNamesLiteral
+        | ForEach-Object { [regex]::Escape($_) }
+    }
+    process {
+        $curPath = $InputPath | Get-Item -ea stop
+        $findAutoLoader_Splat = @{
+            File    = $Config.FilterFile
+            Path    = $curPath
+            Filter  = $Config.RootFilter
+            Recurse = $Config.Recurse
+        }
+
+        $findAutoLoader_Splat | Out-String | Write-Debug
+
+        $filesQuery = Get-ChildItem @findAutoLoader_Splat
+
+
+        $filteredQuery = $filesQuery
+        | Where-Object {
+            #future: filter as not directory? -File catches that
+            $curFile = $_
+            $match_tests = $ignoreNamesLiteral | ForEach-Object {
+                $pattern = $_
+                Write-Debug "test: '($curFile.Name)' -match '$pattern'"
+                $curFile.Name -match $pattern
+            }
+            -not [bool](Test-Any $match_tests)
+        }
+
+        $filesQuery | Join-String -op 'BeforeFilter = ' -sep ', ' -DoubleQuote
+        | Out-String | Write-Debug
+
+        $filteredQuery | Join-String -op 'AfterFilter = ' -sep ', ' -DoubleQuote
+        | Out-String | Write-Debug
+
+        $filteredQuery
+
+    }
+    end {
+
+    }
+}
+
+Export-ModuleMember -Function 'Find-AutoloadChildItem'
 
 $strUL = @{
     'sep' = "`n  - "
@@ -47,39 +130,6 @@ $strUL = @{
     'os'  = "`n"
 }
 
-function Get-DirectChildItem {
-    <#
-    .synopsis
-        Find all children of a type, includes hidden
-    .description
-        sugar for:
-            Get-ChildItem -Directory
-            | ForEach-Object{ Get-ChildItem $_ -Directory }
-    #>
-    [OutputType([System.IO.DirectoryInfo], [System.IO.FileInfo] )]
-    [cmdletbinding()]
-    param(
-        # root dir to search. maybe allow paths pipeled
-        [Alias('PSPath')]
-        [parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$Path = '.',
-
-        # only folders
-        [switch]$Directory,
-        # only files
-        [switch]$File
-    )
-    process {
-        if ($Directory) {
-            $lsArgs = @{ 'Directory' = $true }
-        }
-        if ($File) {
-            $lsArgs = @{ 'File' = $true }
-        }
-        Get-ChildItem -Path $Path -Force
-        | ForEach-Object { Get-ChildItem $_ -Force }
-    }
-}
 
 # $ModuleExportRecord.function.Add( 'Get-DirectChildItem' )
 
@@ -87,7 +137,7 @@ function Get-DirectChildItem {
     'function' = 'Get-DirectChildItem'
 }
 
-$ninModuleInfo
+# $ninModuleInfo
 
 # hardCoded until created
 # see: <C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\main_import_experimental.ps1>
@@ -102,12 +152,31 @@ $ninModuleInfo
 
 # $x = $null
 # return
-$dirsToLoad = Get-ChildItem '.' '__init__.ps1' -Recurse -Force
-| ForEach-Object Directory
+function _find_moduleInitDir {
+    <#
+    .synopsis
+        sugar to find '__init__.ps1' files, returning their parent directories
+    .notes
+        ask sci: how would I pass and invoke a custom sort order?
+            _find_moduleInitDir -path . -Sort { $_.Name  } -Descending
+    #>
+    $splat = @{
+        Recurse = $true
+        Force   = $true
+        Path    = '.'
+        Filter  = '__init__.ps1'
+    }
+    $dirsToLoad = Get-ChildItem @splat
+    | ForEach-Object Directory
+    # also test if eq to $PSScriptRoot?
+    return $DirsToLoad
+}
 
-$dirsToLoad | Write-Host -foreg Green
-$dirsToLoad
+
+
+$dirsToLoad = _find_moduleInitDir
 | Sort-Object { $_.FullName -match 'beforeAll' }-Descending  # future will allow sort order from '__init__.ps1'
+$dirsToLoad | Write-Host -foreg Green
 # |  % fullname
 
 $DirsToLoad | Join-String @strUL | Write-Verbose
@@ -115,8 +184,20 @@ $DirsToLoad | Join-String @strUL { $_.Name } | Write-Debug
 # | Write-Information
 'before'
 
-$ModuleExportRecord | ConvertTo-Json -Depth 50 | Set-Content temp:\last_ModuleExportRecord.json -Encoding utf8
-Get-Content temp:\last_ModuleExportRecord.json -Encoding utf8 | bat -l json -f -p | Write-Information
+$NinModuleInfo | ConvertTo-Json -Depth 50 | Set-Content temp:\last_NinModuleInfo.json -Encoding utf8
+Get-Content temp:\last_NinModuleInfo.json -Encoding utf8 | bat -l json -f -p | Write-Information
+
+
+# $origTest = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+$origTest = Get-ChildItem -File -Path $dirsToLoad
+| Where-Object { $_.Name -ne '__init__.ps1' }
+| Where-Object { $_.Name -ne '__init__.first.ps1' }
+| Where-Object { $_.Name -match '\.ps1$' }
+| Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
+
+$newTest = Find-AutoloadChildItem -InputPath $dirsToLoad
+
+$z = $Null
 $z = $Null
 
 return

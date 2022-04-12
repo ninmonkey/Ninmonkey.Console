@@ -84,6 +84,7 @@ $PSDefaultParameterValues['Out-Fzf:OutVariable'] = 'Fzf'
 | `Ensure->`            | ensure condition is true, else make it so, <br>like: `Ensure-FileExists`, `Ensure-CurrentDirIs`, etc.<br>The intent is non-fatal asserts on a state, which are silently resolved -- if needed                                                                                                                                      |
 | `Resolve->`           | ConvertType to another type -- if needed.<Br>Like: `Resolve-TypeInfo`, ..<br/>`Resolve->FileInfo` attempts to return a `Get-Item`. If it fails, return the original string, instead of errors or nothing. <br>`Resolve->` Is similar to `Ensure->`, the difference is `Resolve->` returns objects . Ensure is about a valid state. |
 | `To->`  and  `From->` | Sugar for `ConvertTo-Type` and `ConvertFrom-Type` / load from                                                                                                                                                                                                                                                                      |
+| `Fmt->`               | Custom Formatting of objects and strings depending on the command<br>Built to chain off of one another, unlike `Format-*` functions                                                                                                                                                                                                |
 
 # Frequently used
 
