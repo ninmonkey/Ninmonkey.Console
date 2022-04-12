@@ -5,6 +5,13 @@
 <# init
     todo: better config system, than copying my profile
 #>
+function prompt {
+    # might error if it's not exported
+    "`n`n>"
+}
+
+Export-ModuleMember -Function 'prompt'  #  ?
+
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
@@ -39,7 +46,7 @@ $__Config = @{
     includePSReadline     = $false
 }
 
-. (Get-Item -ea stop (Join-Path $base 'root_autoloader.ps1'))
+. (Get-Item -ea stop (Join-Path $PSScriptRoot 'root_autoloader.ps1'))
 
 # if ($False) {
 #     try {

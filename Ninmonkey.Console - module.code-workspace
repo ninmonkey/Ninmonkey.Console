@@ -84,7 +84,7 @@
                 "type": "PowerShell",
                 "request": "launch",
                 "script": "${workspaceFolder}/test/private/run_temp_test.ps1",
-                "cwd": "${file}",
+                "cwd": "${workspaceFolder}",
                 "presentation": {
                     "hidden": false,
                     "group": "TempScript",
