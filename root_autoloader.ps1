@@ -261,10 +261,14 @@ function _find_moduleInitDir {
         ask sci: how would I pass and invoke a custom sort order?
             _find_moduleInitDir -path . -Sort { $_.Name  } -Descending
     #>
+    param(
+        [Parameter()]
+        [string]$Path = (Get-Item $PSScriptRoot)
+    )
     $splat = @{
         Recurse = $true
         Force   = $true
-        Path    = '.'
+        Path    = $Path
         Filter  = '__init__.ps1'
     }
     $dirsToLoad = Get-ChildItem @splat
@@ -298,7 +302,7 @@ $origTest = Get-ChildItem -File -Path $dirsToLoad
 | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
 $newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa continue
-
+# Wait-Debugger
 $z = $Null
 $z = $Null
 
@@ -351,16 +355,16 @@ $newTest
 $script:publicToExport | Join-String -op 'ExperimentToExport' | Write-Debug
 
 if ($ninModuleInfo.ExportInfo.function) {
-    Export-ModuleMember -Function  $ninModuleInfo.ExportInfo.function
+    Export-ModuleMember -Function $ninModuleInfo.ExportInfo.function
 }
 if ($ninModuleInfo.ExportInfo.alias) {
-    Export-ModuleMember -Alias  $ninModuleInfo.ExportInfo.alias
+    Export-ModuleMember -Alias $ninModuleInfo.ExportInfo.alias
 }
 if ($ninModuleInfo.ExportInfo.cmdlet) {
-    Export-ModuleMember -Cmdlet  $ninModuleInfo.ExportInfo.cmdlet
+    Export-ModuleMember -Cmdlet $ninModuleInfo.ExportInfo.cmdlet
 }
 if ($ninModuleInfo.ExportInfo.variable) {
-    Export-ModuleMember -Variable  $ninModuleInfo.ExportInfo.variable
+    Export-ModuleMember -Variable $ninModuleInfo.ExportInfo.variable
 }
 if ($ninModuleInfo.ExportInfo.typeData) {
     Write-Warning '$ninModuleInfo.TypeData export is NYI'
@@ -439,7 +443,7 @@ if ($true) {
     | Set-Content -Path $__exportPaths['Export_moduleExports_parseResult'] -Encoding utf8
 
     $parseResult
-    | ConvertTo-Json -Depth 4 -EnumsAsStrings #-EscapeHandling Default
+    | ConvertTo-Json -ea ignore -Depth 4 -EnumsAsStrings #-EscapeHandling Default
     | Set-Content -Path $__exportPaths['Export_moduleExports_parseResult_Summary'] -Encoding utf8
 
     @(
