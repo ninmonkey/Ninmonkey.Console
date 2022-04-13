@@ -320,8 +320,8 @@ $newTest
     try {
         . $Cur
     } catch {
-        $ParseResult['Success'] = $false
-        $ParseResult['Error'].AddRange( @($_) )
+        $ParseResult.Success = $false
+        $ParseResult.Error.AddRange( @($_) )
     }
 
     $parseResultSummary.Add( $parseResult )

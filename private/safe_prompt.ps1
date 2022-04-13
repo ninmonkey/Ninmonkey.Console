@@ -80,6 +80,7 @@ function __safePrompt_sorta {
     ) -join ''
 }
 function Enable-SafePrompt {
+    # toggle prompts
     param(
         [ValidateSet('__safePrompt', '__safePrompt_Sorta')]
         [Parameter()]
@@ -92,19 +93,22 @@ function Enable-SafePrompt {
 
 
 Export-ModuleMember -Function 'Enable-SafePrompt'
+Export-ModuleMember -Alias 'ZD-GoCode'
+
 
 function gocode {
     <#
     .synopsis
-        open file in vs code: similar to __safePrompt, minimal, always works
+        open file in vs code: similar to __safePrompt, minimal, always works [zeroDependency]
     .example
         PS> gi foo.ps1 | gocode
     .example
         PS> gocode (~/foo/bar.ps1
     .link
         __safePrompt
-
     #>
+    [Alias('ZD-GoCode')]
+    [CmdletBinding()]
     param(
         [Parameter(ValueFromPipeline, Position = 0, Mandatory)]
         $Path

@@ -16,7 +16,7 @@ $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
 
-. (Get-Item -ea stop  (Join-Path $PSScriptRoot 'private/safe_prompt.ps1'))
+. (Get-Item -ea stop (Join-Path $PSScriptRoot 'private/safe_prompt.ps1'))
 
 & {
     $hasFunc = (Get-PSReadLineKeyHandler -Bound -Unbound | ForEach-Object Function ) -contains 'ShowCommandHelp'
@@ -398,6 +398,9 @@ function Enable-NinCoreAlias {
         Set-Alias @splat -Name 'Gcl' -Value 'Microsoft.PowerShell.Management\Get-Clipboard'
         Set-Alias @splat -Name 'Cl' -Value 'Microsoft.PowerShell.Management\Set-Clipboard'
         Set-Alias @splat -Name 'Touch' -Value 'Microsoft.PowerShell.Management\New-Item'
+        Set-Alias @splat -Name 'to->Json' -Value 'Microsoft.PowerShell.Utility\ConvertTo-Json'
+        Set-Alias @splat -Name 'to->Csv' -Value 'Microsoft.PowerShell.Utility\ConvertTo-Csv'
+
         # Set-Alias @splat -Name 'rolve->Cmd' -Value 'Ninmonkey.Console\Resolve-CommandName'
 
         # group: external modules

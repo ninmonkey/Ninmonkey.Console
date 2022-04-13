@@ -43,8 +43,8 @@ function ZD-Get-BaseTypeInfo {
                 Object            = $cur
                 Name              = $cur.GetType().Name
                 FullName          = $cur.GetType().FullName
-                'PSTypeNames'     = $cur.PSTypeNames
-                'PSTypeNames_Csv' = $cur.PSTypeNames | Join-String -sep ' ' { '[{0}]' -f $_ }
+                'PSTypes'     = $cur.PSTypeNames
+                'PSTypes_Csv' = $cur.PSTypeNames | Join-String -sep ' ' { '[{0}]' -f $_ }
             }
             return [pscustomobject]$tinfo
 
