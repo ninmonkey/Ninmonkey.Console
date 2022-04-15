@@ -26,7 +26,8 @@ function ConvertTo-Base64String {
         [string] $InputObject,
 
         [Parameter()]
-        [ArgumentCompleter([EncodingArgumentCompleter])]
+        [ArgumentCompletions('UTF8', 'ASCII', 'Unicode', 'BigEndianUnicode', 'Default', 'UTF32', 'us-ascii')]
+        # [ArgumentCompleter([EncodingArgumentCompleter])]
         [EncodingArgumentConverter()]
         [Encoding] $Encoding
     )
