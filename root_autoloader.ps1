@@ -3,10 +3,18 @@
 using namespace system.collections.generic
 # __init__.ps1
 
+Write-Warning "🐱‍👤finish $PSCommandPath"
+
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:publicToExport = @{
-    'function' = @()
-    'alias'    = @()
+    'function' = @(
+        'Join-Hashtable'
+    )
+    'alias'    = @(
+        # when random errors occur, so far it's been PSScriptTools\Join-Hashtable causing exceptions
+        # 'Join-Hashtable' # to be doubly sure to get priority? else put alias in my module
+        # Putting in my profile
+    )
     'cmdlet'   = @()
     'variable' = @()
     'meta'     = @()
@@ -19,6 +27,7 @@ $strUL = @{
     'os'  = "`n"
 }
 
+
 Function Join-Hashtable {
     <#
     .description
@@ -27,7 +36,7 @@ Function Join-Hashtable {
         # WIP
         future: add valuefrom pipeline to $UpdateHash param ?
     .example
-        Join-Hashtable -Base $
+        Join-Hashtable -Base @{ a = 1 }
     .link
         Ninmonkey.Console\Join-Hashtable
     .link
@@ -37,10 +46,12 @@ Function Join-Hashtable {
     .link
         PSScriptTools\Join-Hashtable
     #>
+    # [Alias('Join-HashTable')]
     [cmdletbinding()]
     [outputType('System.Collections.Hashtable')]
     param(
         # base hashtable
+        [Alias('LeftHash')]
         [Parameter(Mandatory, Position = 0)]
         [hashtable]$BaseHash,
 
@@ -49,10 +60,11 @@ Function Join-Hashtable {
         [hashtable]$OtherHash,
 
         # normal is to not modify left, return a new hashtable
-        [Parameter()][switch]$MutateLeft,
+        [Alias('UpdateOriginal')]
+        [Parameter()][switch]$MutateLeft
 
         # default Left wins if they share a key name
-        [Parameter()][switch]$PrioritizeRight
+        # [Parameter()][switch]$PrioritizeRight
     )
 
     # don't mutate $BaseHash
@@ -60,26 +72,19 @@ Function Join-Hashtable {
         if ($PrioritizeRight) {
             Throw 'Next to implement'
         }
-        if ($False) {
-
-            # git branch -m master main
-            # git fetch origin
-            # git branch -u origin/main main
-            # git remote set-head origin -a
-        }
-
 
         # $NewHash = [hashtable]::new( $BaseHash )
         if (! $MutateLeft ) {
             $TargetHash = [hashtable]::new( $BaseHash )
         } else {
-            Write-Debug 'Mutate enabled'
+            Write-Debug 'mutating left'
             $TargetHash = $BaseHash
         }
-        $OtherHash.GetEnumerator() | ForEach-Object {
-            $TargetHash[ $_.Key ] = $_.Value
+
+        $OtherHash.keys.clone() | ForEach-Object {
+            $TargetHash[ $_ ] = $OtherHash[ $_ ]
         }
-        $TargetHash
+        return $TargetHash
     }
 }
 
@@ -302,7 +307,7 @@ $origTest = Get-ChildItem -File -Path $dirsToLoad
 | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
 $newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa continue
-# Wait-Debugger
+
 $z = $Null
 $z = $Null
 
@@ -392,19 +397,19 @@ if ($true) {
     # detect not yet transferred over
     if ($publicToExport.function.Count -gt 0) {
         Write-Warning 'not all functions are using ninModuleInfo'
-        $publicToExport.function | Join-String @strUl | Write-Debug
+        $publicToExport.function | Join-String @strUl | Write-Warning # | Write-Debug
     }
     if ($publicToExport.alias.Count -gt 0) {
         Write-Warning 'not all aliass are using ninModuleInfo'
-        $publicToExport.alias | Join-String @strUl | Write-Debug
+        $publicToExport.alias | Join-String @strUl | Write-Warning # | Write-Debug
     }
     if ($publicToExport.cmdlet.Count -gt 0) {
         Write-Warning 'not all cmdlets are using ninModuleInfo'
-        $publicToExport.cmdlet | Join-String @strUl | Write-Debug
+        $publicToExport.cmdlet | Join-String @strUl | Write-Warning # | Write-Debug
     }
     if ($publicToExport.variable.Count -gt 0) {
         Write-Warning 'not all variables are using ninModuleInfo'
-        $publicToExport.variable | Join-String @strUl | Write-Debug
+        $publicToExport.variable | Join-String @strUl | Write-Warning # | Write-Debug
     }
 }
 $devNinRoot = '~\.dev-nin\dump'
