@@ -39,20 +39,21 @@ function Join-Regex {
         [string]
 
     #>
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding()]
     param(
-        # list of literal text values that are combined as a Logical OR
-        [alias('LiteralText')]
-        [Parameter()][string[]]$Text,
-
         # list of regex patterns that are combined as a Logical OR
-        [Parameter()][string[]]$Regex
+        [Alias('Pattern')]
+        [Parameter()][string[]]$Regex,
+
+        # list of literal text values that are combined as a Logical OR
+        [alias('LiteralText', 'Lit')]
+        [Parameter()][string[]]$Text
+
     )
 
     begin {
         if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
-            $e = [System.ArgumentException]::new('Requires at least a -TextLiteral or -Regex parameter')
-            $PSCmdlet.ThrowTerminatingError($e)
+            throw 'Requires at least one of -TextLiteral or -Regex parameter'
         }
     }
     process {
@@ -71,8 +72,6 @@ function Join-Regex {
 
         $Regex_MergedLiteral = $Text | Join-String @splat_JoinLiteral
         $Regex_MergedRegex = $Regex | Join-String @splat_JoinRegex
-
-        # if($Regex_MergedLiteral -and $Regex_MergedRegex) {
         $finalItems = @(
             if (! [string]::IsNullOrWhiteSpace($Text)) {
                 $Regex_MergedLiteral
@@ -87,25 +86,9 @@ function Join-Regex {
         Write-Debug "Regex: Merged Regex: $Regex_MergedRegex"
         Write-Debug "Regex: Merged all: $Regex_Final"
         Write-Debug "`$Regex = $Regex_Final"
-
-        # $Regex_Final = $finalItems
-        # Write-Debug "Regex: Merged all: $Regex_Final"
-        # if ($finalItems.count -gt 1) {
-        #     Write-Debug "Regex: Merged all: $Regex_Final"
-        # }
-        # ) | Join-String @splat_FinalJoin
-        # ) | Join-String @splat_JoinRegex # Do I want final outer parens? No for now.
-
-        # $query = Get-ChildItem env: | Where-Object Value -Match $Regex_Final
-        Write-Information $Regex_Final
-        if ($PassThru) {
-            $Regex_Final
-            return
-        }
-        $Regex_Final
-        # $query | rg -i $Regex_Final
+        return $regex_Final
     }
     end {
-        # 'am end'
+
     }
 }
