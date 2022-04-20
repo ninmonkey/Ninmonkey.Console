@@ -81,7 +81,12 @@ Function Join-Hashtable {
             $TargetHash = $BaseHash
         }
 
-        $OtherHash.keys.clone() | ForEach-Object {
+        # sometimes gives
+        <#
+             Method invocation failed because [System.Collections.Hashtable+KeyCollection] does not contain a method named 'Clone'.
+        #>
+        # $OtherHash.keys.clone() | ForEach-Object {
+        $OtherHash.GetEnumerator() | ForEach-Object {
             $TargetHash[ $_ ] = $OtherHash[ $_ ]
         }
         return $TargetHash
