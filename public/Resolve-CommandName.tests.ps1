@@ -3,7 +3,7 @@
 
 BeforeAll {
     Import-Module Ninmonkey.Console -Force
-    $ErrorActionPreference = 'Stop'
+    # $ErrorActionPreference = 'Stop'
     # $ErrorActionPreference = 'break'
     # ensure ls.exe exists, or mock it.
 }
@@ -11,7 +11,8 @@ BeforeAll {
 Describe 'Resolve-CommandName' {
     It 'Temp test to flag bug' {
 
-        { Get-Command '?str' | resCmd -q } | Should -Not -Throw
+        { Get-Command '?str'
+            | Ninmonkey.Console\Resolve-CommandName -q } | Should -Not -Throw
         # output:
         # gc: @splat:
         #   error the term jstr is not a command
@@ -28,7 +29,8 @@ Describe 'Resolve-CommandName' {
     }
     It 'PreserveAlias' {
         # todo: need to add command when preserve alias is true
-        rescmd rescmd -QualifiedName -PreserveAlias | ForEach-Object Name | Should -be @(
+        Ninmonkey.Console\Resolve-CommandName 'rescmd' -QualifiedName -PreserveAlias
+        | ForEach-Object Name | Should -Be @(
             'Ninmonkey.Console\rescmd'
             'Ninmonkey.Console\Resolve-CommandName'
         )
@@ -144,7 +146,7 @@ Describe 'Resolve-CommandName' {
 
                 @{
                     Name         = 'ls.exe'
-                    IncludeExe   = = $false
+                    IncludeExe   = $false
                     ExpectedType = $null
                     # ExpectedType = $null
                     # error:

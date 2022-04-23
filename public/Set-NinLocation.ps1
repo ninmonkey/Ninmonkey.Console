@@ -21,6 +21,10 @@ function Set-NinLocation {
 
         🐒> Goto -Back
             # runs: pop-location -StackName 'NinLocation'
+    .notes
+        future
+            - [ ] if exception, try resolve-VSCodePath
+            - [ ] if fail, then split path
     #>
 
     [Alias('Goto')]
@@ -58,11 +62,17 @@ function Set-NinLocation {
         return
     }
 
-    $DestItem = Get-Item $Path
+    try {
+        $DestItem = Get-Item $Path -ea stop
+    } catch {
+        Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ ."
+        $DestItem = Get-Item ($path | Split-Path )
+    }
+    $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
     # todo; maybe test that item is container, before throwing for others
     # see Test-IsDirectory
-    $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
     if ($DestItem.PSProvider.Name -ne 'filesystem') {
+        # I don't need to require FS,
         $PSCmdlet.WriteError(
             [ErrorRecord]::new(
                 [NotSupportedException]::new('Non-filesystem providers are not supported'),

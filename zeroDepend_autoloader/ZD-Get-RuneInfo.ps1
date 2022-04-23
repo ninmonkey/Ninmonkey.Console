@@ -34,7 +34,7 @@ function ZD-Get-RuneInfo {
         $lines.AddRange( [string[]]@($InputObject)  )
     }
     end {
-        $Lines | %{
+        $Lines | ForEach-Object {
             $text = $_
 
             [ninRuneInfo]@{
@@ -57,4 +57,5 @@ class ninRuneInfo {
 
 }
 
-ZD-Get-RuneInfo '🐱🦎' -ea break
+Write-Warning 'got caught, finish WIP '
+# ZD-Get-RuneInfo '🐱🦎' -ea continue

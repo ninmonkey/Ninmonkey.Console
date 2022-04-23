@@ -53,6 +53,14 @@ function __old_Set-ConsoleEncoding {
 
 
 function Set-ConsoleEncoding {
+    <#
+    .synopsis
+        changes the powershell session to use an encoding
+    .notes
+        changing encodings multiple times in code works at least on 'pwsh' and the integrated terminal
+    .link
+        Ninmonkey.Console\Get-ConsoleEncoding
+    #>
     param(
         # Which encoding to use?
         # [string] or [encoding]
