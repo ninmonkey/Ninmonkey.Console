@@ -5,11 +5,30 @@ if ( $publicToExport ) {
         'Write-NinLogRecord'
     )
     $publicToExport.alias += @(
+        'ninLog' # ' Write-NinLogRecord'
         'minLog' # ' Write-NinLogRecord'
     )
 }
 
+function Set-NinLogOption {
+    <#
+    .synopsis
+        minimal wrapper/entry point to set persistant options
+    .link
+        Ninmonkey.Console\Set-NinLogOption
+    .link
+        Ninmonkey.Console\Write-NinLogRecord
+    #>
+    param(
+        # optional
+        [Parameter()]
+        [string]$LogName = 'ninmonkey.console-shared.log',
 
+        # optional root, names are  relative
+        [Parameter()]
+        [string]$RootDir = 'H:\data\2022\log_list'
+    )
+}
 function Write-NinLogRecord {
     <#
     .synopsis
@@ -21,29 +40,51 @@ function Write-NinLogRecord {
         > Get-Command
     .synopsis
         # local logging
+    .link
+        Ninmonkey.Console\Set-NinLogOption
+    .link
+        Ninmonkey.Console\Write-NinLogRecord
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'FromPipe')]
     param(
-        [Alias('minLog')]
+        [Alias(
+            'ninLog'
+            # 'minLog'
+        )]
         [Parameter(Mandatory, Position = 0)]
         $Label,
 
+        # object[s] ppayloadto convertto-Json
         [Alias('Message', 'Payload')]
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Mandatory, ValueFromPipeline)]
-        [Parameter(
-            ParameterSetName = 'fromParam',
-            Mandatory, Position = 1)]
+        [Parameter(ParameterSetName = 'FromPipe', Mandatory, ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'fromParam', Mandatory, Position = 1)]
         [object[]]$InputObject,
 
         # output information stream
         [switch]$PassThru,
-        [switch]$JoinAsCsv
+        # [switch]$JoinAsCsv
+
+        # kwargs style options
+        [Alias('kwargs')]
+        [hashtable]$Options = @{}
     )
     begin {
-        throw 'finish me'
+        $Config = @{
+            LogPid      = $true
+            Time        = @{
+                Enabled      = $True
+                FormatString = 'u'
+                Universal    = $true
+            }
+            ToJsonSplat = @{
+                Depth          = 9
+                EnumsAsStrings = $true
+                AsArray        = $true
+            }
+        }
+        $Config = Ninmonkey.Console\Join-Hashtable $Config $Options
+        throw "finish me $PSCommandPath"
         if (! (Get-Item -ea ignore $AppConf.LLogPath)) {
             New-Item -ItemType File -Path $AppConf.LLogPath -Force
         }
@@ -55,15 +96,33 @@ function Write-NinLogRecord {
         $items.AddRange( $InputObject)
     }
     end {
-        $now = ([datetime]::now).ToUniversalTime().ToString('u')
+        $now = [datetime]::Now
+        if ( $Config.Time.Universal ) {
+            $now = $now.ToUniversalTime()
+        }
+        $nowStr = $now.ToString( $Config.Time.FormatString )
+
+        # $now = ([datetime]::now).ToUniversalTime().ToString('u')
+
         # $items.ToString()
-        $prefix = "${now}: ${Label}: "
+        $prefix = @(
+            if ($Config.Time.Enabled) {
+                "${nowStr}:"
+            }
+            if ($Config.LogPid) {
+                " ${pid}:"
+            }
+            " ${Label}: "
+        ) -join ''
 
         if ($JoinAsString) {
             $render = $Items | Join-String -sep ', ' -op $Prefix #"${Label}: "
 
         } else {
-            $render = $Items | ConvertTo-Json -Depth 9 -EnumsAsString -AsArray
+            $splat = $Config.ToJsonSpat
+
+
+            $render = $Items | ConvertTo-Json @splat
         }
 
         $addContentSplat = @{
