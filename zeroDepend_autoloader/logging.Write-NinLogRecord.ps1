@@ -3,13 +3,43 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Write-NinLogRecord'
+        'Get-NinLogOption'
+        'Set-NinLogOption'
     )
     $publicToExport.alias += @(
-        'ninLog' # ' Write-NinLogRecord'
-        'minLog' # ' Write-NinLogRecord'
+        # 'ninLog' # ' Write-NinLogRecord'
+        'minLog' # ' Write-NinLogRecord' # to make it not collide with future ninlog
+        # 'minLog' # ' Write-NinLogRecord'
     )
 }
 
+class MinLoggerConfig {
+    [string]$LogName = 'ninmonkey.console-shared'
+    [string]$RootDir = 'H:\data\2022\log_list'
+    [System.IO.FileInfo]$FullName
+
+}
+
+$script:__ninLog = @{
+    LogName = 'ninmonkey.console-shared.log'
+    RootDir = 'H:\data\2022\log_list'
+}
+function Get-NinLogOption {
+
+    <#
+    .synopsis
+        retrieve current config
+    .link
+        Ninmonkey.Console\Set-NinLogOption
+    .link
+        Ninmonkey.Console\Get-NinLogOption
+    .link
+        Ninmonkey.Console\Write-NinLogRecord
+    #>
+    # todo: use instance of [MinLoggerConfig]
+    $state = $script:__ninLog
+    return $state
+}
 function Set-NinLogOption {
     <#
     .synopsis
@@ -17,23 +47,41 @@ function Set-NinLogOption {
     .link
         Ninmonkey.Console\Set-NinLogOption
     .link
+        Ninmonkey.Console\Get-NinLogOption
+    .link
         Ninmonkey.Console\Write-NinLogRecord
     #>
     param(
         # optional
         [Parameter()]
-        [string]$LogName = 'ninmonkey.console-shared.log',
+        [string]$LogName = 'ninmonkey.console-shared',
 
         # optional root, names are  relative
         [Parameter()]
-        [string]$RootDir = 'H:\data\2022\log_list'
+        [string]$RootDir = 'H:\data\2022\log_list',
+
+        # return new config's state
+        [switch]$PassThru
     )
+
+    $state = $script:__ninLog
+    $state.LogName = $LogName
+    $state.RootDir = $RootDir
+    # todo:resolve->PathExists (log)
+
+
+    if ($PassThru) {
+        Get-NinLogOption
+        return
+    }
+    return
 }
 function Write-NinLogRecord {
     <#
     .synopsis
         minimal log, One might say ninimal log.
     .description
+        only  writes to one log at a time, no context switching or special sublogs yet
         Logs datetime with a json payload. (1 json object per line.) Other lines being modified don't break documents.
     .example
         # Find commands From my modules
@@ -43,14 +91,16 @@ function Write-NinLogRecord {
     .link
         Ninmonkey.Console\Set-NinLogOption
     .link
+        Ninmonkey.Console\get-NinLogOption
+    .link
         Ninmonkey.Console\Write-NinLogRecord
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'FromPipe')]
     param(
         [Alias(
-            'ninLog'
-            # 'minLog'
+            'ninLog',
+            'minLog'
         )]
         [Parameter(Mandatory, Position = 0)]
         $Label,
@@ -61,42 +111,57 @@ function Write-NinLogRecord {
         [Parameter(ParameterSetName = 'fromParam', Mandatory, Position = 1)]
         [object[]]$InputObject,
 
-        # output information stream
+        # log to information stream: Instead, or in addition?
         [switch]$PassThru,
-        # [switch]$JoinAsCsv
 
         # kwargs style options
         [Alias('kwargs')]
         [hashtable]$Options = @{}
     )
+
+
     begin {
-        $Config = @{
-            LogPid      = $true
-            Time        = @{
+        [hashtable]$Config = @{
+            ShowInConsole = $false # meaning write to outputstream, maybe use -PassThru isntead?
+            LogName       = $script:__ninLog.LogName
+            LogRootDir    = $script:__ninLog.RootDir
+            LogPid        = $true
+            Time          = @{
                 Enabled      = $True
                 FormatString = 'u'
                 Universal    = $true
             }
-            ToJsonSplat = @{
+            LogAsString   = $false # meaning no json conversion
+            ToJsonSplat   = @{
                 Depth          = 9
                 EnumsAsStrings = $true
                 AsArray        = $true
             }
         }
-        $Config = Ninmonkey.Console\Join-Hashtable $Config $Options
-        throw "finish me $PSCommandPath"
-        if (! (Get-Item -ea ignore $AppConf.LLogPath)) {
-            New-Item -ItemType File -Path $AppConf.LLogPath -Force
-        }
 
-        $log_dest = Get-Item $AppConf.LLogPath
-        $items = [list[object]]::new()
+
+        $Config = Ninmonkey.Console\Join-Hashtable $Config $Options
+        $LogFullName = (Join-Path $Config.LogRootDir $Config.LogName) + '.log'
+        if (! (Test-Path $LogFullName )) {
+            Write-Verbose "'$LogFullName' did not exist, creating..." #todo:attribute -> creates and logs , replacing this
+            New-Item -ItemType File -Path $LogFullName -Force
+        }
+        $LogFullName = Get-Item $LogFullName
+        [list[object]]$items = [list[object]]::new()
     }
     process {
+        if ($null -eq $InputObject) {
+            return
+        }
+        if ([string]::IsNullOrEmpty( $InputObject)) {
+            # *should* be redundant
+            return
+        }
         $items.AddRange( $InputObject)
     }
     end {
         $now = [datetime]::Now
+
         if ( $Config.Time.Universal ) {
             $now = $now.ToUniversalTime()
         }
@@ -115,23 +180,25 @@ function Write-NinLogRecord {
             " ${Label}: "
         ) -join ''
 
-        if ($JoinAsString) {
+        Write-Debug "prefix: '$Prefix'"
+
+        if ($Config.LogAsString) {
             $render = $Items | Join-String -sep ', ' -op $Prefix #"${Label}: "
-
         } else {
-            $splat = $Config.ToJsonSpat
-
-
-            $render = $Items | ConvertTo-Json @splat
+            $splat = $Config.ToJsonSplat
+            $render = $Items | ConvertTo-Json @splat -Compress
         }
 
-        $addContentSplat = @{
-            Path = $log_dest
+        Write-Debug "render: '$render'"
+        $finalRender = $prefix, $render -join ''
+
+        $writeLog = @{
+            Path = $LogFullName
         }
         if ($PassThru) {
-            $render | Add-Content @addContentSplat -PassThru | Write-Information
+            $finalRender | Add-Content @writeLog -PassThru | Write-Information
             return
         }
-        $render | Add-Content @addContentSplat
+        $finalRender | Add-Content @writeLog
     }
 }
