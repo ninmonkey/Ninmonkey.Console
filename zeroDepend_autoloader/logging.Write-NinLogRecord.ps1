@@ -13,15 +13,35 @@ if ( $publicToExport ) {
     )
 }
 
-class MinLoggerConfig {
-    [string]$LogName = 'ninmonkey.console-shared'
-    [string]$RootDir = 'H:\data\2022\log_list'
-    [System.IO.FileInfo]$FullName
+class MinLoggerDestinationConfig {
+    # todo: expansion
+    # name?
+    # [string]$LogName = 'ninmonkey.console-shared'
+    # [string]$RootDir = 'H:\data\2022\log_list' # more for the log source?
+    [System.IO.FileInfo]$Path
+
+    # [Void] MinLoggerDestination ($x) {
+
+    # }
+    # [string]ToString() {
+    #     return $this.Path
+    # }
 
 }
+class MinLoggerConfig {
+    # todo: expansion
+    # global config
+    # [MinLogger]
+}
 
-$script:__ninLog = @{
-    LogName = 'ninmonkey.console-shared.log'
+# $logger = [MinLoggerOutConfig]@{
+#     LogName = 'ninmonkey.console-shared'
+#     RootDir = 'H:\data\2022\log_list'
+# }
+
+
+[hashtable]$script:__ninLog = @{
+    LogName = 'min_logger-global'
     RootDir = 'H:\data\2022\log_list'
 }
 function Get-NinLogOption {
@@ -69,13 +89,19 @@ function Set-NinLogOption {
     $state.RootDir = $RootDir
     # todo:resolve->PathExists (log)
 
-
     if ($PassThru) {
         Get-NinLogOption
         return
     }
     return
 }
+$splat = @{
+    LogName = 'min_logger-global'
+    RootDir = 'H:\data\2022\log_list'
+}
+Set-NinLogOption @splat
+
+
 function Write-NinLogRecord {
     <#
     .synopsis
