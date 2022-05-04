@@ -3,6 +3,7 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Write-NinLogRecord'
+        'Parse-NinLogRecord'
         'Get-NinLogOption'
         'Set-NinLogOption'
     )
@@ -102,6 +103,9 @@ $splat = @{
 Set-NinLogOption @splat
 
 
+function Parse-NinLogRecord {
+
+}
 function Write-NinLogRecord {
     <#
     .synopsis
@@ -147,21 +151,27 @@ function Write-NinLogRecord {
 
 
     begin {
+        [ValidateSet('standard', 'TimeAtEnd')]$LogStyle = 'standard' #'TimeAtEnd'
+
         [hashtable]$Config = @{
             ShowInConsole = $false # meaning write to outputstream, maybe use -PassThru isntead?
             LogName       = $script:__ninLog.LogName
             LogRootDir    = $script:__ninLog.RootDir
+            RecordDelim   = '▸·⇢⁞ ┐⇽▂▸·'
             LogPid        = $true
             Time          = @{
                 Enabled      = $True
                 FormatString = 'u'
                 Universal    = $true
             }
+            LogStyle      = $LogStyle
+            # converts prefix to a suffix to make it humanizable
             LogAsString   = $false # meaning no json conversion
             ToJsonSplat   = @{
                 Depth          = 9
                 EnumsAsStrings = $true
                 AsArray        = $true
+                Compress       = $true
             }
         }
 
@@ -196,28 +206,79 @@ function Write-NinLogRecord {
         # $now = ([datetime]::now).ToUniversalTime().ToString('u')
 
         # $items.ToString()
-        $prefix = @(
-            if ($Config.Time.Enabled) {
-                "${nowStr}:"
-            }
-            if ($Config.LogPid) {
-                " ${pid}:"
-            }
-            " ${Label}: "
-        ) -join ''
+        if ($false) {
+            $prefix = @(
+                if ($Config.Time.Enabled) {
+                    "${nowStr} "
+                }
+                if ($Config.LogPid) {
+                    " ${pid} "
+                }
+                " ${Label}; "
+            ) -join ''
 
-        Write-Debug "prefix: '$Prefix'"
 
-        if ($Config.LogAsString) {
-            $render = $Items | Join-String -sep ', ' -op $Prefix #"${Label}: "
-        } else {
-            $splat = $Config.ToJsonSplat
-            $render = $Items | ConvertTo-Json @splat -Compress
+            Write-Debug "prefix: '$Prefix'"
+
+            if ($Config.LogAsString) {
+                $render = $Items | Join-String -sep ', ' -op $Prefix #"${Label}: "
+            } else {
+                $splat = $Config.ToJsonSplat
+                $render = $Items | ConvertTo-Json @splat -Compress
+            }
+
+            Write-Debug "render: '$render'"
+            $finalRender = $prefix, $render -join ''
         }
 
-        Write-Debug "render: '$render'"
-        $finalRender = $prefix, $render -join ''
+        if ($true) {
+            $delimRecord = '␞' # '␂'
+            $delimUnique = '␝'
 
+            if ($Config.LogAsString) {
+                $renderPayload = $Items | Join-String -sep ', '
+            } else {
+                $splat = $Config.ToJsonSplat
+                $renderPayload = $Items | ConvertTo-Json @splat
+            }
+            Write-Debug "renderPayload: '$render'"
+
+            Switch ($Config.LogStyle) {
+                'standard' {
+                    $finalRender = @(
+                        if ($Config.Time.Enabled) {
+                            "${nowStr}${delimRecord} "
+                        }
+                        if ($Config.LogPid) {
+                            "${pid}${delimRecord} "
+                        }
+                        "${Label} "
+                        "${delimUnique}${renderPayload}"
+                    ) -join ''
+
+                }
+                'TimeAtEnd' {
+                    $FinalRender = @()
+                    Write-Error -ea stop 'WIP write log with as [label,data,payload,time]'
+
+                }
+                default {
+                    Write-Error "ShouldNeverReachException: '$_'" -ea stop
+                }
+            }
+
+            # @(
+            #     " ${Label}; "
+            #     if ($Config.LogPid) {
+            #         " ${pid} "
+            #     }
+            #     if ($Config.Time.Enabled) {
+            #         "${nowStr} "
+            #     }
+            # ) -join ''
+
+
+        }
         $writeLog = @{
             Path = $LogFullName
         }
