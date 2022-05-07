@@ -30,12 +30,17 @@ function ZD-Invoke-WtThemeTest {
     $verb = 'new-tab'
     $window = 'theme-test'
     $profileName = 'Pwsh² -Nop'
+
+    # make sure one instance exists to prevent spam
+    & (Get-Command 'wt' -CommandType Application) -w $Window --title 'no-args'
+    Start-Sleep 0.3
+
     if ($Random) {
         $themes = $themes | Get-Random -Count 1
     }
     foreach ($scheme in $themes) {
-        "invoke: wt -w $window $verb --title $scheme --profile $ProfileName --colorScheme $scheme" | Write-Host -fore magenta
-        & (Get-Command 'wt' -CommandType Application) -w $window $verb --title $scheme --profile $ProfileName --colorScheme $scheme
+        "invoke: wt -w $window $verb --title `"$scheme`" --profile `"$ProfileName`" --colorScheme `"$scheme`"" | Write-Host -fore magenta
+        & (Get-Command 'wt' -CommandType Application) -w $window $verb --title "`"$scheme`"" --profile "`"$ProfileName`"" --colorScheme "`"$scheme`""
 
     }
 }
@@ -71,18 +76,19 @@ function Invoke-WtThemeTest {
     } else {
         $themes = $Config.themes
     }
+
+    # make sure one instance exists to prevent spam
+    & (Get-Command 'wt' -CommandType Application) -w $Window --title 'no-args'
+    Start-Sleep 0.3
+
     foreach ($scheme in $themes) {
-
-
-
         $wtArgs = @(
             '-w'
             $config.window
             $config.verb
             '--title'
 
-            $scheme
-            | Join-String -DoubleQuote
+            $scheme | Join-String -DoubleQuote
             '--profile'
 
             $config.ProfileName | Join-String -DoubleQuote
@@ -92,6 +98,7 @@ function Invoke-WtThemeTest {
             | Join-String -DoubleQuote
         )
         $wtArgs -join ' ' | Write-Host -fore magenta
+        $wtArgs | Join-String -sep ' ' | Write-Host -fore magenta
         & (Get-Command 'wt' -CommandType Application) @wtArgs
 
     }
