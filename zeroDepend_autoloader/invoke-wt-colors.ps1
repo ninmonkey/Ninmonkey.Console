@@ -19,7 +19,11 @@ function ZD-Invoke-WtThemeTest {
         Without changing settings, view the theme in multiple color schemes
     .notes
         runs commands like: #split-pane --profile 'Pwsh² -Nop' --title 'a' -d (gi C:\nin_temp) split-pane --profile 'Pwsh² -Nop' --title 'b'
-
+    .example
+        PS> zd-Invoke-WtThemeTest -Random  # run twice
+        PS> zd-Invoke-WtThemeTest -Random
+    .example
+        PS> zd-Invoke-WtThemeTest -Random  # show all themes
     #>
     param(
         [switch]$Random
@@ -29,7 +33,8 @@ function ZD-Invoke-WtThemeTest {
     $verb = 'split-tab'
     $verb = 'new-tab'
     $window = 'theme-test'
-    $profileName = 'Pwsh² -Nop'
+    $profileName = 'pwsh' # '"Pwsh² -Nop"'
+    $FirstPass = $true
 
     # make sure one instance exists to prevent spam
     & (Get-Command 'wt' -CommandType Application) -w $Window --title 'no-args'
@@ -39,8 +44,13 @@ function ZD-Invoke-WtThemeTest {
         $themes = $themes | Get-Random -Count 1
     }
     foreach ($scheme in $themes) {
-        "invoke: wt -w $window $verb --title `"$scheme`" --profile `"$ProfileName`" --colorScheme `"$scheme`"" | Write-Host -fore magenta
+        "invoke: wt -w $window $verb --title `"$scheme`" --profile $ProfileName --colorScheme `"$scheme`"" | Write-Host -fore magenta
         & (Get-Command 'wt' -CommandType Application) -w $window $verb --title "`"$scheme`"" --profile "`"$ProfileName`"" --colorScheme "`"$scheme`""
+        if ($FirstPass) {
+            # ensure named window exists, before invoking
+            $FirstPass = $false
+            Start-Sleep 0.4
+        }
 
     }
 }
@@ -68,8 +78,9 @@ function Invoke-WtThemeTest {
         themes      = @( 'Nin-Nord', 'Dracula', 'Nord-3bit-iter2', 'Nord-3bit-iter2', 'BirdsOfParadise', 'Solarized Dark', 'Nin-Nord', 'Nin-Nord', 'Nin-Nord', 'ninmonkey-darkgrey', 'BirdsOfParadise', 'Nord-3bit-iter2', 'Nin-Nord', 'BirdsOfParadise' )
         verb        = 'new-tab' # 'split-tab'
         window      = 'theme-test'
-        profileName = 'Pwsh² -Nop'
+        profileName = 'pwsh' #'Pwsh² -Nop'
     }
+    $FirstPass = $true
 
     if ($Random) {
         $themes = $Config.themes | Get-Random -Count 1
@@ -78,8 +89,8 @@ function Invoke-WtThemeTest {
     }
 
     # make sure one instance exists to prevent spam
-    & (Get-Command 'wt' -CommandType Application) -w $Window --title 'no-args'
-    Start-Sleep 0.3
+    # & (Get-Command 'wt' -CommandType Application) -w $Config.Window --title 'no-args'
+    # Start-Sleep 0.3
 
     foreach ($scheme in $themes) {
         $wtArgs = @(
@@ -100,6 +111,11 @@ function Invoke-WtThemeTest {
         $wtArgs -join ' ' | Write-Host -fore magenta
         $wtArgs | Join-String -sep ' ' | Write-Host -fore magenta
         & (Get-Command 'wt' -CommandType Application) @wtArgs
+
+        if ($FirstPass) {
+            $FirstPass = $false
+            Start-Sleep 0.4
+        }
 
     }
 }
