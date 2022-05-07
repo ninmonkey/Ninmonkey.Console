@@ -36,10 +36,6 @@ function ZD-Invoke-WtThemeTest {
     $profileName = 'pwsh' # '"Pwsh² -Nop"'
     $FirstPass = $true
 
-    # make sure one instance exists to prevent spam
-    & (Get-Command 'wt' -CommandType Application) -w $Window --title 'no-args'
-    Start-Sleep 0.3
-
     if ($Random) {
         $themes = $themes | Get-Random -Count 1
     }
@@ -88,10 +84,6 @@ function Invoke-WtThemeTest {
         $themes = $Config.themes
     }
 
-    # make sure one instance exists to prevent spam
-    # & (Get-Command 'wt' -CommandType Application) -w $Config.Window --title 'no-args'
-    # Start-Sleep 0.3
-
     foreach ($scheme in $themes) {
         $wtArgs = @(
             '-w'
@@ -108,7 +100,6 @@ function Invoke-WtThemeTest {
             $scheme
             | Join-String -DoubleQuote
         )
-        $wtArgs -join ' ' | Write-Host -fore magenta
         $wtArgs | Join-String -sep ' ' | Write-Host -fore magenta
         & (Get-Command 'wt' -CommandType Application) @wtArgs
 
