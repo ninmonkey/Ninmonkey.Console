@@ -3,17 +3,17 @@ using namespace system.collections.generic
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Get-PropertyEnumerator'
-        'ZD-Get-BaseTypeInfo'
+        'Get-BaseTypeInfo'
     )
     $publicToExport.alias += @(
         'iter->Prop' # 'Get-PropertyEnumerator'
 
-        'Zd-Get-Typeof'  # 'ZD-Get-BaseTypeInfo'
+        # 'Get-TypeOf'  # 'ZD-Get-BaseTypeInfo'
     )
 }
 
 
-function ZD-Get-BaseTypeInfo {
+function Get-BaseTypeInfo {
     <#
     .synopsis
         Basic type info
@@ -21,7 +21,7 @@ function ZD-Get-BaseTypeInfo {
         PS> gi . | ZD-Get-BasicTypeInfo
 
     #>
-    [Alias('Zd-Get-TypeOf')]
+    [Alias('Get-TypeOf')]
     [cmdletbinding()]
     param(
         # What to enumerate
@@ -39,10 +39,10 @@ function ZD-Get-BaseTypeInfo {
         $uniqueItem | ForEach-Object {
             $Cur = $_
             $tinfo = @{
-                PSTypeName        = 'zeroDependency.TypeInfo'
-                Object            = $cur
-                Name              = $cur.GetType().Name
-                FullName          = $cur.GetType().FullName
+                PSTypeName    = 'zeroDependency.TypeInfo'
+                Object        = $cur
+                Name          = $cur.GetType().Name
+                FullName      = $cur.GetType().FullName
                 'PSTypes'     = $cur.PSTypeNames
                 'PSTypes_Csv' = $cur.PSTypeNames | Join-String -sep ' ' { '[{0}]' -f $_ }
             }

@@ -52,7 +52,8 @@ function Join-Regex {
     )
 
     begin {
-        if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
+        # if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
+        if ( $null -eq $Text -and $null -eq $Regex) {
             throw 'Requires at least one of -TextLiteral or -Regex parameter'
         }
     }
