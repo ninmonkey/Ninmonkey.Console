@@ -23,7 +23,10 @@ function Invoke-PansiesExample {
         [string]$FunctionName,
 
         # list functions, quit.
-        [switch]$ListOnly
+        [switch]$ListOnly,
+
+        # return the implementation instead of invoking
+        [switch]$GetScriptBlock
     )
     begin {
 
@@ -73,11 +76,20 @@ function Invoke-PansiesExample {
             } )
         $fn.Add(
             [ExampleScriptBlock]@{
-                Name        = 'Compare-Colorspaces_Block-testingLiteralDef'
+                Name        = 'Colors_ManyCreationModes'
 
-                Description = 'test: actual inline definition of "Compare-Colorspaces_Block"'
-                Tags        = @('Debug')
+                Description = 'How many ways can you create [rgbcolor] or color escapes? A bunch'
+                Tags        = @('Pwsh7', 'PSStyle', 'Gradient')
                 ScriptBlock = {
+
+
+                    Get-Gradient Red Blue
+                    Get-Item bg:\red    # the main web and X11 names
+                    Get-Item bg:\gray30 # gray 0..100
+
+                    [RgbColor]::FromRgb(240, 120, 30)
+                    [RgbColor]::FromRgb( [int32]45326)
+                    [RgbColor]::FromRgb( 'CD5555' )
                     'Hsl', 'Lch', 'Rgb', 'Lab', 'Xyz' | ForEach-Object {
                         Get-Gradient red cyan -Width 30 -ColorSpace $_ | ForEach-Object { Write-Host ('a'..'z' + 'Z'..'Z' | Get-Random) -fg 'white' -bg $_ -no }
                         Write-Host
@@ -94,6 +106,10 @@ function Invoke-PansiesExample {
 
         [ExampleScriptBlock]$found = $fn | Where-Object Name -Match $Name | Select-Object -First 1
         Write-Information "Func: ${Found.Name}"
+
+        if ($GetScriptBlock) {
+            return $found.ScriptBlock
+        }
 
         & $found.ScriptBlock
     }
