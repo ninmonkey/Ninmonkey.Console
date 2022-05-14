@@ -20,6 +20,18 @@ function ConvertTo-Jsonify {
         minimal hack to process objects before default handler is called
     .DESCRIPTION
         converts specific types to specific outputs
+    .notes
+        dependencies:
+            directly: none
+            Indirectly: RgbColor, and handling of types
+        to test:
+            - [ ] get-process
+            - [ ] gci Env:
+    .example
+        PS> # Round trip:
+            ls .| Jsonify | to->Json
+                | from->Json | unJsonify
+
     .link
         Ninmonkey.Console\ConvertTo-Jsonify
     .link
