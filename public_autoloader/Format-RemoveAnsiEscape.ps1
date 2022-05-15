@@ -15,6 +15,13 @@ function Format-RemoveAnsiEscape {
     <#
     .synopsis
         strips ansi colors (or optionally, all ansi control sequences)
+    .notes
+        update by (also) Jaykul
+        > Technically, I think '\u001B.*?\p{L}' is ok, but '\u001B.*?m' is not,
+        > because it would match on any escape sequence, provided there was an m later.
+        > You'd need '\u001B\[[^\p{L}]*?m' or '\u001B\[.*?\p{L}(<=m)
+            <https://discord.com/channels/180528040881815552/447475598911340559/971943112995922050>
+
     #>
 
     [Alias('StripAnsi', 'Remove-AnsiEscape')]

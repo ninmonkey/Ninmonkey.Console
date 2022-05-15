@@ -1,8 +1,25 @@
+# temp, move to auto load, and, move to ZD directory
+$tmpExport = @{
+    Functions = @(
 
-function __safePrompt {
+        'Enable-NinPrompt'
+        # prompts *might* not need to be imported
+        # '__safePrompt', '__safePrompt_Sorta'
+    )
+    Aliases   = @(
+
+    )
+}
+
+
+
+
+function __safePrompt_blah {
     <#
     .synopsis
         zero dependency prompt, that includes errors
+    .notes
+        If function is declared locally, then $error must use global:
     .link
         __safePrompt_sorta
     #>
@@ -29,12 +46,8 @@ function __safePrompt_sorta {
         # [switch]$Enable
     )
 
-    Write-Warning 'not-imported: _fmt_FilepathWithoutUsernamePrefix'
+    # Write-Warning 'not-imported: _fmt_FilepathWithoutUsernamePrefix'
 
-
-    # if ($Enable) {
-    #     $global:prompt = $script:__safePrompt
-    # }
 
     $colorPrefix = New-Text -fg gray50 'nin'
 
@@ -79,46 +92,107 @@ function __safePrompt_sorta {
         ' PS> '
     ) -join ''
 }
-function Enable-SafePrompt {
-    # toggle prompts
-    param(
-        [ValidateSet('__safePrompt', '__safePrompt_Sorta')]
-        [Parameter()]
-        [string]$ConfigName = '__safePrompt'
-    )
-    # $global:prompt = __safePrompt
-    # Set-Item -Path 'function:\prompt' -Value __safePrompt
-    Set-Item -Path 'function:\prompt' -Value $ConfigName
-}
-
-
-Export-ModuleMember -Function 'Enable-SafePrompt'
-Export-ModuleMember -Alias 'ZD-GoCode'
-
-
-function gocode {
+function Enable-NinPrompt {
     <#
     .synopsis
-        open file in vs code: similar to __safePrompt, minimal, always works [zeroDependency]
-    .example
-        PS> gi foo.ps1 | gocode
-    .example
-        PS> gocode (~/foo/bar.ps1
-    .link
-        __safePrompt
+         toggle prompts, breaks if prompts aren't exported
+    .notes
+        setting value to a function, vs name, *might* make it more stable
+
+        what works?
+            - 1]
+                - value = name as string
+                - export-ModuleMember on the privateFunc Prompts
+            - 2]
+                - value = name as string
+                - do not export ModuleMembers
+                - then $error must be referenced as $error
+
+            - 3]
+                - value = name as string
+                - function set global:
+                - regular $error
+
     #>
-    [Alias('ZD-GoCode')]
-    [CmdletBinding()]
     param(
-        [Parameter(ValueFromPipeline, Position = 0, Mandatory)]
-        $Path
+        [ValidateSet(
+            '__safePrompt_blah',
+            '__safePrompt_Sorta',
+            'systemDefaultPrompt',
+            'ColorBasic',
+            'OriginalPrompt'
+        )]
+        [Parameter()]
+        [string]$ConfigName = 'ColorBasic'
     )
-    if ( Test-Path $Path ) {
-        & code.cmd @(
-            '--goto'
-            Get-Item -ea stop $Path | Join-String -DoubleQuote
-        )
+    $funcName = switch ($ConfigName) {
+        '__safePrompt_blah' {
+            '__safePrompt_blah'
+        }
+        '__safePrompt_Sorta' {
+            '__safePrompt_Sorta'
+        }
+        'ColorBasic' {
+            '__yellow'
+        }
+        'OriginalPrompt' {
+            'OriginalPrompt'
+        }
+        default {
+            '__systemDefaultPrompt'
+        }
     }
+    # $global:prompt = __safePrompt
+    # Set-Item -Path 'function:\prompt' -Value __safePrompt
+    # Set-Item -Path 'function:\prompt' -Value $ConfigName
+    # $custom = Get-Item -Path function:\$ConfigName
+    # Set-Item -Path 'function:\global:prompt' -Value $ConfigName
+    $custom = Get-Item -Path function:\$funcName
+    # Set-Item -Path 'function:\global:prompt' -Value
+    Set-Item -Path 'function:\global:prompt' -Value $custom
+}
+$script:OriginalPrompt ??= Get-Item Function:\global:prompt
+
+function __systemDefaultPrompt {
+
+    "PS $($executionContext.SessionState.Path.CurrentLocation)`n$('>' * ($nestedPromptLevel + 1)) ";
+    # .Link
+    # https://go.microsoft.com/fwlink/?LinkID=225750
+    # .ExternalHelp System.Management.Automation.dll-help.xml
+
 }
 
-Export-ModuleMember -Function 'goCode'
+function __yellow {
+    <#
+    .synopsis
+        minimal (more-so), only dependency is Pwsh
+    #>
+    $c = @{
+        Yellow = $PSStyle.Foreground.FromRgb('#ffff00')
+        Gray40 = $PSStyle.Foreground.FromRgb(
+            255 * 0.4, 255 * 0.4, 255 * 0.4 )
+
+        Gray80 = $PSStyle.Foreground.FromRgb(
+            255 * 0.8, 255 * 0.8, 255 * 0.8 )
+
+        Reset  = $PSStyle.Reset
+    }
+    @(
+        if ($Error.Count -gt 0) {
+            ' '
+            $C.Yellow
+            $Error.Count
+            ' '
+        }
+        $C.Gray40
+        $PSVersionTable.PSVersion.ToString()
+        $C.Gray80
+        '🐒> '
+        # New-Text -fg gray80 ''
+        $c.Reset
+    ) -join ''
+}
+
+
+
+Export-ModuleMember -Function $tmpExport.Functions -Alias $tmpExport.Aliases
