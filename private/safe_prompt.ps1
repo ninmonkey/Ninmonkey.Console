@@ -1,18 +1,12 @@
 # temp, move to auto load, and, move to ZD directory
 $tmpExport = @{
     Functions = @(
-
         'Enable-NinPrompt'
-        # prompts *might* not need to be imported
-        # '__safePrompt', '__safePrompt_Sorta'
     )
     Aliases   = @(
 
     )
 }
-
-
-
 
 function __safePrompt_blah {
     <#
@@ -147,11 +141,20 @@ function Enable-NinPrompt {
     # Set-Item -Path 'function:\prompt' -Value $ConfigName
     # $custom = Get-Item -Path function:\$ConfigName
     # Set-Item -Path 'function:\global:prompt' -Value $ConfigName
-    $custom = Get-Item -Path function:\$funcName
+    'param {0} -> func:\{1}' -f @($ConfigName, $funcName) | Write-Debug
+    Write-Warning "$PSCommandPath not safe"
+    return
+
+    Copy-Item -Path "Function:\$FuncName" -Destination function:\prompt
+    return
+    # $custom = Get-Item -Path function:\$funcName
     # Set-Item -Path 'function:\global:prompt' -Value
-    Set-Item -Path 'function:\global:prompt' -Value $custom
+    # $function:prompt = $global:$custom
+    # $Function:Prompt = Get-Item -Path function:\$FuncName
+    # Set-Item -Path 'function:\global:prompt' -Value $custom
 }
-$script:OriginalPrompt ??= Get-Item Function:\global:prompt
+# $global:OriginalPrompt ??= (Get-Content -ea ignore (Get-Item -ea ignore $Function:prompt))
+# Get-Item Function:\global:prompt
 
 function __systemDefaultPrompt {
 
