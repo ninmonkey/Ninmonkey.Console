@@ -6,13 +6,17 @@ if ( $publicToExport ) {
         'Parse-NinLogRecord'
         'Get-NinLogOption'
         'Set-NinLogOption'
+        'Start-WatchNinLog'
     )
     $publicToExport.alias += @(
+        'ninLog' #'Write-NinLogRecord'
         # 'ninLog' # ' Write-NinLogRecord'
         'minLog' # ' Write-NinLogRecord' # to make it not collide with future ninlog
         # 'minLog' # ' Write-NinLogRecord'
     )
 }
+Write-Warning 'left off '
+
 
 class MinLoggerDestinationConfig {
     # todo: expansion
@@ -41,10 +45,37 @@ class MinLoggerConfig {
 # }
 
 
+function Test-TypeIsJsonifyFlat {
+    <#
+    .synopsis
+        Is this type registered to be serialized aat depth 0 ?
+    .notes
+        Is this type essentially a scalar-type (in terms of "Jsonify"?)
+        This is false if it contains nested types (that themselves need special handling)
+    #>
+    param(
+        [Parameter(Mandatory)]
+        [String]$TypeName
+    )
+
+    # not registrered directly, but, are all properties flat?
+    return $false
+}
+
 [hashtable]$script:__ninLog = @{
     LogName = 'min_logger-global'
     RootDir = 'H:\data\2022\log_list'
 }
+
+function _getCurrentNinLog {
+    $state = $script:__ninLog
+    $null
+    $fullBaseName = (Join-Path $Config.LogRootDir $Config.LogName)
+    $FullName = $FullBaseName ?? '' + '.log'
+    return $Fullname
+}
+
+
 function Get-NinLogOption {
 
     <#
@@ -97,13 +128,31 @@ function Set-NinLogOption {
     return
 }
 $splat = @{
+
     LogName = 'min_logger-global'
     RootDir = 'H:\data\2022\log_list'
 }
 Set-NinLogOption @splat
 
+function Start-WatchNinLog {
+    param(
+        [string]$LogPath = (_getCurrentNinLog),
+        [string]$Language = 'log'
+    )
+    if (!(Test-Path $LogPath)) {
+        throw "LogNotFoundException: '$LogPath', '$Language'"
+    }
+    $Log = Get-Item -ea stop $LogPath
+    Get-Content $Log -Wait
+    | ForEach-Object { $_ }
+    | bat -l $Language
+
+    # gc $LogPath -wait
+    # | %{ $_ | bat -l log }
+}
 
 function Parse-NinLogRecord {
+    Write-Warning 'nyi'
 
 }
 function Write-NinLogRecord {
@@ -175,9 +224,10 @@ function Write-NinLogRecord {
             }
         }
 
+        $LogFullName = (Join-Path $Config.LogRootDir $Config.LogName) + '.log'
+        $LogFullName = _getCurrentNinLog
 
         $Config = Ninmonkey.Console\Join-Hashtable $Config $Options
-        $LogFullName = (Join-Path $Config.LogRootDir $Config.LogName) + '.log'
         if (! (Test-Path $LogFullName )) {
             Write-Verbose "'$LogFullName' did not exist, creating..." #todo:attribute -> creates and logs , replacing this
             New-Item -ItemType File -Path $LogFullName -Force

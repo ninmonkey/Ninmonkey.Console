@@ -14,6 +14,8 @@ if ( $publicToExport ) {
 
 function _showHistory {
     <#
+    .synopsis
+        View Highlighted history in a pager
     .notes
     nice filter:
         history |sort -Unique CommandLine | sort id

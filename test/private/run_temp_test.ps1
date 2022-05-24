@@ -1,18 +1,24 @@
-Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
+Import-Module Ninmonkey.Console -Force -ea break -infa continue
+# Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
 # Some tests are visual, or not Pester worthy
 # This file is a scratchboard
 
 # editfunc editfunc -PassThru
 # write-warning 'do me first'
 
-'hi world'
+# Wait-Debugger
+# 'done'
 
-$red = [rgbcolor]'red'
-$red | iProp
+# $error.count
+# hr
+
+
+return
 
 
 # H1 'quick test'
 $ConfigTest = @{
+    'OnlyImportModule'           = $false
     'tryCommand'                 = $false
     'PropertyList.Format.ps1xml' = $True
     'PropShortTypeName'          = $false
@@ -26,7 +32,18 @@ $ConfigTest = @{
     'CustomObject2'              = $false
     'GetCommand'                 = $false
 }
+if ( $ConfigTest.'OnlyImportModule' ) {
+
+    $ConfigTest | Format-Table
+    return
+}
+
 $ConfigTest | Format-HashTable -Title 'Config'
+
+'hi world'
+
+$red = [rgbcolor]'red'
+$red | iProp
 
 if ( $ConfigTest.'tryCommand' ) {
     Import-Module Ninmonkey.Console -Force -DisableNameChecking
@@ -38,7 +55,7 @@ if ( $ConfigTest.'tryCommand' ) {
 
     Get-Command -Module ClassExplorer, Ninmonkey.Console
     | Sort-Object Module, CommandType, Name
-    | Format-Table CommandType, Name, Version, Description  -AutoSize -GroupBy Source
+    | Format-Table CommandType, Name, Version, Description -AutoSize -GroupBy Source
 }
 if ( $ConfigTest.'PropertyList.Format.ps1xml' ) {
     Get-PSReadLineOption | Prop
@@ -87,7 +104,9 @@ if ( $ConfigTest.'LabelFromPropAndPipeline' ) {
     Label 'greeting' 'woof' -Debug -Verbose -InformationAction continue
 
     $colors = Get-ChildItem fg:
-    function randColor { $colors | Get-Random }
+    function randColor {
+        $colors | Get-Random
+    }
     'sdf' | Label 3 length
     0..4 | Label 'nums' -fg (randColor) -fg2 (randColor)
     0..4 | JoinStr | Label 'nums2' -fg orange -ea Break
@@ -159,7 +178,7 @@ if ( $ConfigTest.GetCommand ) {
     $gcm = Get-Command Select-Object
     $gcm.Parameters | Prop | Format-List
     $gcm.Parameters | Prop | Format-Table
-    $prop = $gcm.psobject.properties | Where-Object  Name -EQ Parameters # | % TypeNameOfValue
+    $prop = $gcm.psobject.properties | Where-Object Name -EQ Parameters # | % TypeNameOfValue
     $prop.TypeNameOfValue -as 'type' | Format-TypeName
 }
 

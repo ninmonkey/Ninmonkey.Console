@@ -98,7 +98,6 @@ function Format-ShortSciTypeName {
             return
         }
         $name = [ClassExplorer.Internal._Format]::Type($Target)
-        # $Target.FullName -replace '^System\.(Management.Automation\.)?', '' -replace '^PoshCode\.Pansies', 'Pansies'
         | Join-String -op '[' -os ']'
         if ($Env:NO_COLOR -or $NoColor) {
             return $Name | StripAnsi

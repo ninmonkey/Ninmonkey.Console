@@ -5,12 +5,7 @@
 <# init
     todo: better config system, than copying my profile
 #>
-function prompt {
-    # might error if it's not exported
-    "`n`n>"
-}
 
-Export-ModuleMember -Function 'prompt'  #  ?
 
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
@@ -64,7 +59,11 @@ $__Config = @{
 # . (Get-Item -ea Stop (Join-Path $base 'public_autoloader\__init__.ps1'))
 # . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_autoloader\__init__.ps1'))
 # }
+# function prompt {
+#     "`n`n>"
+# }
 
+# throw 'stop here debug'
 
 $psreadline_extensions = @(
     'smart_brackets_braces'     # auto add/close quotes and braces
@@ -88,13 +87,18 @@ if ($psEditor) {
     #  $private_seeminglySci.Remove('NamespaceAwareCompletion')
     $private_seeminglySci = $private_seeminglySci -ne 'NamespaceAwareCompletion'
 }
+
 foreach ($file in $private_seeminglySci) {
-    # Write-Warning "file: seeminglySci -> : $File"
-    if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
-        Write-Error "Import: failed: private_seeminglySci: private: $File"
+    try {
+        # Write-Warning "file: seeminglySci -> : $File"
+        if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
+        } else {
+            Write-Error "Import: failed: private_seeminglySci: private: $File"
+        }
+        . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
+    } catch {
+        Write-Error -ErrorRecord $_ -Message "Loading '$file' failed!`n$_" -ea stop
     }
-    . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
 }
 
 <#
@@ -386,10 +390,10 @@ function Enable-NinCoreAlias {
         ErrorAction = 'ignore'
         Force       = $true
         PassThru    = $true
-        Scope       = 'global'
+        Scope       = 'script'
     }
 
-    @(
+    $aliases = @(
         # group: builtins
         Set-Alias @splat -Name 'ls' -Value 'Microsoft.PowerShell.Management\Get-ChildItem'
         Set-Alias @splat -Name 'impo' -Value 'Microsoft.PowerShell.Core\Import-Module'
@@ -398,8 +402,11 @@ function Enable-NinCoreAlias {
         Set-Alias @splat -Name 'Gcl' -Value 'Microsoft.PowerShell.Management\Get-Clipboard'
         Set-Alias @splat -Name 'Cl' -Value 'Microsoft.PowerShell.Management\Set-Clipboard'
         Set-Alias @splat -Name 'Touch' -Value 'Microsoft.PowerShell.Management\New-Item'
+
         Set-Alias @splat -Name 'to->Json' -Value 'Microsoft.PowerShell.Utility\ConvertTo-Json'
         Set-Alias @splat -Name 'to->Csv' -Value 'Microsoft.PowerShell.Utility\ConvertTo-Csv'
+        Set-Alias @splat -Name 'from->Json' -Value 'Microsoft.PowerShell.Utility\ConvertFrom-Json'
+        Set-Alias @splat -Name 'from->Csv' -Value 'Microsoft.PowerShell.Utility\ConvertFrom-Csv'
 
         # Set-Alias @splat -Name 'rolve->Cmd' -Value 'Ninmonkey.Console\Resolve-CommandName'
 
@@ -415,12 +422,37 @@ function Enable-NinCoreAlias {
         }
     )
     # | _sortBy_Get-Alias
-    | Write-Information
+    $Aliases | Write-Information
     Write-Warning 'remember to import: "_sortBy_Get-Alias"'
+    Export-ModuleMember -Alias $aliases
+}
+
+$executionContext.SessionState.Module.OnRemove = {
+    Get-Command ls -All | Format-Table | Out-String | Write-Warning
+    Write-Warning 'alias "ls" isn''t reverting correctly, until next import'
+    Remove-Alias 'ls'# -ea ignore
+
+    # warning still not automatic
+    Set-Alias 'ls' 'Microsoft.PowerShell.Management\GetChildItem' -Scope Global
+    Get-Command ls -All | Format-Table | Out-String | Write-Warning
 
 }
 
 Export-ModuleMember -Function 'Enable-NinCoreAlias'
+
+<#
+Several bugs occur if 'Enable-NinCoreAlias' isn't ran, because
+    [1] they are not marked as aliases, so they are not unloaded
+        they end up pointing to 'ls.exe', not 'gci'
+        when either Module is unloaded, or, Module is imported again
+    [2] or makes ninmonkey.profile have errors for not fully loading aliases first
+
+    could fix using
+        [1] always load aliases, or
+        [2] cleanup on module uevent, or
+        [3] minimal module that contains the aliases, removing the dynamic requirement
+#>
+Enable-NinCoreAlias
 
 foreach ($typeName in $formatData) {
 
@@ -435,23 +467,24 @@ foreach ($typeName in $formatData) {
 }
 
 if ($true) {
+    $eaIgnore = @{ ErrorAction = 'Ignore'}
     # toggle auto importing of aliases', otherwise only use new-alias
-    New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
-    New-Alias -ea 'Ignore' 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
+    New-Alias @eaIgnore 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
+    New-Alias @eaIgnore 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'
 
     # this wasn't loading below, maybe because old system
-    New-Alias 'Select->Property' -Value Select-NinProperty
+    New-Alias @eaIgnore 'Select->Property' -Value Select-NinProperty
 
 
 
-    # now set as an alias: New-Alias -ea 'Ignore' 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
-    New-Alias -ea 'Ignore' 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
+    # now set as an alias: New-Alias @eaIgnore 'Goto' -Value Set-NinLocation -Description 'a more flexible version of Set-Location / cd'
+    New-Alias @eaIgnore 'Here' -Value Invoke-Explorer -Description 'Open paths in explorer'
 
     # Set-Alias 'Cd' -Value 'Set-NinLocation' -ea Continue #todo:  make this opt in
 
     # class-explorer
-    New-Alias -ea 'Ignore' 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
-    New-Alias -ea 'Ignore' -Name 'Get-EnumInfo' -Value 'Get-EnumInfo'
+    New-Alias @eaIgnore 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
+    New-Alias @eaIgnore -Name 'Get-EnumInfo' -Value 'Get-EnumInfo'
 
     $aliasesToExport = @(
         'H1'

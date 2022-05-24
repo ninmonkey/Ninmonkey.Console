@@ -12,17 +12,13 @@ if ($script:publicToExport) {
 function New-WindowsTerminal {
     <#
     .synopsis
-        super minimal, quick sugar to launch another instance using my starting directory
+        minimal sugar to launch another instance using my starting directory
     .notes
-        better name?
-
-        # 'wt', see: <https://docs.microsoft.com/en-us/windows/terminal/command-line-arguments?tabs=linux>
-    .example
         PS> wt->NewTab
-    .example
         PS> wt->NewTab -Profile 'pwsh'
     .link
         https://docs.microsoft.com/en-us/windows/terminal/command-line-arguments
+
     #>
     [Alias('wt->NewTab')]
     param(
@@ -32,15 +28,9 @@ function New-WindowsTerminal {
 
         [parameter()]
         [ArgumentCompletions(
-            "'pwsh'",
-            "'Pwsh² -Nop'",
-            "'WinPS - (Normal)'",
-            "'Git-Bash'",
-            "'vscode_nop'",
+            "'pwsh'", "'Pwsh² -Nop'", "'WinPS - (Normal)'",
             "'Developer PowerShell for VS 2019'",
-            "'pwsh -Admin -Nop'",
-            "'Pwsh² -Admin'"
-
+            "'Pwsh² -Admin'", "'pwsh -Admin -Nop'"
         )]$Profile
     )
 
@@ -61,10 +51,6 @@ function New-WindowsTerminal {
             Get-Item . | Split-Path -Leaf
         ) | str str | Join-String -sep ' ' -SingleQuote
         #  SingleQuote Same here, quoting was read as literal
-
-
-
-
     )
     $wtArgs | Join-String -op 'wt ' -sep ' ' | Write-Information
     if ($WhatIf) {

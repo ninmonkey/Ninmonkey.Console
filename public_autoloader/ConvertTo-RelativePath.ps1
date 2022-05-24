@@ -8,6 +8,7 @@ if ( $publicToExport ) {
         'To->RelativePath' # compare with 'To->VariablePath'
     )
 }
+# new
 
 function ConvertTo-RelativePath {
     <#
@@ -113,6 +114,7 @@ function ConvertTo-RelativePath {
         }
         # Push-Location -StackName 'temp' $BasePath
         if (! [string]::IsNullOrWhiteSpace( $BasePath) ) {
+            Write-Debug "'$BasePath' => '$CurDir'"
             $curDir = Get-Item $BasePath
         }
         $curDir = Get-Location | Get-Item

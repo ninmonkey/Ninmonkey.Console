@@ -1,44 +1,44 @@
-﻿using namespace System.Management.Automation
+﻿# using namespace System.Management.Automation
 
 
-function _Format-ParameterTypeInfo {
-    <#
-    .description
-        formats [System.Management.Automation.ParameterMetadata]
-    #>
-    param(
-        # [ParameterMetadata] instance
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        $InputObject
-    )
+# function _Format-ParameterTypeInfo {
+#     <#
+#     .description
+#         formats [System.Management.Automation.ParameterMetadata]
+#     #>
+#     param(
+#         # [ParameterMetadata] instance
+#         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+#         $InputObject
+#     )
 
-    begin {
-        h2 'yay'
-        Write-Warning 'wip'
-    }
-    process {
+#     begin {
+#         h2 'yay'
+#         Write-Warning 'wip'
+#     }
+#     process {
 
-        $InputObject.GetEnumerator() | ForEach-Object {
+#         $InputObject.GetEnumerator() | ForEach-Object {
 
-            # is a: [ParameterMetadata]
-            $curParam = $_
-            $curName = $curParam.Key
-            $curValue = $curParam.Value
-            $hashParam = @{
-                Name       = $curName
-                Type       = $curValue.ParameterType
-                ParamSets  = $curValue.ParameterSets
-                IsDynamic  = $curValue.IsDynamic
-                Aliases    = $curValue.Aliases
-                Attributes = $curValue.Attributes
-                IsSwitch   = $curVal.SwitchParameter
+#             # is a: [ParameterMetadata]
+#             $curParam = $_
+#             $curName = $curParam.Key
+#             $curValue = $curParam.Value
+#             $hashParam = @{
+#                 Name       = $curName
+#                 Type       = $curValue.ParameterType
+#                 ParamSets  = $curValue.ParameterSets
+#                 IsDynamic  = $curValue.IsDynamic
+#                 Aliases    = $curValue.Aliases
+#                 Attributes = $curValue.Attributes
+#                 IsSwitch   = $curVal.SwitchParameter
 
-            }
-            [pscustomobject]$hashParam
-        }
-    }
-}
-<#
+#             }
+#             [pscustomobject]$hashParam
+#         }
+#     }
+# }
+# <#
 if ($false) {
     $Sample = @{
         FunctionInfo_WithParam = Get-Command * | Where-Object {

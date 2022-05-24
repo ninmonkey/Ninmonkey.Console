@@ -96,6 +96,7 @@ function ConvertTo-Timespan {
             (?<Milliseconds>[\d\.\-]+)
             ms
         )?
+
         (?<Rest>.*)
         $
 '@
@@ -120,13 +121,13 @@ function ConvertTo-Timespan {
 
             $ts = [timespan]::new($Days, $Hours, $Minutes, $Seconds, $Milliseconds)
             if ($ts -eq 0 -or $null -eq $ts) {
-                $splatError = @{}
-                if (! $ZeroIsValid) {
-                    $splatError = @{
-                        ErrorAction = 'Stop'
-                    }
-                }
-                Write-Error -m '[timespan] == 0' -TargetObject $RelativeText @splatError
+                # $splatError = @{}
+                # if (! $ZeroIsValid) {
+                #     $splatError = @{
+                #         ErrorAction = 'Stop'
+                #     }
+                # }
+                # Write-Error -m '[timespan] == 0' -TargetObject $RelativeText @splatError
             }
             $ts
         } catch {

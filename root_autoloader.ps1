@@ -28,6 +28,9 @@ $strUL = @{
 }
 
 
+Write-Warning '[dev.nin] needs this'
+
+
 Function Join-Hashtable {
     <#
     .description
@@ -95,6 +98,14 @@ Function Join-Hashtable {
 
 
 class ModuleExportRecord {
+    <#
+    One Idea is a pre-parse stage:
+        [1] ast only, collect any metadata, and registered exports
+        [2] potential filter on loaders
+        [3] then actually invoke script blocks etc
+
+    allow skipping function, parse without execute
+    #>
     # future:// param that auto-logs when property is changed
     # maybe this is one instance per file
     # which gets appended to global state?
@@ -290,7 +301,7 @@ function _find_moduleInitDir {
 
 
 $dirsToLoad = _find_moduleInitDir
-| Sort-Object { $_.FullName -match 'beforeAll' }-Descending  # future will allow sort order from '__init__.ps1'
+| Sort-Object { $_.FullName -match 'beforeAll' } -Descending  # future will allow sort order from '__init__.ps1'
 $dirsToLoad | Write-Host -foreg Green
 # |  % fullname
 
@@ -311,7 +322,8 @@ $origTest = Get-ChildItem -File -Path $dirsToLoad
 | Where-Object { $_.Name -match '\.ps1$' }
 | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
-$newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa continue
+$newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa 'continue'
+| Sort-Object { $_.fullname -match 'zeroDepend_autoloader' } -Descending
 
 $z = $Null
 $z = $Null
