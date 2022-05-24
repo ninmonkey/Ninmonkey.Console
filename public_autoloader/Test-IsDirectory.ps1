@@ -34,7 +34,7 @@ function Test-IsContainer {
         [allowNull()]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [Alias('PSPath', 'Path')]
-        [object]$InputObject,
+        [object[]]$InputObject,
 
         # looser definition ,  use to test containers in providers other than filesystems
         [switch]$IsContainer
@@ -44,39 +44,42 @@ function Test-IsContainer {
     process {
         <#
          #>
-        $item = Get-Item $InputObject -ea ignore
-        if ( [string]::IsNullOrEmpty( $InputObject )) {
-            return $false;
-        }
-        if ($null -eq $item) {
-            return $false
-        }
-        if ($IsContainer -and $Item.PSIsContainer) {
-            return $True;
-        }
-        # try {
-        #     $item = Get-Item $InputObject -ea stop
-        # } catch {
-        #     # definitely didn't exist
-        #     Write-Debug 'GI failed'
-        #     return $false;
-        # }
-        $isType = $Item -is 'System.IO.DirectoryInfo'
-        $meta = @{
-            IsDirInfo         = $isDir
-            HasAttr           = $hasAttribute
-            IsContainer       = [bool]$Item.PSIsContainer
-            PathTypeContainer = Test-Path -PathType Container -Path $InputObject
-        }
-        $meta | Format-Table | Out-String | Write-Debug
+        $InputObject | ForEach-Object {
+            $TargetItem = $_
+            $item = Get-Item $TargetItem -ea ignore
+            if ( [string]::IsNullOrEmpty( $TargetItem )) {
+                return $false;
+            }
+            if ($null -eq $item) {
+                return $false
+            }
+            if ($IsContainer -and $Item.PSIsContainer) {
+                return $True;
+            }
+            # try {
+            #     $item = Get-Item $TargetItem -ea stop
+            # } catch {
+            #     # definitely didn't exist
+            #     Write-Debug 'GI failed'
+            #     return $false;
+            # }
+            $isType = $Item -is 'System.IO.DirectoryInfo'
+            $meta = @{
+                IsDirInfo         = $isDir
+                HasAttr           = $hasAttribute
+                IsContainer       = [bool]$Item.PSIsContainer
+                PathTypeContainer = Test-Path -PathType Container -Path $TargetItem
+            }
+            $meta | Format-Table | Out-String | Write-Debug
 
-        # $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
-        # you could also do -ne 0 at the end to achieve the same thing
-        $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -ne 0
-        $isContainer = Test-Path -PathType Container -Path $InputObject
+            # $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -eq [IO.FileAttributes]::Directory
+            # you could also do -ne 0 at the end to achieve the same thing
+            $hasAttribute = ($item.Attributes -band [IO.FileAttributes]::Directory) -ne 0
+            $isContainer = Test-Path -PathType Container -Path $TargetItem
 
-        #  return [bool]:
-        $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer) -or $isContainer
+            #  return [bool]:
+            $isType -or $hasAttribute -or ([bool]$Item.PSIsContainer) -or $isContainer
+        }
     }
     end {
     }

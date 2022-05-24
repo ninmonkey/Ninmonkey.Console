@@ -5,7 +5,7 @@ $script:publicToExport.function += @(
 )
 $script:publicToExport.alias += @(
     'measureLs'
-    'CliTool💻-Measure-NinChildItem'
+    # 'CliTool💻-Measure-NinChildItem'
 )
 
 function Measure-NinChildItem {
@@ -47,7 +47,10 @@ function Measure-NinChildItem {
     .outputs
         [Nin.Nin.DiskUsageSummary[]]
     #>
-    [alias('measureLs', 'CliTool💻-Measure-NinChildItem')]
+    [alias(
+        'measureLs'
+        # 'CliTool💻-Measure-NinChildItem'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Alias('Path')]
@@ -85,6 +88,7 @@ function Measure-NinChildItem {
     }
 }
 
+# cleanup splat:
 $splatForceIgnore = @{ Force = $true; 'Ea' = 'Ignore' }
 
 # refactor: This should be in a autoloader script block, or consolidated as a type
