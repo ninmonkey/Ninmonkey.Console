@@ -13,9 +13,11 @@ function Find-TabExpansionCommand {
     # [alias('Find-TabExpansion')]
     param (
         [Parameter()][switch]$UseGrep
-    )a
-    begin {}
-    Get-process {
+    )
+    begin {
+        throw 'Obsolete'
+    }
+    process {
         # $Target = gi -ea stop $InputObject # Yes? No?
         $meta = @{
             ChocolateyProfile     = $ChocolateyProfile

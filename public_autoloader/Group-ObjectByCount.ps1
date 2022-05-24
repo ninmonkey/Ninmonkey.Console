@@ -55,6 +55,13 @@ function Group-ObjectByCount {
                 6
             )
           .
+    .EXAMPLE
+        $Template = @{ Hex = '{0,-3:x}'  }
+        0..255 | Iter->ByCount 8 | %{
+            $_
+            | Join-String -sep '' { $Template.Hex -f $_ }
+            | Format-Predent -PassThru -TabWidth 4
+        } | Join-String -sep 'outer'
     .outputs
           [object[]]
 

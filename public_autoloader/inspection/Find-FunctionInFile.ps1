@@ -77,9 +77,9 @@ class NinFunctionInfo {
     <#
     unwanted ?
     #>
-}6
+}
 
-
+# Write-Warning "$PSCommandPath 🐱‍👤"
 function Find-FunctionChildItem {
     <#
     .synopsis

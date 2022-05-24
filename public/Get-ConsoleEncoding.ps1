@@ -8,6 +8,8 @@
         Get-Encoding -Test
     .example
         Get-Encoding Full
+    .link
+        Ninmonkey.Console\Set-ConsoleEncoding
     #>
     param(
         [Parameter(Mandatory = $false, position = 0)]
@@ -39,6 +41,8 @@
 
             $config.GetEnumerator() | ForEach-Object {
                 [pscustomobject]@{
+                    # should be format or type data
+                    PSTypeName             = 'nin.ConsoleEncodingInfo.Full'
                     Name                   = $_.Key
                     Encoding               = $_.Value.EncodingName
                     GetEncoder             = $_.value.GetEncoder()
@@ -58,6 +62,7 @@
         Default {
             $config.GetEnumerator() | ForEach-Object {
                 [pscustomobject]@{
+                    PSTypeName   = 'nin.ConsoleEncodingInfo.Short'
                     Name         = $_.Key
                     Encoding     = $_.Value.EncodingName
                     CodePage     = $_.Value.CodePage

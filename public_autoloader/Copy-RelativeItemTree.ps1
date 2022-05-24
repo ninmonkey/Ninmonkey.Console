@@ -9,19 +9,26 @@ if ( $publicToExport ) {
     )
 }
 
-function copyRelativeItemTree {
+function Copy-RelativeItemTree {
     <#
     .SYNOPSIS
         copy items in one tree relative another, preserving any path prefix
     .DESCRIPTION
         You may filter items before piping, copy-item requires modifying relative paths
     .notes
+    .example
+        # Recent VS Code logs
+        $Results = fd --changed-within 20minutes --search-path $AppConfig.SourceRoot -t f
+        | StripAnsi | Get-Item
+        | Copy-RelativeItemTree -SourceRootDir $AppConfig.SourceRoot -DestinationRootDir $AppConfig.DestRoot -TestOnly -PassThru -infa ignore
+
 
     .LINK
         https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats
     .LINK
         https://docs.microsoft.com/en-us/dotnet/api/System.IO.Path
     #>
+    [Alias('CopyRelativeItemTree')]
     [OutputType('System.IO.FileSystemInfo', 'Object')]
     [cmdletbinding()]
     param(
@@ -49,7 +56,7 @@ function copyRelativeItemTree {
         [switch]$TestOnly
     )
     begin {
-        Write-Warning 'no WhatIf mode'
+
         if (!( Test-Path $SourceRootDir) -or !(Test-Path $DestinationRootDir)) {
             Throw "Source and Dest paths must exist ('$SourceRootDir', '$DestinationRootDir')"
         }
@@ -64,10 +71,10 @@ function copyRelativeItemTree {
 
             }
             $item = Get-Item $Item # somewhere got null
-            $RelativeOnly = [io.path]::GetRelativePath( $SourceRoot, $Item)
+            $RelativeOnly = [io.path]::GetRelativePath( $SourceRootDir, $Item)
             $FullName = Join-Path $DestinationRootDir $RelativeOnly
             $DestDir = [io.path]::GetDirectoryName( $FullName )
-            New-Item -Path $DestDir -ItemType Directory -Force
+            New-Item -Path $DestDir -ItemType Directory -Force | Out-Null
             $dbg = [ordered]@{
                 PSTypeName       = 'copyItemDebugInfo'
                 RelativeOnly     = $RelativeOnly
@@ -77,6 +84,7 @@ function copyRelativeItemTree {
                 SourceBase       = $SourceRootDir | toEnvPath
             }
             [pscustomobject]$Dbg | Format-List | Out-String | Write-Information
+
             if ($TestOnly) {
                 [pscustomobject]$Dbg
                 Continue
@@ -84,14 +92,14 @@ function copyRelativeItemTree {
             $splat = @{
                 Path        = $Item
                 Destination = $FullName
-                Confirm     = $true
+                # Confirm     = $true
                 Force       = $True
             }
             if ($PassThru) {
                 $splat['PassThru'] = $PassThru
             }
             if ($Confirm) {
-                $splat['PassThru'] = $Confirm
+                $splat['Confirm'] = $Confirm
             }
 
             Copy-Item @splat
