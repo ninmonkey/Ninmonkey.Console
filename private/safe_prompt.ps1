@@ -7,7 +7,6 @@ $tmpExport = @{
 
     )
 }
-
 function __safePrompt_blah {
     <#
     .synopsis
@@ -24,7 +23,7 @@ function __safePrompt_blah {
     #     $global:prompt = $script:__safePrompt
     # }
     @(
-        "`n", ($Error.Count ?? 0),
+        "`n", ($global:Error.count ?? 0),
         "`nPS> "
     ) -join ''
 }
@@ -49,8 +48,8 @@ function __safePrompt_sorta {
     # | _fmt_FilepathWithoutUsernamePrefix -ReplaceWith $colorPrefix
     # | _fmt_FilepathForwardSlash
 
-    $errorCount = $Error.count ?? 0
-    # $errorString = ($Error.count ?? 0)
+    $errorCount = $global:Error.count ?? 0
+    # $errorString = ($global:Error.count ?? 0)
     $errorColor = switch ($errorCount) {
         { $_ -ge 1 -and $_ -lt 5 } {
             'orange' ; break;
@@ -79,7 +78,7 @@ function __safePrompt_sorta {
     @(
         "`n"
         "`n"
-        # ($Error.Count ?? 0)
+        # ($global:Error.count ?? 0)
         $renderPath
         ' '
         $RenderError
@@ -181,10 +180,10 @@ function __yellow {
         Reset  = $PSStyle.Reset
     }
     @(
-        if ($Error.Count -gt 0) {
+        if ($global:Error.count -gt 0) {
             ' '
             $C.Yellow
-            $Error.Count
+            $global:Error.count
             ' '
         }
         $C.Gray40

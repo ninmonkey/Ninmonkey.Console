@@ -1,13 +1,16 @@
-# temp, move to auto load, and, move to ZD directory
-$tmpExport = @{
-    Functions = @(
+#Requires -Version 7
+
+if ( $publicToExport ) {
+    $publicToExport.function += @(
         'Enable-NinHistoryHandler'
         'Get-NinHistoryHandlerLog'
+
     )
-    Aliases   = @(
+    $publicToExport.alias += @(
 
     )
 }
+
 
 $script:__historyhandler = @{
     Path = Join-Path $Env:UserProfile '.ninmonkey/raw_history.jsonl'
