@@ -2,11 +2,11 @@
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
-        'Get-TypesOfEnumerator'
+        'Get-CollectionTypeInfo'
     )
     $publicToExport.alias += @(
-        'InspectEnumerable'  # 'Get-TypesOfEnumerator'
-        'Inspect->Enumerable' # 'Get-TypesOfEnumerator'
+        'InspectCollection'  # 'Get-TypesOfEnumerator'
+        'Inspect->Collection' # 'Get-TypesOfEnumerator'
 
     )
 }
@@ -21,10 +21,10 @@ class CollectionTypeInfo {
     [int]$Count
 
     # quick hide until its replaced with  TypeData
-    hidden [object]$BaseTypeInfo
-    hidden [object]$ChildTypeInfo
+    [object]$BaseTypeInfo
+    [object]$ChildTypeInfo
 }
-function Get-TypesOfEnumerator {
+function Get-CollectionTypeInfo {
     <#
     .synopsis
         summarize collections, or more broadly or ienumerables?
@@ -33,6 +33,11 @@ function Get-TypesOfEnumerator {
 
         to fix:
             gi env: | InspectEnumerable | fl
+
+        see class explorer:
+                Find-Type -Signature { [generic[exact[System.Collections.Generic.IEnumerable`1, args[mytype]]]] } -map @{ 'mytype' = $arg }
+
+                Find-Type -Implements System.Collection.IDictionary
     .example
         ps> $cmd = Get-Command -Name Get-Culture
         ps> $cmd.Parameters | InspectEnumerable
@@ -45,28 +50,34 @@ function Get-TypesOfEnumerator {
             ChildTypeInfo : [Name, System.Management.Automation.ParameterMetadata]
     #>
     [Alias(
-        'InspectEnumerable',
-        'Inspect->Enumerable'
+        'InspectCollection',
+        'Inspect->Collection'
     )]
     [OutputType('CollectionTypeInfo')]
     param(
         # Any possible collections
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory, Position = 0)]
         $InputObject
     )
-    process {
-        # return 32
-        [CollectionTypeInfo]@{
-            Base          = $InputObject | Get-Unique -OnType | shortType
-            Child         = $InputObject.GetEnumerator() | Select-Object -First 1 | shortType
-            Count         = $InputObject.Count
-            BaseTypeInfo  = $InputObject.GetType()
-            ChildTypeInfo = @($InputObject.GetEnumerator())[0] # is one bettter?
-            # IsDict = 'nyi'
-            # IsIEnumerable 'nyi'
-            # IsList/Arrary 'nyi'
-            # IsEmptyList = 'sdf'
-        }
+
+
+    # return 32
+    [CollectionTypeInfo]@{
+        Base          = $InputObject | Get-Unique -OnType | shortType
+        Child         = $InputObject.GetEnumerator() | Select-Object -First 1 | shortType
+        Count         = $InputObject.Count
+        BaseTypeInfo  = $InputObject.GetType()
+        ChildTypeInfo = @($InputObject.GetEnumerator())[0] # is one bettter?
+        # IsDict = 'nyi'
+        # IsIEnumerable 'nyi'
+        # IsList/Arrary 'nyi'
+        # IsEmptyList = 'sdf'
     }
 
+
 }
+
+<#
+
+    nce of DictionaryEntry t
+#>
