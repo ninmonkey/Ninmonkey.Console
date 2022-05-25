@@ -1,5 +1,6 @@
 BeforeAll {
     Import-Module Ninmonkey.Console -DisableNameChecking -Force *>$Null
+    # note: requires first-pass
 }
 
 Describe 'Inspect Enumerable' {
@@ -31,21 +32,21 @@ Describe 'Inspect Enumerable' {
 
         $params = (Get-Command Get-Culture).Parameters
         InspectEnumerable $params #| Format-List
-        hr
+        Hr
         Get-Item env: | InspectEnumerable | Format-List
 
 
-        h1 '1'
+        H1 '1'
         $manyEnv = Get-ChildItem env:
-        h1 '2'
+        H1 '2'
         $manyColor = Get-ChildItem env:
-        h1 '3'
+        H1 '3'
 
         $envItem = Get-Item env:\
-        h1 '4'
+        H1 '4'
         $colorItem = Get-Item Fg:\red
         Get-Item Env:\TEMP | InspectEnumerable
-        h1 '5'
+        H1 '5'
 
     }
 
