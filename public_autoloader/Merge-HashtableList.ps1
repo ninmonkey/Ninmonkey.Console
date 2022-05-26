@@ -1,6 +1,8 @@
-$script:publicToExport.function += @(
-    'Merge-HashtableList'
-)
+if ($script:publicToExport) {
+    $script:publicToExport.function += @(
+        'Merge-HashtableList'
+    )
+}
 # $script:publicToExport.alias += @(
 # 'HelpCommmand')
 
@@ -10,7 +12,8 @@ Function Merge-HashtableList {
     .description
         from the pipeline, merge all hastables in-order
     .notes
-        .
+        .this should join with 'join-hashtable' to be a single command
+        the *other* command is if I want to mutate the first
     .example
     🐒> ls . -file | select -First 4 | %{
     $_ | Lookup 'Length' -NewKeyName 'Size'
@@ -64,7 +67,7 @@ Function Merge-HashtableList {
     )
     begin {
         $tables = [list[hashtable]]::new()
-        write-warning 'old codo, needs at leat a look'
+        Write-Warning 'old codo, needs at leat a look'
     }
     # don't mutate $BaseHash
     process {
