@@ -4,17 +4,41 @@ using namespace System.Collections.Generic
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
-        'Get-SequentialRandomLines'
+        '_randPath'
     )
     $publicToExport.alias += @(
         '_randGC' # 'Get-SequentialRandomLines '
         'Rand->GCChunks' # 'Get-SequentialRandomLines '
+        'Rand->Path' # '_randPath'
     )
     # $publicToExport.variable += @(
 
     # )
 }
 
+
+function _randPath {
+    <#
+    .synopsis
+        Sugar for random folders
+    .example
+        PS> _randPath | Goto
+    #>
+    [Alias('Rand->Path')]
+    [OutputType('System.IO.DirectoryInfo')]
+    param(
+        [string]$PathRoot = '~',
+        [int]$Depth = 2,
+        [int]$Count = 1
+    )
+    $getChildItemSplat = @{
+        Depth     = $Depth
+        Directory = $true
+        Path      = $PathRoot
+    }
+
+    Get-ChildItem @getChildItemSplat | Get-Random -Count $Count
+}
 
 function Get-SequentialRandomLines {
     <#

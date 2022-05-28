@@ -1,8 +1,12 @@
 ﻿using namespace System.Management.Automation
+
 function Set-NinLocation {
     <#
     .Synopsis
         A nicer 'cd' command that doesn't error when the target is a filename
+    .description
+        calls
+            Push-Location -Path $DestItem -StackName 'NinLocation'
     .example
         🐒> Goto /c/foo/bar
         /c/foo/bar
@@ -52,6 +56,12 @@ function Set-NinLocation {
         [Alias('AlwaysGci')]
         [Parameter()][switch]$AlwaysLsAfter
     )
+    begin {
+        $StackName = @{
+            StackName = 'ninLocationStack'
+        }
+
+    }
     process {
 
         # prevent ansi color errors
@@ -59,6 +69,11 @@ function Set-NinLocation {
         Write-Debug "Path: '$Path'"
         if ( [String]::IsNullOrWhiteSpace($Path) ) {
             Write-Debug 'Path: Was null or empty'
+            return
+        }
+
+        if ($Path -in @('-', '+')) {
+            Push-Location $Path @StackName
             return
         }
 
@@ -108,12 +123,63 @@ function Set-NinLocation {
             $DestItem = $DestItem.Directory
         }
 
-        Write-Debug "Moving to: $DestItem"
-        Push-Location -Path $DestItem -StackName 'NinLocation'
+        if ($true) {
 
-        if ($AlwaysLsAfter) {
-            Ninmonkey.Console\Get-NinChildItem
+            Write-Debug "Moving to: $DestItem"
+
+            Push-Location -Path $DestItem @stackname -PassThru
+            | Label 'push -> ' | Write-Information
+
+
+            if ($AlwaysLsAfter) {
+                Ninmonkey.Console\Get-NinChildItem
+            }
+            return
         }
+        # if ($True) {
+        #     return
+        #     # Write-Debug 'go ->'
+        #     # Inspect-PathInfoStack
+        #     # Write-Debug "go-> '$DestItem'"
+
+        #     # Set-Location -StackName $null -PassThru | Label 'new stack' | Write-Information
+
+        #     # Push-Location -Path $DestItem -StackName $null -PassThru | Label 'new push' | Write-Information
+        #     # Get-Location -Stack | Label 'get-stack' | Write-Information
+
+
+
+
+        #     # This snippet, from in a module,  *will* set user's default stack to the new path
+        #     # the problem is that truncates it, so you only want to, if, you're not currently the current stack
+        #     # H1 'starting...'
+
+        #     # 0..4 | ForEach-Object {
+        #     #     Push-Location -Path (_randPath) -PassThru | Label 'push ->'
+        #     # }
+
+        #     # Inspect-PathInfoStack
+        #     # Push-Location -Path (Get-Item . ) -StackName $null -PassThru
+        #     # Push-Location -Path (Get-Item '~') -StackName $null -PassThru
+        #     # Get-Location -Stack
+
+        #     return
+        # }
+
+        # if ($false) {
+
+        #     H1 'stack?'
+        #     Get-Location -Stack
+        #     Hr
+        #     Get-Item . | Label -fg orange 'loc='
+        #     H1 'set-loc'
+        #     # this worked
+        #     Set-Location -StackName $null -PassThru | Label 'stack "nin"'
+        #     Get-Item . | Label -fg orange 'loc='
+        #     H1 'push-loc'
+        #     Push-Location -Path (Get-Item .) -PassThru -StackName $null | Label 'stack2'
+        #     Get-Item . | Label -fg orange 'loc='
+        # }
 
     }
 }

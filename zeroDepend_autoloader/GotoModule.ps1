@@ -30,8 +30,9 @@ function Goto-Module {
         [string]$ModuleName,
 
         # Force import
-        [switch]$Force
+        [switch]$WithoutForce
     )
+    $Force = -not $WithoutForce
     if ($Force) {
         Import-Module -Scope Global -Name $ModuleName -Force | Out-Null
     }
