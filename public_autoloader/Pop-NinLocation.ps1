@@ -34,7 +34,7 @@ function  Pop-NinLocation {
 
 
     try {
-        Pop-Location @StackName -PassThru:$PassThru
+        Pop-Location @StackName -PassThru:$PassThru -ea stop
         | Label 'pop <- ' | Write-Information
     } catch {
         if ( -not $_.Exception.Message -match 'Cannot find location stack' ) {
