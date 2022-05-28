@@ -61,6 +61,7 @@ function _textIgnoreAfterMatch {
         [Parameter()][switch]$IncludeMatch
     )
     begin {
+        Write-Warning 'nyi, rewrite' ; throw 'nyi'
         $state_hasMatched = $false
         [list[object]]$items = [list[object]]::New()
         if (!  $Regex) {
@@ -134,18 +135,22 @@ function _textIgnoreUntilMatch {
         [Parameter()][switch]$IncludeMatch
     )
     begin {
+        Write-Warning 'nyi, rewrite' ; throw 'nyi'
         $state_hasMatched = $false
-        [list[object]]$items = [list[object]]::New()
+        [list[string]]$items = [list[string]]::New()
         if (!  $Regex) {
             $Pattern = [regex]::escape( $Pattern )
         }
+
 
     }
     process {
         if ($null -eq $InputText) {
             return
         }
-        $items.AddRange( $InputText ) #.ToString() )
+        foreach ($Line in $InputText) {
+            $items.Add($Line)
+        }
     }
 
     end {

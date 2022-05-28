@@ -56,6 +56,7 @@ function RemoveModule {
         [ArgumentCompletions('uGit', 'Posh-Git', 'Ninmonkey.Console', 'Dev.Nin', 'Ninmonkey.Profile')]
         [string[]]$Name
     )
+    Write-Debug "ImportModule: -> '$Name'"
     Remove-Module -Name $Name
 }
 function ImportModule {
@@ -78,7 +79,6 @@ function ImportModule {
         # $Config = $Config | Ninmonkey.Console\Join-Hashtable -OtherHash $Options
         $importModuleSplat = @{
             Scope = 'global'
-            Name  = $Name
         }
 
         if ($Force) {
@@ -87,9 +87,9 @@ function ImportModule {
 
     }
     process {
-        foreach ($Item in $ModuleName) {
-
-            Import-Module @importModuleSplat
+        foreach ($Name in $ModuleName) {
+            Write-Debug "ImportModule: -> '$Name'"
+            Import-Module @importModuleSplat -Name $Name
         }
     }
 }

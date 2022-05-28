@@ -33,6 +33,8 @@ function Set-NinLocation {
 
     param(
         # change directory to target Directory or (even a Filename)
+        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
         [Parameter(
             ParameterSetName = 'GoToPath',
             Mandatory, Position = 0,
@@ -50,59 +52,68 @@ function Set-NinLocation {
         [Alias('AlwaysGci')]
         [Parameter()][switch]$AlwaysLsAfter
     )
+    process {
 
-    Write-Debug "Path: '$Path'"
-
-    if ($Back) {
-        try {
-            Pop-Location -StackName 'NinLocation' -ea Stop
-        } catch {
-            Write-Debug 'stack was empty'
+        # prevent ansi color errors
+        $Path = $Path | StripAnsi
+        Write-Debug "Path: '$Path'"
+        if ( [String]::IsNullOrWhiteSpace($Path) ) {
+            Write-Debug 'Path: Was null or empty'
+            return
         }
-        return
-    }
 
-    try {
-        $DestItem = Get-Item $Path -ea stop
-    } catch {
-        Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ ."
-        $DestItem = Get-Item ($path | Split-Path )
-    }
-    $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
-    # todo; maybe test that item is container, before throwing for others
-    # see Test-IsDirectory
-    if ($DestItem.PSProvider.Name -ne 'filesystem') {
-        # I don't need to require FS,
-        $PSCmdlet.WriteError(
-            [ErrorRecord]::new(
-                [NotSupportedException]::new('Non-filesystem providers are not supported'),
-                'InvalidProviderType',
-                [ErrorCategory]::NotImplemented, $DestItem
+        if ($Back) {
+            try {
+                Pop-Location -StackName 'NinLocation' -ea Stop
+            } catch {
+                Write-Debug 'stack was empty'
+            }
+            return
+        }
+
+        try {
+            $DestItem = Get-Item $Path -ea stop
+        } catch {
+            Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ ."
+            $DestItem = Get-Item ($path | Split-Path )
+        }
+        $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
+        # todo; maybe test that item is container, before throwing for others
+        # see Test-IsDirectory
+        if ($DestItem.PSProvider.Name -ne 'filesystem') {
+            # I don't need to require FS,
+            $PSCmdlet.WriteError(
+                [ErrorRecord]::new(
+                    [NotSupportedException]::new('Non-filesystem providers are not supported'),
+                    'InvalidProviderType',
+                    [ErrorCategory]::NotImplemented, $DestItem
+                )
             )
-        )
-        return
-        # todo: future: pass command to Push-Location for providers like registry
-    }
+            return
+            # todo: future: pass command to Push-Location for providers like registry
+        }
 
-    if (! (Test-Path -Path $Path)) {
-        'Invalid path: {0}' -f $Path | Write-Error -Category 'InvalidArgument'
-        return
-    }
-
+        if (! (Test-Path -Path $Path)) {
+            'Invalid path: {0}' -f $Path | Write-Error -Category 'InvalidArgument'
+            return
+        }
 
 
-    # $cust = 'Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -replace (), 'HKCU:\'
-    # Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Keyboard Layout\
 
-    if (!(Test-IsDirectory $DestItem.FullName)) {
-        Write-Debug "Input was a file: $DestItem"
-        $DestItem = $DestItem.Directory
-    }
+        # $cust = 'Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders' -replace (), 'HKCU:\'
+        # Microsoft.PowerShell.Core\Registry::HKEY_CURRENT_USER\Keyboard Layout\
 
-    Write-Debug "Moving to: $DestItem"
-    Push-Location -Path $DestItem -StackName 'NinLocation'
+        if (!(Test-IsDirectory $DestItem.FullName)) {
+            Write-Debug "Input was a file: $DestItem"
+            $DestItem = $DestItem.Directory
+        }
 
-    if ($AlwaysLsAfter) {
-        Ninmonkey.Console\Get-NinChildItem
+        Write-Debug "Moving to: $DestItem"
+        Push-Location -Path $DestItem -StackName 'NinLocation'
+
+        if ($AlwaysLsAfter) {
+            Ninmonkey.Console\Get-NinChildItem
+        }
+
     }
 }

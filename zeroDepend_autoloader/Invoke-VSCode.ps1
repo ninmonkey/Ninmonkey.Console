@@ -19,7 +19,6 @@ function Goto-EditInVSCode {
         future:
         - [ ] open directories
         - [ ] flag 'reuse' or 'newwindow'
-        - [ ]
     .example
         PS> gi foo.ps1 | GoCode
     .example
@@ -30,25 +29,38 @@ function Goto-EditInVSCode {
         Ninmonkey.Console\Goto-Module
     #>
     [Alias('GoCode')]
+    [OutputType('System.Void')]
     [CmdletBinding()]
     param(
+        # file to open as text, or FileInfo
         [ValidateNotNull()]
-        [Parameter(ValueFromPipeline, Position = 0, Mandatory)]
-        $Path
-    )
-    if ($null -eq $Path) {
-        throw "Path Cannot be `$Null"
-    }
-    if ( [string]::IsNullOrWhiteSpace( $Path )  ) {
-        throw 'Path Is Blank'
-    }
-    if ( Test-Path $Path ) {
-        $binCode = Get-Command 'code.cmd' -CommandType Application | Select-Object -First 1
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        $Path,
 
-        & $binCode @(
-            '--goto'
-            Get-Item -ea stop $Path | Join-String -DoubleQuote
-        )
+        # open file on a specific line number
+        [Parameter(Position = 1)]
+        [int]$LineNumber
+    )
+    begin {}
+    process {
+
+        if ($null -eq $Path) {
+            throw 'Path Cannot be $Null'
+        }
+        if ( [string]::IsNullOrWhiteSpace( $Path )  ) {
+            throw 'Path Is Blank'
+        }
+        if ( Test-Path $Path ) {
+            $binCode = Get-Command 'code.cmd' -CommandType Application | Select-Object -First 1
+
+
+
+            & $binCode @(
+                '--goto'
+                Get-Item -ea stop $Path | Join-String -DoubleQuote
+            )
+        }
     }
+    end {}
 }
 

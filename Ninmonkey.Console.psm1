@@ -395,6 +395,7 @@ function Enable-NinCoreAlias {
 
     $aliases = @(
         # group: builtins
+        Set-Alias @splat -Name 'io' -Value 'ninmonkey.console\Inspect-ObjectProperty'
         Set-Alias @splat -Name 'ls' -Value 'Microsoft.PowerShell.Management\Get-ChildItem'
         Set-Alias @splat -Name 'impo' -Value 'Microsoft.PowerShell.Core\Import-Module'
         Set-Alias @splat -Name 'jStr' -Value 'Microsoft.PowerShell.Utility\Join-String'
@@ -467,7 +468,7 @@ foreach ($typeName in $formatData) {
 }
 
 if ($true) {
-    $eaIgnore = @{ ErrorAction = 'Ignore'}
+    $eaIgnore = @{ ErrorAction = 'Ignore' }
     # toggle auto importing of aliases', otherwise only use new-alias
     New-Alias @eaIgnore 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     New-Alias @eaIgnore 'IPython' -Value 'Invoke-IPython' -Description 'ipython.exe defaults using my profile'

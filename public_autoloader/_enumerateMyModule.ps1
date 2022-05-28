@@ -75,10 +75,18 @@ function _enumerateMyModule {
     }
 
     $ModuleGroups = @{
-        'FavModules' = @(
+        'FavModules'     = @(
             'ClassExplorer', 'EditorServicesCommandSuite',
             'Pansies', 'PowerShellEditorServices.Commands',
             'PowerShellEditorServices.VSCode', 'PSReadLine'
+        )
+        'MyModules'      = @(
+            Get-ChildItem "$Env:UserProfile\SkyDrive\Documents\2021\Powershell\My_Github" *.psd1 -Recurse | ForEach-Object basename
+            Get-ChildItem "$Env:UserProfile\SkyDrive\Documents\2021\Powershell\My_Github" *.psm1 -Recurse | ForEach-Object basename
+        ) | Sort-Object -Unique
+
+        'Others_BigList' = @(
+            'ADEssentials', 'AngleParse', 'Benchpress', 'BitLocker', 'BitsTransfer', 'BranchCache', 'BuildHelpers', 'BurntToast', 'CimCmdlets', 'CompletionPredictor', 'Configuration', 'Connectimo', 'DataMashup', 'dbatools', 'Dism', 'EditorServicesCommandSuite', 'EZOut', 'Fasdr', 'functional', 'Hyper-V', 'ImpliedReflection', 'ImportExcel', 'Indented.ChocoPackage', 'Indented.Net.IP', 'Indented.ScriptAnalyzerRules', 'Indented.StubCommand', 'IntelNetCmdlets', 'InvokeBuild', 'Irregular', 'Metadata', 'Microsoft.PowerShell.Archive', 'Microsoft.PowerShell.Diagnostics', 'Microsoft.PowerShell.Host', 'Microsoft.PowerShell.LocalAccounts', 'Microsoft.PowerShell.Management', 'Microsoft.PowerShell.Security', 'Microsoft.PowerShell.TextUtility', 'Microsoft.PowerShell.Utility', 'Microsoft.WSMan.Management', 'ModuleBuild', 'ModuleBuilder', 'MSOnline', 'NameIT', 'NetTCPIP', 'Pansies', 'Pester', 'Piecemeal', 'Plaster', 'platyPS', 'posh-git', 'PoshInteractive', 'PoshNmap', 'powershell-yaml', 'PowerShellBuild', 'PowerShellGet', 'PowerShellHumanizer', 'PowerShellPivot', 'Profiler', 'PSCache', 'PSConfig', 'PSEventViewer', 'PSFunctionInfo', 'PSFzf', 'PSKoans', 'PSLambda', 'PSParseHTML', 'PSProfiler', 'PSReadLine', 'PSScriptAnalyzer', 'PSScriptTools', 'PSTree', 'PSWriteColor', 'PSWriteExcel', 'PSWriteHTML', 'PSWriteWord', 'ScriptBlockDisassembler', 'Splatter', 'SQLPS', 'Stucco', 'Terminal-Icons', 'ThreadJob', 'ugit', 'ZLocation'
         )
     }
 
