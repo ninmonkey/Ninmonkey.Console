@@ -3,9 +3,12 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Inspect-ObjectProperty'
+        'iot'
     )
     $publicToExport.alias += @(
-        # 'Inspect-ObjectProperty'
+        'InspectObject'  # 'Inspect-ObjectProperty'
+        # 'getProps'  # 'Inspect-ObjectProperty'
+        'Inspect->ObjectProp'  # 'Inspect-ObjectProperty'
 
     )
 }
@@ -14,8 +17,24 @@ if ( $publicToExport ) {
 # Import-Module ClassExplorer
 # Import-Module ninmonkey.console -Force
 
-function InspectObject {
-    [Alias('getProps')]
+function iot {
+    <#
+    sugar with best defaults for Inspect-ObjectProperty #>
+    $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm | Format-Table -AutoSize Name, Reported, Type, Value
+}
+
+
+function Inspect-ObjectProperty {
+    <#
+    .EXAMPLE
+        $MyInvocation | io -SkipBlank | ? IsPrimitive -not  | ft
+        $MyInvocation | io -SkipBlank -SkipPrimitive | ft
+    #>
+    [Alias(
+        'InspectObject',
+        # 'getProps',
+        'Inspect->ObjectProp'
+    )]
     param(
         # Any object
         [ValidateNotNull()]
@@ -23,6 +42,9 @@ function InspectObject {
         [object]$InputObject,
 
         # [switch]$SkipBasic, # Primitive,
+        [Alias('sm')]
+        [switch]$SkipMost, # Primitive,
+        [switch]$SkipPrimitive, # Primitive,
 
         [switch]$SkipNull,
 
@@ -41,6 +63,11 @@ function InspectObject {
             'Blank'      = '<Blank>'
             'Reset'      = $PSStyle.Reset
             'FgDim'      = $PSStyle.Foreground.FromRgb('#777777')
+        }
+        if ($SkipMost) {
+            $SkipPrimitive = $True
+            $SkipNull = $true
+            $SkipBlank = $true
         }
     }
     process {
@@ -94,6 +121,9 @@ function InspectObject {
                 return $false
             }
             if ($SkipBlank -and $_.IsBlank) {
+                return $false
+            }
+            if ($SkipPrimitive -and $_.IsPrimitive) {
                 return $false
             }
             return $true
