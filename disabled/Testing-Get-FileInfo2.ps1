@@ -1,5 +1,9 @@
 Import-Module ninmonkey.console -Force 3>$null
 
+function Csv2 {
+    $Input | Microsoft.PowerShell.Utility\Join-String -sep ', '
+}
+
 if (-not (Get-Command 'h1' -ea Ignore)) {
     function h9 {
         param( [string]$Text )
@@ -16,6 +20,8 @@ function _testIt {
         [string]$Label
     )
 
+    $nullStr = "`u{2400}"
+
     if ($Null -eq $Obj) {
         throw 'Obj was null, requires value.'
     }
@@ -31,11 +37,11 @@ function _testIt {
     $dbg = [ordered]@{
         'Label'           = $Label
         'Exists?'         = Test-Path $Obj
-        'Name'            = $Obj.Name ?? '<null>'
-        'FullName'        = $Obj.FullName ?? '<null>'
+        'Name'            = $Obj.Name ?? $nullStr
+        'FullName'        = $Obj.FullName ?? $nullStr
         'Types?'          = $Obj.PStypeNames | Csv2
-        'Length'          = $Obj.Length ?? '<null>'
-        'Content'         = $MaybeContent ?? '<null>'
+        'Length'          = $Obj.Length ?? $nullStr
+        'Content'         = $MaybeContent ?? $nullStr
         'ContentWasError' = $ContentWasErr
     }
     return [pscustomobject]$dbg
