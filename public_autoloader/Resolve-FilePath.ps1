@@ -1,35 +1,33 @@
+#Requires -Version 7
 using namespace System.Collections.Generic
 
-#Requires -Version 7
-
 if ( $publicToExport ) {
-    $publicToExport.variable += @(
-        'ninLastPath' # from: 'Ninmonkey.Console\Resolve-FilePath'
-    )
     $publicToExport.function += @(
-        'Resolve-FilePath'
+        'Resolve-FileInfo'
     )
     $publicToExport.alias += @(
-        # 'sdf' # 'Resolve-FilePath'
         'GetItem?', # 'Resolve-FilePath'
-        'resolvePath', # 'Resolve-FilePath'
+        'Resolve-ItemInfo', # 'Resolve-FIlePath'
         'Resolve->FilePath' # 'Resolve-FilePath'
+        # 'resolvePath', # 'Resolve-FilePath'
     )
 }
 
-
-# do me -> nin.console
-function Resolve-FilePath {
+function Resolve-FileInfo {
     <#
     .synopsis
-        Resolve to paths, always returns at least a string,  skip types that normally return null
-
+        Resolve to paths, non-existing paths still return an object (either IO.FileInfo) always returns at least a string,  skip types that normally return null
     .example
+        # Resolve-FilePath '.output' -BasePath $AppRoot
         Resolve-FilePath '.output'
 
-        [io.fileinfo](gi Fg:\Green)
+                [io.fileinfo](gi Fg:\Green)
+    .DESCRIPTION
+        If Item doesn't exist, (or is a different provider) it attempts, in order:
+            - Get-Item
+            - [IO.FileSystemInfo] - works when files do not exist
+            - [String] - fallback to initial input, never returns $null
 
-        # Resolve-FilePath '.output' -BasePath $AppRoot
     .link
         https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths
     .link
@@ -41,10 +39,11 @@ function Resolve-FilePath {
     #>
     [Alias(
         'GetItem?',
-        # 'Resolve-Item', # too broad? ?
+        'Resolve-ItemInfo',
         'resolvePath',
-        # 'Resolve->Path',
-        'Resolve->FilePath'
+        'Resolve->FilePath',
+        'Resolve->Path'
+        # 'Resolve-Item', # too broad? ?
         # 'to->FilePath' #  ?
     )]
     [OutputType(
@@ -55,37 +54,42 @@ function Resolve-FilePath {
         [Alias('PSPath', 'Path', 'Fullname')]
         [Parameter(
             Mandatory,
-            # Position = 0,
             ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string]$Name
+        [object]$InputObject,
 
-        # [parameter()]
-        # [string]$BasePath,
+        [Alias('ErrorIgnore', 'Silent')]
+        [switch]$EaIgnore
 
         # kwargs
-        # [Parameter()]
-        # [hashtable]$Options
+        # [Parameter()][hashtable]$Options
     )
     begin {
-        # [hashtable]$Config = @{
-        #     BasePath = $BasePath ?? $App.Root ?? (Get-Item . -ea ignore) ?? '.'
-        # }
-        # $Config = Join-Hashtable $Config ($Options ?? @{})
+        # $Config = Ninmonkey.Console\Join-Hashtable $Config ($Options ?? @{})
     }
     process {
-        [string]$OriginalName = $Name
-        try {
-            $item = Get-Item -ea stop $Name -ErrorVariable 'grab'
-            return $item
-        } catch {
-            Write-Debug "Path did not exist, coercing to type: '$Name'"
+        $err = $Null
+        $splatIgnore = @{}
+        if ($EaIgnore) {
+            $ErrorActionPreference = 'Ignore'
         }
 
+        if ($EaIgnore) {
+            $splatIgnore = @{ 'ErrorAction' = 'Ignore' }
+        }
+
+        [string]$OriginalName = $InputObject
+
+        $Item = Get-Item $InputObject -ErrorVariable 'err' @splatIgnore
+        if ( -not $Err ) {
+            return $item
+        }
+
+        Write-Verbose "Item Path '$InputObject' does not exist, now coercing to [IO.FileInfo] from '$InputObject'"
         try {
-            $item = [IO.FileInfo]$Name
+            $item = [IO.FileInfo]$InputObject
             return $item
         } catch {
-            Write-Debug "Path failed to coerce as [IO.FileInfo], coercing to next type: '$Name'"
+            Write-Verbose "Item Path '$InputObject' failed to coerce as [IO.FIleInfo], returning original string: '$OriginalName'"
         }
 
         return $OriginalName
