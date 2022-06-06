@@ -96,7 +96,7 @@ function Edit-FunctionSource {
             $cmd.ScriptBlock.Ast.Extent.File
             | Join-String -op 'loading:... <' -os '>' { $_ }
             | Write-Information
-            Start-Process -path $binCode -args $codeArgs -WindowStyle Hidden
+            Start-Process -path $binCode -WindowStyle 'Hidden' -args $codeArgs
         }
     }
 }

@@ -12,6 +12,15 @@ if ( $publicToExport ) {
     )
 }
 
+class IsExperimental : Attribute {
+    # Cleaner way to have 'NYI' / 'WIP' commands
+    [string]$Reason
+
+    IsExperimental([string]$Reason) {
+        $this.Reason = $Reason
+    }
+}
+
 function Test-PathsAreEqual {
     <#
     .synopsis
@@ -60,7 +69,7 @@ function Ensure-CurWorkingDirectory {
         $is_cwd = Test-PathsAreEqual -Path1 (Get-Location) -Path2 $ExpectedPath
         "Test: Cwd -Is '$ExpectedPath' ? $is_cwd" | Write-Debug
         if ($Is_cwd) {
-            return 
+            return
         }
         if (! $Is_cwd) {
             Push-Location -Path $ExpectedPath
