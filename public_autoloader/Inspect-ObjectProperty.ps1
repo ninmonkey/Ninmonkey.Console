@@ -3,7 +3,7 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Inspect-ObjectProperty'
-        'iot'
+        'iot', 'iot2'
     )
     $publicToExport.alias += @(
         'InspectObject'  # 'Inspect-ObjectProperty'
@@ -19,13 +19,49 @@ if ( $publicToExport ) {
 
 function iot {
     <#
+    sugar with best defaults for Inspect-ObjectProperty
+
+        I *want* Value as first column, just truncated for width
+    #>
+    param(
+        [switch]$ViewB
+    )
+    $PropList = 'Reported', 'Type', 'Name', 'Value'
+    $PropListB = 'Type', 'Name', 'Reported', 'Value'
+    $inspectObjectPropertySplat = @{
+        # SkipBlank = $true
+        # SkipMost = $true
+        # SkipNull = $true
+        # SkipPrimitive = $true
+        # SortBy = 'Value'
+    }
+
+    $formatTableSplat = @{
+        AutoSize = $true
+        Property = $PropList
+    }
+    if ($ViewB) {
+        $formatTableSplat.Property = $PropListB
+    }
+
+    $Input
+    | Ninmonkey.Console\Inspect-ObjectProperty @inspectObjectPropertySplat
+    | Format-Table @formatTableSplat
+}
+function iot2 {
+    <#
     sugar with best defaults for Inspect-ObjectProperty #>
+
     $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm | Format-Table -AutoSize Name, Reported, Type, Value
 }
 
 
 function Inspect-ObjectProperty {
     <#
+    .SYNOPSIS
+        quick obj property summarizes
+    .NOTES
+        todo: make FormatData that sets max width on 'Value'
     .EXAMPLE
         $MyInvocation | io -SkipBlank | ? IsPrimitive -not  | ft
         $MyInvocation | io -SkipBlank -SkipPrimitive | ft
@@ -37,7 +73,8 @@ function Inspect-ObjectProperty {
     )]
     param(
         # Any object
-        [ValidateNotNull()]
+        # [ValidateNotNull()]
+        [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [object]$InputObject,
 
@@ -51,8 +88,8 @@ function Inspect-ObjectProperty {
         # empty, null or whitespace
         [switch]$SkipBlank,
 
-        [ValidateSet('Default', 'Length', 'Type', 'Value', 'Name')]
-        $SortBy = 'Default'
+        [ValidateSet('Type', 'Value', 'Name', 'Length')]
+        $SortBy = 'Type'
 
         # s
     )
@@ -71,6 +108,9 @@ function Inspect-ObjectProperty {
         }
     }
     process {
+        if ($Null -eq $InputObject) {
+            return
+        }
         $summary = $InputObject.psobject.properties | ForEach-Object {
             $IsNull = $null -eq $_.Value
             $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
@@ -91,6 +131,16 @@ function Inspect-ObjectProperty {
                 IsEmptyStr = $IsEmptyStr
                 # IsEmptyList = $something -and $_.count -eq 0
             }
+
+            $meta += @{ # shouldn't exist , should be class field properties
+                ShortValue = ($_.Value)?.ToString()
+
+
+            }
+
+
+
+
             if ('Extra' -or $true) {
                 $meta['IsPrimitive'] = $IsNull ? $false : ( $_.Value.GetType().IsPrimitive ?? $false )
             }
@@ -132,7 +182,7 @@ function Inspect-ObjectProperty {
         $ordered = $filtered | ForEach-Object {
             $_
         }
-        $ordered | Sort-Object
+        $ordered | Sort-Object -Property $SortBy
     }
 }
 
