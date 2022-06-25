@@ -32,8 +32,11 @@ function ConvertTo-EnvVarPath {
         [Parameter(ValueFromPipeline)]
         [string]$Path,
 
-        # Read path from the clipboard, then save the transformed valueconvert, set clipboard
+        # Include non-standard env vars
+        [Alias('UseSpecial')]
+        [switch]$IncludeSpecialVars,
 
+        # Read path from the clipboard, then save the transformed valueconvert, set clipboard
         [Alias('Clip')]
         [switch]$AutoClip
     )
@@ -45,9 +48,12 @@ function ConvertTo-EnvVarPath {
         Write-Error -ea stop -Category InvalidArgument -Message 'Path was blank' -ErrorId 'toEnvVar.paramIsBlank'
     }
     $accum = $accum -replace ([Regex]::escape("$Env:AppData")), '$Env:AppData'
+
+    $accum = $accum -replace ([Regex]::escape("$Env:AppData")), '$Env:AppData'
     $accum = $accum -replace ([Regex]::escape("$Env:LocalAppData")), '$Env:LocalAppData'
     $accum = $accum -replace ([Regex]::escape("$Env:UserProfile")), '$Env:UserProfile'
     $accum = $accum -replace ([Regex]::escape("$Env:AllUsersProfile")), '$Env:AllUsersProfile'
+    $accum = $accum -replace '\\', '/'
 
     if ($AutoClip) {
         $accum | Set-Clipboard

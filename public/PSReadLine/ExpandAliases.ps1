@@ -40,6 +40,6 @@ Set-PSReadLineKeyHandler @splatKeys -ScriptBlock {
         }
     }
     if ($ENV:NinEnableToastDebug) {
-        New-BurntToastNotification -Text ($Tokens | str csv ' ' )
+        New-BurntToastNotification -Text ($Tokens | Join-String -sep ' ' -SingleQuote )
     }
 }

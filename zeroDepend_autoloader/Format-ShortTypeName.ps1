@@ -83,11 +83,15 @@ function Format-ShortSciTypeName {
     [Alias('shortType')]
     param(
         # any object or typeinfo instance
+        [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [object]$InputObject,
         [switch]$NoColor
     )
     process {
+        if ($null -eq $InputObject) {
+            return # $null?
+        }
         if ($InputObject -is 'type') {
             $Target = $InputObject
         } else {

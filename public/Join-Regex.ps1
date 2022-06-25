@@ -43,18 +43,19 @@ function Join-Regex {
     param(
         # list of regex patterns that are combined as a Logical OR
         [Alias('Pattern')]
-        [Parameter()][string[]]$Regex,
+        [Parameter()]
+        [string[]]$Regex,
 
         # list of literal text values that are combined as a Logical OR
         [alias('LiteralText', 'Lit')]
         [Parameter()][string[]]$Text
-
     )
 
     begin {
         # if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
         if ( $null -eq $Text -and $null -eq $Regex) {
-            throw 'Requires at least one of -TextLiteral or -Regex parameter'
+            Write-Error 'Requires at least one of -TextLiteral or -Regex parameter'
+            return
         }
     }
     process {
