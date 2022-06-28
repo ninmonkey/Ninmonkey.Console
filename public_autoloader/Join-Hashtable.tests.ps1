@@ -3,6 +3,28 @@ BeforeAll {
 }
 
 Describe 'Join-Hashtable' {
+    Context 'Parameters are optional' {
+
+        It 'No Argument' {
+            { Join-Hashtable -BaseHash @{ a = 3 } -ea stop }
+            | Should -Not -Throw
+
+        }
+        It 'Empty Hash' {
+            {
+                $other = @{}
+                Join-Hashtable -BaseHash @{ a = 3 } -OtherHash $other -ea stop
+            }
+            | Should -Not -Throw
+        }
+        It '$Null hash' {
+            {
+                $other = $Null
+                Join-Hashtable -BaseHash @{ a = 3 } -OtherHash $other -ea stop
+            }
+            | Should -Not -Throw
+        }
+    }
     It 'try mutation' -Pending {
         @(
             $defaults = @{Name = 'NoUser' }
