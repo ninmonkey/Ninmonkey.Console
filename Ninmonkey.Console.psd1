@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.10'
+    ModuleVersion     = '0.2.16'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -126,6 +126,6 @@
     # HelpInfoURI = ''
 
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
-    # DefaultCommandPrefix = 'Nin'
+
 
 }

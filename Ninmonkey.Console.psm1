@@ -6,7 +6,7 @@
     todo: better config system, than copying my profile
 #>
 
-
+$__origPrompt = $function:prompt
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true

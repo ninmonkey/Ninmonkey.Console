@@ -28,7 +28,8 @@ Function Join-Hashtable {
         [hashtable]$BaseHash,
 
         # New values to append and/or overwrite
-        [Parameter(Mandatory, Position = 1)]
+        [AllowNull()]
+        [Parameter(Position = 1)]
         [hashtable]$OtherHash,
 
         # normal is to not modify left, return a new hashtable
@@ -37,6 +38,7 @@ Function Join-Hashtable {
 
     # don't mutate $BaseHash
     process {
+        $OtherHash ??= @{}
         if (! $MutateLeft ) {
             $TargetHash = [hashtable]::new( $BaseHash )
         } else {
