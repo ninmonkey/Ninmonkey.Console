@@ -118,12 +118,16 @@ function Inspect-ObjectProperty {
             # $IsStrEmpty = $null -ne $_.Value -and $_.Value -is 'string' -and $_.Value.Length -eq 0 # overkill?
             # $_ | Format-List
 
+            $reportedTypeName = $_.TypeNameOfValue -as 'type' | shortType
+            $typeName = if (! $IsNull) {
+                $_.Value | shortType
+            }
+            $HasSameTypes = $reportedTypeName -eq $typeName
+
             $meta = @{
                 PSTypeName = 'nin.SummarizedObject.Property'
-                Reported   = $_.TypeNameOfValue -as 'type' | shortType # Format-ShortSciTypeName
-                Type       = if (! $IsNull) {
-                    $_.Value | shortType
-                }
+                Reported   = $reportedTypeName
+                Type       = $typeName
                 Name       = $_.Name
                 Value      = $_.Value
                 IsBlank    = $IsBlank
@@ -132,8 +136,43 @@ function Inspect-ObjectProperty {
                 # IsEmptyList = $something -and $_.count -eq 0
             }
 
-            $meta += @{ # shouldn't exist , should be class field properties
-                ShortValue = ($_.Value)?.ToString()
+            if ($HasSameTypes) {
+                $MergedTypes = $reportedTypeName  # $typeName
+            } else {
+                $MergedTypes = @(
+                    "${fg:gray60}"
+                    $reportedTypeName
+                    # or newline, or both
+                    # "`n"
+                    ' 🠚 '
+                    "${fg:gray90}"
+                    if ($null -eq $_.Value) {
+                        "`u{2400}"
+                    } else {
+                        $typeName
+                    }
+                ) -join ''
+            }
+
+            # $ReportedType = if
+            $meta += @{
+                #
+                # temp hack ; shouldn't be a property, should be class field properties or formatData
+                HasSameTypeNames  = $HasSameTypes
+                ReportedType      = $ReportedType
+                MergedTypes       = $MergedTypes
+
+                ShortMergedTypes  = $ReportedType -split '' # add newlines instead of only truncating
+                | Select-Object -First 40 | Join-String -sep ''
+
+                ShortReportedType = $ReportedType -split ''
+                | Select-Object -First 40 | Join-String -sep ''
+
+                ShortValue        = ($_.Value)?.ToString() -split ''
+                | Select-Object -First 40 | Join-String -sep ''
+
+                ShortType         = $meta['Type'] -split ''
+                | Select-Object -First 40 | Join-String -sep ''
 
 
             }
