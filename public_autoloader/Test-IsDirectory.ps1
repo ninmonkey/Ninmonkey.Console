@@ -45,6 +45,9 @@ function Test-IsContainer {
         <#
          #>
         $InputObject | ForEach-Object {
+            if ($Null -eq $_) {
+                return $false 
+            }
             $TargetItem = $_
             $item = Get-Item $TargetItem -ea ignore
             if ( [string]::IsNullOrEmpty( $TargetItem )) {

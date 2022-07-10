@@ -1,6 +1,19 @@
-Import-Module Ninmonkey.Console -Force -ea break -infa continue
-# Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
-# Some tests are visual, or not Pester worthy
+Import-Module Ninmonkey.Console -Force -ea break -infa continue *>$null
+
+# Get-Location
+# $x = $null
+
+
+# Goto 'C:\nin_temp\colors'
+
+# Get-Location
+# $x = $null
+# # Get-Location
+# # 'pop'
+# Pop-Location
+# Get-Location
+# # Import-Module Ninmonkey.Console, dev.nin -Force #| Out-Null
+# # Some tests are visual, or not Pester worthy
 # This file is a scratchboard
 
 # editfunc editfunc -PassThru

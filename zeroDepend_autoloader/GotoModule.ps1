@@ -72,7 +72,8 @@ function ImportModule {
         [ArgumentCompletions('uGit', 'Posh-Git', 'Ninmonkey.Console', 'Dev.Nin', 'Ninmonkey.Profile')]
         [string[]]$ModuleName,
 
-        [switch]$Force,
+        # imports default to -Force, invert it
+        [switch]$NoForce,
 
         [hashtable]$Options = @{}
     )
@@ -82,9 +83,9 @@ function ImportModule {
             Scope = 'global'
         }
 
-        if ($Force) {
-            $importModuleSplat['Force'] = $Force
-        }
+        # if (-not $NoForce) {
+        $importModuleSplat['Force'] = ! $NoForce
+        # }
 
     }
     process {
