@@ -43,11 +43,13 @@ function Compare-LongestSharedPrefix {
     [CmdletBinding()]
     param(
         [AllowNull()]
+        [AllowEmptyString()]
         [Parameter(Mandatory)]
         [Alias('A')]
         [string]$Text1,
 
         [AllowNull()]
+        [AllowEmptyString()]
         [Parameter(Mandatory)]
         [Alias('B')]
         [string]$Text2,
@@ -108,8 +110,8 @@ function Compare-LongestSharedPrefix {
     # at this point we know StartsWith is true, its just how long
     if ($AsChar) {
         $sharedLen = foreach ($subStrLength in 1..($strShort.length)) {
-            $partialShort = $strShort.SubString(0, $charIndex)
-            $partialLong = $strLong.subString(0, $charIndex)
+            $partialShort = $strShort.SubString(0, $subStrLength)
+            $partialLong = $strLong.subString(0, $subStrLength)
             if ($partialShort -eq $partialLong) {
                 if (-not $PassThru) {
                     return $partialShort
