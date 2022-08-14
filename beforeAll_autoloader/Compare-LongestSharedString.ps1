@@ -35,7 +35,7 @@ function Compare-LongestSharedPrefix {
         https://docs.microsoft.com/en-us/dotnet/api/system.string.compare?view=net-6.0
 
     #>
-    [OutputType('System.String')]
+    [OutputType('System.String', 'System.Management.Automation.PSObject')]
     [Alias(
         'longestSharedStr',
         'str->Shared'
@@ -109,28 +109,21 @@ function Compare-LongestSharedPrefix {
     }
     # at this point we know StartsWith is true, its just how long
     if ($AsChar) {
-        $sharedLen = foreach ($subStrLength in 1..($strShort.length)) {
+        $sharedLen = 0
+        foreach ($subStrLength in 1..($strShort.length)) {
             $partialShort = $strShort.SubString(0, $subStrLength)
             $partialLong = $strLong.subString(0, $subStrLength)
             if ($partialShort -eq $partialLong) {
-                if (-not $PassThru) {
-                    return $partialShort
-                }
-                $dbg.sharedLen = $sharedLen
-                $dbg.Match = $partialShort
-                return [pscustomobject]$dbg
-
+                $sharedLen = $subStrLength
             }
         }
-
-        if ( -not $PassThru ) {
-            return $strShort.Substring(0, $sharedLen)
-        }
-
         $dbg.sharedLen = $sharedLen
         $dbg.Match = $strShort.Substring(0, $sharedLen)
-        return [pscustomobject]$dbg
 
+        if ( -not $PassThru ) {
+            return $dbg.Match
+        }
+        return [pscustomobject]$dbg
     }
 
     # throw 'wip'
