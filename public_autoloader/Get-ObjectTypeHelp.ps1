@@ -1,18 +1,22 @@
 #Requires -Version 7
 using namespace System.Management.Automation.PSMethod
 
+# get the newer version
+
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
-        'Get-ObjectTypeHelp'
+        'Get-ObjectTypeHelp.2'
     )
     $publicToExport.alias += @(
-        'HelpFromType'
+        'HelpFromType.2'
     )
 }
 
+
+
 # 'DevTool💻.Get-HelpFromType'
-function Get-ObjectTypeHelp {
+function Get-ObjectTypeHelp.2 {
     <#
     .synopsis
         Opens the docs for the current type, in your default browser
@@ -22,7 +26,7 @@ function Get-ObjectTypeHelp {
         you can always fallback to the url
             https://docs.microsoft.com/en-us/dotnet/api/
     .example
-          .
+          PS> [math]::Round | HelpFromType -PassThru -infa 'Continue'
     .outputs
           [string | None]
     .link
@@ -31,7 +35,7 @@ function Get-ObjectTypeHelp {
         Ninmonkey.Console\Get-ObjectTypeHelp
 
     #>
-    [Alias('HelpFromType')]
+    [Alias('HelpFromType.2')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -43,9 +47,6 @@ function Get-ObjectTypeHelp {
     )
 
     begin {
-
-        # list of full type nam;es1
-        $x
         $NameList = [list[string]]::new()
         $TemplateUrl = 'https://docs.microsoft.com/en-us/dotnet/api/{0}'
         @'
@@ -133,8 +134,3 @@ function Get-ObjectTypeHelp {
 
 
 
-
-if (! $publicToExport) {
-    # [math] | HelpFromType -PassThru
-    [math]::Round | HelpFromType -PassThru -infa Continue
-}
