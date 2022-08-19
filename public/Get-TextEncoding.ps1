@@ -1,5 +1,7 @@
 ﻿# Set-Alias 'Get=Encoding' -Value Get-TextEncoding -Description 'until the wrapper for both encodings is creating, link to this one'
 
+write-warning "Not imported <${PSCommandPath}>"
+
 function Get-TextEncoding {
     <#
     .synopsis
@@ -42,10 +44,14 @@ function Get-TextEncoding {
 
     > for information on defining a custom encoding, see the documentation for the "Encoding.RegisterProvider method"
     #>
+    [Alias('Resolve->TextEncoder')]
+    [OutputType('System.Text.Encoding')]
     [CmdletBinding(DefaultParameterSetName = 'ByName')]
     param (
         # [Parameter(Mandatory, Position=0, HelpMessage="doc")]
         # [TypeName]$ParameterName
+
+        # todo
 
         [Alias('Name')]
         [Parameter(
@@ -55,12 +61,12 @@ function Get-TextEncoding {
 
         # [Alias('Name')]
         [Parameter(
-            ParameterSetName = "ByNum",
+            ParameterSetName = 'ByNum',
             Mandatory, Position = 0)]
         [int]$Codepage,
 
         [Parameter(
-            ParameterSetName = "ListOnly",
+            ParameterSetName = 'ListOnly',
             Mandatory
         )][switch]$List,
 
@@ -79,8 +85,10 @@ function Get-TextEncoding {
         if ($List ) {
             return [Text.Encoding]::GetEncodings()
         }
+        if ($EncoderFallback -or $DecoderFallback) {
+            throw "NYI: using params: EncoderFallback, DecoderFallback in '$PSCommandPath'"
+        }
         if ($null -ne $DecoderFallback -or $null -ne $EncoderFallback) {
-            throw "NYI: Get-TextEncoding() using params: EncoderFallback, DecoderFallback"
         }
     }
     Process {
@@ -118,3 +126,4 @@ if ($false -and $run_test) {
     # . ".\${PSScriptRoot}\tests\test_Get-Encoding.ps1"
     . "${PSScriptRoot}\tests\test_Get-TextEncoding.ps1"
 }
+

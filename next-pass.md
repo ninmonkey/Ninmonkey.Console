@@ -1,0 +1,5 @@
+- [ ] `Invoke-GhRepoList` new dynamic completions
+- [ ] `Jsonify core` => FileInfo, Dates, ProcessListing, automatic nesting test
+  - [ ] increment depth cost, unless, type is already directly handled by `Jsonify`
+    - [ ] future: Jsonify using custom attributes for easier serialization
+- [ ] `Test-JsonifyPropertyIsOk`

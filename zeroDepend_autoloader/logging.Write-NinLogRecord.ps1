@@ -62,6 +62,7 @@ function Test-TypeIsJsonifyFlat {
     return $false
 }
 
+
 [hashtable]$script:__ninLog = @{
     LogName = 'min_logger-global'
     RootDir = 'H:\data\2022\log_list'
@@ -227,7 +228,7 @@ function Write-NinLogRecord {
         $LogFullName = (Join-Path $Config.LogRootDir $Config.LogName) + '.log'
         $LogFullName = _getCurrentNinLog
 
-        $Config = Ninmonkey.Console\Join-Hashtable $Config $Options
+        $Config = NinMOnkey.Console\Join-Hashtable $Config $Options
         if (! (Test-Path $LogFullName )) {
             Write-Verbose "'$LogFullName' did not exist, creating..." #todo:attribute -> creates and logs , replacing this
             New-Item -ItemType File -Path $LogFullName -Force
@@ -236,6 +237,7 @@ function Write-NinLogRecord {
         [list[object]]$items = [list[object]]::new()
     }
     process {
+        # first 2022-06-20
         if ($null -eq $InputObject) {
             return
         }

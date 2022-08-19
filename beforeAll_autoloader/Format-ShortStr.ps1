@@ -41,6 +41,10 @@ function Format-ShortString {
             ["z_y_x_w_v_u_t_s_r_q_"..."_e_d_c_b_a"]
             [z_y...b_a]
             ["z_y"..."b_a"]
+    .link
+        Ninmonkey.Console\Format-ShortStr
+    .link
+        Ninmonkey.Console\Format-WrapText
     #>
     [Alias(
         'shortStr',
@@ -105,6 +109,9 @@ function Format-ShortString {
         #     $joinOuterStr['Separator'] = ''
         #     $Config['Separator'] = ''
         # }
+        if ($Chars.Length -gt ($headCount + $TailCount)) {
+            return $chars
+        }
 
 
         @(

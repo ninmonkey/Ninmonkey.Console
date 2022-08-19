@@ -72,6 +72,7 @@ function Get-PropertyEnumerator {
         Property IsSynchronized                  False System.Boolean        True      False       True
     #>
     [Alias('iter->Prop')]
+    [OuptputType([System.Management.Automation.PSMemberInfoCollection[[System.Management.Automation.PSPropertyInfo, System.Management.Automation]]])]
     [cmdletbinding()]
     param(
         # What to enumerate

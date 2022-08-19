@@ -2,11 +2,24 @@
 $tmpExport = @{
     Functions = @(
         'Enable-NinPrompt'
+        'Invoke-NinPrompt'
     )
     Aliases   = @(
 
     )
 }
+
+. (Get-Item -ea 'continue' 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Ninmonkey.Console\prompt_block\prompt_blocks.ps1')
+
+$script:___promptInfo = @{
+    Current = '__prompt_noModuleLoaded'
+    # '__safePrompt_blah'
+    # '__prompt_noModuleLoaded'
+    # '__prompt_usingColorExperiment_v2'
+    # '__prompt_usingColorExperiment_v1'
+
+}
+
 function __safePrompt_blah {
     <#
     .synopsis
@@ -85,6 +98,16 @@ function __safePrompt_sorta {
         ' PS> '
     ) -join ''
 }
+
+function Invoke-NinPrompt {
+    [cmdletbinding()]
+    param()
+
+    $funcName = $script:___promptInfo.Current
+    $func = Get-Command -CommandType Function -Name $funcName
+
+    & $func
+}
 function Enable-NinPrompt {
     <#
     .synopsis
@@ -109,15 +132,23 @@ function Enable-NinPrompt {
     #>
     param(
         [ValidateSet(
-            '__safePrompt_blah',
+            '__prompt_noModuleLoaded',
+            '__prompt_usingColorExperiment_v2',
+            '__prompt_usingColorExperiment_v1',
             '__safePrompt_Sorta',
             'systemDefaultPrompt',
             'ColorBasic',
-            'OriginalPrompt'
+            'OriginalPrompt',
+            '__safePrompt_blah'
+
         )]
         [Parameter()]
         [string]$ConfigName = 'ColorBasic'
     )
+
+    '__prompt_noModuleLoaded'
+    '__prompt_usingColorExperiment_v1'
+
     $funcName = switch ($ConfigName) {
         '__safePrompt_blah' {
             '__safePrompt_blah'
@@ -135,16 +166,17 @@ function Enable-NinPrompt {
             '__systemDefaultPrompt'
         }
     }
+    $script:___promptInfo.Current = $funcName
     # $global:prompt = __safePrompt
     # Set-Item -Path 'function:\prompt' -Value __safePrompt
     # Set-Item -Path 'function:\prompt' -Value $ConfigName
     # $custom = Get-Item -Path function:\$ConfigName
     # Set-Item -Path 'function:\global:prompt' -Value $ConfigName
-    'param {0} -> func:\{1}' -f @($ConfigName, $funcName) | Write-Debug
-    Write-Warning "$PSCommandPath not safe"
+    # 'param {0} -> func:\{1}' -f @($ConfigName, $funcName) | Write-Debug
+    # Write-Warning "$PSCommandPath not safe"
     return
 
-    Copy-Item -Path "Function:\$FuncName" -Destination function:\prompt
+    # Copy-Item -Path "Function:\$FuncName" -Destination function:\prompt
     return
     # $custom = Get-Item -Path function:\$funcName
     # Set-Item -Path 'function:\global:prompt' -Value

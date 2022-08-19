@@ -9,6 +9,7 @@ function Select-NinProperty {
         Uncertain on aliases. the goal is to have one that defaults
         to calling Fzf, and one that does not. ( ie: default invert of -PassThru)
     .notes
+        - [ ] update, include $Options as kwargs
         future:
             - [ ] -NoSort, -NoDistinct: params
             - [ ] -UseCache param: so additional calls don't invoke Fzf

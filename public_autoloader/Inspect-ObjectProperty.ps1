@@ -19,9 +19,13 @@ if ( $publicToExport ) {
 
 function iot {
     <#
-    sugar with best defaults for Inspect-ObjectProperty
+    .SYNOPSIS
+        sugar with best defaults for Inspect-ObjectProperty
 
         I *want* Value as first column, just truncated for width
+        Using ShortStr inside a formatter
+    .LINK
+        Ninmonkey.Console\Inspect-ObjectProperty
     #>
     param(
         [switch]$ViewB
@@ -50,7 +54,14 @@ function iot {
 }
 function iot2 {
     <#
-    sugar with best defaults for Inspect-ObjectProperty #>
+    .SYNOPSIS
+        sugar with best defaults for Inspect-ObjectProperty
+    .NOTES
+        todo:
+            refactor into TypeData and FormatData, with optional views
+    .link
+        Ninmonkey.Console\Inspect-ObjectProperty
+    #>
 
     $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm | Format-Table -AutoSize Name, Reported, Type, Value
 }
@@ -137,7 +148,7 @@ function Inspect-ObjectProperty {
             }
 
             if ($HasSameTypes) {
-                $MergedTypes = $reportedTypeName  # $typeName
+                $MergedTypes = $reportedTypeName   # $typeName
             } else {
                 $MergedTypes = @(
                     "${fg:gray60}"

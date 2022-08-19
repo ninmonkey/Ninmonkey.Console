@@ -38,10 +38,16 @@ function batPreview {
         [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string[]]$InputObject,
 
-        [switch]$AlwaysRelative
+        [switch]$AlwaysRelative,
+        # kwargs style extra
+        [hashtable]$Options = @{}
     )
 
     begin {
+        $Config = ninmonkey.console\Join-Hashtable -OtherHash $Options -BaseHash @{
+
+        }
+
         $NameList = [list[string]]::new()
         if ( Get-Command -Name 'fzf' -CommandType Application -ea ignore) {
         } else {
@@ -49,23 +55,33 @@ function batPreview {
         }
     }
     process {
-        if ( Ninmonkey.Console\Test-IsContainer -InputObject $InputPath ) {
+        if ( ninmonkey.console\Test-IsContainer -InputObject $InputPath ) {
             return # bat shouldn't see directories
         }
         $nameList.AddRange( $InputObject )
     }
     end {
+
+        if ($false) {
+            & rg -C 5 --column --line-number --no-heading --color=always --smart-case 'bdg'
+            | fzf
+
+        }
+
         # future: is there a clean way to allow directories
         # but have bat not preview them ?
         if ($AlwaysRelative) {
             $NameList
             | StripAnsi | To->RelativePath
+            | Where-Object { $null -ne $_ } # Where-IsNotBlank
             | Where-Object { -not ( Test-IsDirectory -InputObject $_ ) }
             | fzf.exe -m --preview 'bat --style=snip,header,numbers --line-range=:200 "{}"'
             return
         }
         $NameList
+        | Where-Object { $null -ne $_ } # Where-IsNotBlank
         | Where-Object { -not ( Test-IsDirectory -InputObject $_ ) }
         | fzf.exe -m --preview 'bat --style=snip,header,numbers --line-range=:200 "{}"'
+
     }
 }

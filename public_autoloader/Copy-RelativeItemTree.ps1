@@ -54,6 +54,11 @@ function Copy-RelativeItemTree {
 
         # Like -WhatIf but cleaner, output objects of what would be copied
         [switch]$TestOnly
+
+        # overwrite existing files?
+        # strange, it errors on copy-item but force is passed?
+        # [Alias('Force')]
+        # [switch]$ReplaceExisting
     )
     begin {
 

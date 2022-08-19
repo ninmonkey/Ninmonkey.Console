@@ -323,7 +323,8 @@ $origTest = Get-ChildItem -File -Path $dirsToLoad
 | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
 
 $newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa 'continue'
-| Sort-Object { $_.fullname -match 'zeroDepend_autoloader' } -Descending
+# | Sort-Object { $_.fullname -match 'zeroDepend_autoloader' } -Descending
+| Sort-Object { $_.fullname -match '' } -Descending
 
 $z = $Null
 $z = $Null

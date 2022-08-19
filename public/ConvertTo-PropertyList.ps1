@@ -74,7 +74,9 @@ function ConvertTo-PropertyList {
 
     )
     begin {
-        Write-Warning "Replace with 'Dev.Nin\New-Hashtable'"
+        write-error "deprecated or rewrite?"
+        # Write-Warning "Replace with 'Dev.Nin\New-Hashtable'"
+
 
     }
     process {
