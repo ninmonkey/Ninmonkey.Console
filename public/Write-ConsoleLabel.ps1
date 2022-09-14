@@ -130,15 +130,18 @@ function Write-ConsoleLabel {
 
         # Do not clear ANSI colors at the end
         [Parameter()][switch]$LeaveColor
+        # [hashtable]$Options = @{}
 
     )
 
     begin {
         $strConst = @{
             Null = '[␀]' # U+2400 null symbol
+            ColorFg = '#96af84'
+
         }
         $newTextSplat_Label = @{
-            ForegroundColor = $ForegroundColor ?? 'green'
+            ForegroundColor = $ForegroundColor ?? $StrConst.ColorFg
             BackgroundColor = $BackgroundColor
             # Separator = 'x'
             LeaveColor      = $LeaveColor

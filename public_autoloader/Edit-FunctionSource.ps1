@@ -5,7 +5,7 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Edit-FunctionSource'
-        'ExposeMe'
+
     )
     $publicToExport.alias += @(
         'editFunc' # 'Edit-FunctionSource'
