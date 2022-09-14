@@ -26,7 +26,8 @@ function Write-ConsoleHorizontalRule {
         # 'Color as text/hex/rgb (Anything supported by "PoshCode.Pansies.RgbColor"'
         [Parameter()]
         [alias('Fg')]
-        [PoshCode.Pansies.RgbColor]$ForegroundColor = 'gray60'
+        [ArgumentCompletions('Magenta', 'Gray60', '#8fc0df')]
+        [PoshCode.Pansies.RgbColor]$ForegroundColor = '#8fc0df'
 
         # # disable color
         # [Parameter()][switch]$NoColor,

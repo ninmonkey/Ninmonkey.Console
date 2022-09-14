@@ -9,7 +9,6 @@ if ($script:publicToExport) {
     )
 }
 
-
 function compareChar {
     <#
     .SYNOPSIS
@@ -122,7 +121,7 @@ function compareString {
     #>
     param([String]$TextA, [String]$TextB )
     $MaxLen = [math]::max( $TextA.Length, $TextB.Length )
-    0..$maxLen | ForEach-Object {
+    0..($maxLen-1) | ForEach-Object {
         $curOffset = $_
         $curA = getCharAt? -InputText $TextA -Offset $curOffset
         $curB = getCharAt? -InputText $TextB -Offset $curOffset

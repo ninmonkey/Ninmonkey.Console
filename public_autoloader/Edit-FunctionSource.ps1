@@ -5,6 +5,7 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Edit-FunctionSource'
+        'ExposeMe'
     )
     $publicToExport.alias += @(
         'editFunc' # 'Edit-FunctionSource'
@@ -13,7 +14,6 @@ if ( $publicToExport ) {
         'ninLastPath' # from: 'Ninmonkey.Console\Edit-FunctionSource'
     )
 }
-
 
 function Edit-FunctionSource {
     <#
@@ -65,6 +65,8 @@ function Edit-FunctionSource {
     end {
         $cmd_list = Ninmonkey.Console\Resolve-CommandName $items
         | Sort-Object -Unique
+        # [console]::WriteLine
+        # test-path -
 
         $cmd_list | ForEach-Object {
             $cmd = $_
@@ -84,6 +86,8 @@ function Edit-FunctionSource {
             if ($NameOnly) {
                 return $cmd.ScriptBlock.Ast.Extent.File | Get-Item | ForEach-Object FullName
             }
+
+
 
 
 

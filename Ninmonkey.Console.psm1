@@ -413,6 +413,7 @@ function Enable-NinCoreAlias {
 
         # group: external modules
         Set-Alias @splat -Name 'Fm' -Value 'ClassExplorer\Find-Member'
+        Set-Alias @splat -Name 'fime' -Value 'ClassExplorer\Find-Member'
 
         # internal funcs
         Set-Alias @splat -Name 'Label' -Value 'Ninmonkey.Console\Write-ConsoleLabel'

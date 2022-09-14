@@ -100,6 +100,8 @@ Original from:
         $length = $end - $start
         # Write-Host "`e[s`e[2;0H`e[34mStart:$start End:$end Length:$Length `e[u"
 
+        $Length = ($length -lt 0) ? 0 : $Length  # exceptions sometimes thrown
+
         $lines = $command.SubString($start, $length)
         $count = ($lines -split "`n").Count
         # Write-Host "`e[s`e[3;0H`e[36m$lines`e[u"
