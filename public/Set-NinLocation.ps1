@@ -16,6 +16,18 @@ function Set-NinLocation {
         🐒> Goto '-'    # normal cd history works too
         🐒> Goto '+'
     .example
+        # Goto the world
+        gi $PROFILE  | goto  # cd to the FileItem's path
+        $Profile     | goto  # go to string's path
+        gcm EditFunc | goto  # jump to function declaration
+        gmo NameIt   | Goto  # go to module's folder
+        [CompletionResult] | goto | # to docs for: <https://docs.microsoft.com/en-us/dotnet/api/System.Management.Automation.CompletionResult>
+        goto git microsoft/powerquery-parser
+        goto git@github.com:microsoft/powerquery-parser.git
+
+        # not sure on the syntax for the next:
+
+    .example
         🐒> Goto './folder'
             # runs: cd './folder'
 
@@ -35,7 +47,7 @@ function Set-NinLocation {
     [Alias('Goto')]
     [CmdletBinding(
         PositionalBinding = $false,
-        DefaultParameterSetName = 'GoToPath')]
+        DefaultParameterSetName = 'GoToPath')] #
 
     param(
         # change directory to target Directory or (even a Filename)
@@ -45,8 +57,9 @@ function Set-NinLocation {
             ParameterSetName = 'GoToPath',
             Mandatory, Position = 0,
             ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('PSPath')]
-        [String]$Path,
+        [Alias('PSPath', 'Path')]
+        [object]$InputObject,
+        # [object]$Path,
 
         # Go back? (uses Pop-Location on custom stack name)
         [Alias('Popd')]
@@ -62,15 +75,79 @@ function Set-NinLocation {
             StackName = 'ninLocationStack'
         }
 
+        # $UniPattern = @{
+        #     Home = @(
+        #         Join-Re
+        #         '🏘''🏘',"`u{1f3d8}"
+        #         '🏡'
+        #         '🏠' # House Building
+        #     )
+        # }
+
     }
     process {
+        if ($InputObject -is 'type') {
+            return ($InputObject | HelpFromType.2)
+        }
+
+
+        # if($InputObject -is 'string') {
+        #     switch($InputObject) -regex {
+        #         # '^🏠$' { gi '~' }
+        #         # '^home$' { gi '~' }
+        #         # '~' auto
+        #         default { $InputObject }
+        #     }
+        # }
+
+        if ( $InputObject -match ':\d+$' ) {
+            # expected input:
+            # prototype\AnimateColorCycle.ps1:16
+            'grep/vscode filepath detected: nyi: use regex' | Write-Warning
+            return
+        }
+        if (
+            ($InputObject -match ( ReLit 'git@github.com:')) -or
+            ($inputobject -match ( '\.git$' )) ) {
+            'git detected: wip use regex' | Write-Warning
+            return
+            # git@github.com:microsoft/powerquery-parser.git
+
+        }
+        #  microsoft/powerquery-parser.git') {
+
+
+
 
         # prevent ansi color errors
-        $Path = $Path | StripAnsi
+        $Path = $InputObject | StripAnsi
         Write-Debug "Path: '$Path'"
         if ( [String]::IsNullOrWhiteSpace($Path) ) {
             Write-Debug 'Path: Was null or empty'
             return
+        }
+
+        # todo: wip:
+        if ($false -and 'UseTheseToResolve') {
+            <#
+                [CompletionResult] | HelpFromType.2 -PassThru
+
+                # Gogo the world
+                gi $PROFILE  | goto  # cd to the FileItem's path
+                $Profile     | goto  # go to string's path
+                gcm EditFunc | goto  # jump to function declaration
+                gmo NameIt   | Goto  # go to module's folder
+                [CompletionResult] | goto | #
+
+            #>
+            $query_cmd = Get-Command ls -ea ignore
+            $orig_obj = (Get-Command ls)
+            $x = (Get-Command ls) -is 'scriptblock'
+            $x = (Get-Command ls) -is 'commandinfo'
+            $x | HelpFromType.2 -PassThru
+            $x | editfunc -PassThru
+            Resolve->Cmd $x
+
         }
 
         if ($Path -in @('-', '+')) {

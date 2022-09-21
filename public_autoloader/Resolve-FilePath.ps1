@@ -23,10 +23,17 @@ function Resolve-FileInfo {
 
                 [io.fileinfo](gi Fg:\Green)
     .DESCRIPTION
-        If Item doesn't exist, (or is a different provider) it attempts, in order:
-            - Get-Item
-            - [IO.FileSystemInfo] - works when files do not exist
-            - [String] - fallback to initial input, never returns $null
+
+        Returns:
+
+            If Item doesn't exist, (or is a different provider) it attempts, in order:
+                - Get-Item
+                - [IO.FileSystemInfo] - works when files do not exist
+                - [String] - fallback to initial input, never returns $null
+
+    .notes
+        The purpose is mainly [Io.FileInfo],
+        but it supports some other PSProviders
 
     .link
         https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths

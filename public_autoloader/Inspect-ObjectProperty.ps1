@@ -63,7 +63,12 @@ function iot2 {
         Ninmonkey.Console\Inspect-ObjectProperty
     #>
 
-    $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm | Format-Table -AutoSize Name, Reported, Type, Value
+    # gi . | iot | ft
+    # gi . | iot -ViewB | ft
+    # gi . | io -SortBy Type | ft -AutoSize Name, Reported, Value, is* # alternate
+
+    $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm
+    | Format-Table -AutoSize Name, Reported, Type, Value
 }
 
 
