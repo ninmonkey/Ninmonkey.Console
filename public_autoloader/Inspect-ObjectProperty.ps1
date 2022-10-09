@@ -62,13 +62,79 @@ function iot2 {
     .link
         Ninmonkey.Console\Inspect-ObjectProperty
     #>
+    # [OutputType('[PSCustomObject[]]', 'String')]
+    # [CmdletBinding()]
+    param(
+        # which columns to use?
+        # [ArgumentCompletions(
+        #     'Name, Reported, Value, Type',
+        #     'Name, Reported, Type, Value'
+        # )]
+        # [string[]]$ColumnName,
+        # [object]$SortBy = 'Name',
+        [switch]$PassThru,
+        [switch]$NotSkipMost
+    )
+    begin {
 
-    # gi . | iot | ft
-    # gi . | iot -ViewB | ft
-    # gi . | io -SortBy Type | ft -AutoSize Name, Reported, Value, is* # alternate
+    }
+    process {
+        $splat = @{}
+        if( $NotSkipMost ) { $splat.sm = $false } else { $splat.sm = $true }
 
-    $Input | Ninmonkey.Console\Inspect-ObjectProperty -sm
-    | Format-Table -AutoSize Name, Reported, Type, Value
+        $query = $_ | Ninmonkey.Console\Inspect-ObjectProperty @splat
+        | Sort Name
+
+        if($PassTHru) { return $query }
+
+        $query | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
+    }
+    end {}
+
+}
+
+
+function iot.dev2 {
+    <#
+    .SYNOPSIS
+        sugar with best defaults for Inspect-ObjectProperty
+    .NOTES
+        todo:
+            refactor into TypeData and FormatData, with optional views
+    .link
+        Ninmonkey.Console\Inspect-ObjectProperty
+    #>
+    param(
+        # which columns to use?
+        [ArgumentCompletions(
+            'Name, Reported, Value, Type',
+            'Name, Reported, Type, Value'
+        )]
+        [string[]]$ColumnName,
+        [object]$SortBy = 'Name',
+        [switch]$NotSkipMost
+    )
+    begin {
+        [hashtable]$Config = Join-Hashtable -OtherHash $Options -BaseHash @{
+            ColumnNames = if( $Columns ) { $columns } else { @('Name', 'Reported', 'Value', 'Type') }
+        }
+        if($SortBy -isnot 'string') {
+            throw "ScriptBlock Implementation NYI, use string[s]."
+        }
+    }
+    process {
+        if($Config.ColumnNames.count -eq 1 -and $Config.ColumnNames -match ',\s+') {
+            $Config.ColumnNames = [string[]]@($Config.ColumnNames -split ',\s+')
+        }
+        # gi . | iot | ft
+        # gi . | iot -ViewB | ft
+        # gi . | io -SortBy Type | ft -AutoSize Name, Reported, Value, is* # alternate
+        $_
+        | Ninmonkey.Console\Inspect-ObjectProperty -sm:( -not $NotSkipMost )
+        | Format-Table -AutoSize $Config.ColumnNames
+    }
+    end {}
+
 }
 
 
