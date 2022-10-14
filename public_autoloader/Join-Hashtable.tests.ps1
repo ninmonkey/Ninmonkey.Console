@@ -2,6 +2,71 @@ BeforeAll {
     Import-Module Ninmonkey.Console -Force
 }
 
+Describe 'Join-Hashtable Rewrite' {
+    BeforeAll {
+        $sample = @(
+            @{a = 2}
+            @{a = 3 ; z = 0 }
+        )
+
+    }
+    it 'toFix: ParamSets' {
+        {
+            $base = @{a = 1}
+            $expected =  @{ a = 3; z = 0 }
+
+            $sample
+            | Join-Hashtable -BaseHash $base
+        } | Should -not -Throw
+    }
+    it 'static' {
+        $base = @{a = 1}
+        $expected =  @{ a = 3; z = 0 }
+
+        $res = $sample | Join-Hashtable -BaseHash $base
+
+        $res -is 'hashtable' -or  $res -is 'System.Collections.Specialized.OrderedDictionary'
+        | Should -be $True -because 'Should Be dictionary-like type'
+
+        $res.a | SHould -be 3
+        $res.z | Should -be 0
+
+        # | Should -BeExactly $expected
+        # System.Collections.Specialized.OrderedDictionary
+    }
+    it 'AsPipe' {
+        $base = @{a = 1}
+        $expected =  @{ a = 3; z = 0 }
+
+        $sample
+        | Join-Hashtable -BaseHash $base
+        | Should -BeExactly $expected
+    }
+    it 'HardCoded Pipeline' {
+        $res = @(
+            @{a=1; z=1}
+            @{a=2}
+        ) | Join-Hashtable -BaseHash @{ a=0; b=0}
+
+        $res.a | SHould -be 2
+        $res.b | SHould -be 0
+        $res.z | SHould -be 1
+    }
+    Context 'ParamSet Runs Without Throw' {
+        it 'FromPipe' {
+            {
+                @{ a = 1 } | Join-hashtable -BaseHash @{ a = 0; b = 0 }
+            } | Should -not -Throw
+
+            {
+                @( @{ a = 1 }; @{ b = 2 } )
+                | Join-hashtable -BaseHash @{ a = 0; b = 0 }
+            } | Should -not -Throw
+        }
+    }
+
+}
+
 Describe 'Join-Hashtable' {
     Context 'Parameters are optional' {
 
