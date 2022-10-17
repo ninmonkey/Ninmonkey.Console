@@ -66,14 +66,11 @@ function Compare-StringSet {
     param(
         [string[]]$ListA,
         [string[]]$ListB,
-
-        [switch]$Insensitive
+        [switch]$Insensitive,
+        $ComparerKind
+        # [object]$ComparerFunc
+        # [hashtable]$Options
     )
-
-
-    if($Insensitive) { throw "NYI: Equality comparison"}
-
-
     <#
     todo: future:
         When empty column format string as '∅'
@@ -87,16 +84,45 @@ function Compare-StringSet {
         [list[string]]$RemainingRight
         [list[string]]$Union
     }
+    $Config = @{
+        Insensitive  = $Insensitive
+        ComparerKind = $ComparerKind ?? [StringComparer]::InvariantCultureIgnoreCase
+    }
+    # wait-debugger
 
     $results = [ordered]@{}
-    $SetA = [HashSet[string]]::new( [string[]]$ListA)
-    $SetB = [HashSet[string]]::new( [string[]]$ListB)
+
+    function _newSet {
+        # macro for a fresh instance
+        param( $InputList, $Comparer )
+        $Comparer ??= $Config.ComparerKind = [StringComparer]::InvariantCultureIgnoreCase
+        if($Config.Insensitive ) {
+            [HashSet[string]]::new( $InputList )
+        } else {
+            [HashSet[string]]::new( $InputList, $Comparer )
+        }
+
+    }
+
+    # if($Insensitive) {
+    #     $SetA = [HashSet[string]]::new(
+    #         [string[]]$ListA,
+    #         [StringComparer]::InvariantCultureIgnoreCase )
+    #     $SetB = [HashSet[string]]::new(
+    #         [string[]]$ListB,
+    #         [StringComparer]::InvariantCultureIgnoreCase )
+    # } else {
+    #     $SetA = [HashSet[string]]::new( [string[]]$ListA)
+    #     $SetB = [HashSet[string]]::new( [string[]]$ListB)
+    # }
+    $SetA = _newSet $ListA
+    $SetB = _newSet $ListB
 
     $SetA.IntersectWith( $setB )
     $results['Intersect'] = $SetA
 
-    $SetA = [HashSet[string]]::new( [string[]]$ListA)
-    $SetB = [HashSet[string]]::new( [string[]]$ListB)
+    $SetA = _newSet $ListA
+    $SetB = _newSet $ListB
 
     # $SetA -notin $results.Intersect
     $results.'RemainingLeft' =  $SetA | ?{
@@ -106,8 +132,8 @@ function Compare-StringSet {
         $results.'Intersect' -notcontains $_
     }
 
-    $SetA = [HashSet[string]]::new( [string[]]$ListA)
-    $SetB = [HashSet[string]]::new( [string[]]$ListB)
+    $SetA = _newSet $ListA
+    $SetB = _newSet $ListB
 
     $SetA.UnionWith( $SetB )
     $results.'Union' = $SetA
