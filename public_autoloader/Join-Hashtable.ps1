@@ -1,6 +1,7 @@
 if ($script:publicToExport) {
     $script:publicToExport.function += @(
         'Join-Hashtable'
+        'Join-Hashtable.basic'
 
         # sort-of-private
         'sortedHashtable'
@@ -13,6 +14,56 @@ function sortedHashtable {
     param()
     throw "NYI: super simple though"
 
+}
+
+# Function Join-Hashtable.basic {
+Function Join-Hashtable {
+    <#
+    .description
+        the simplified, previous implementation of 'Join-Hashtable'
+    .notes
+        future: add valuefrom pipeline to $UpdateHash param ?
+    .example
+        Join-Hashtable -Base $
+    .link
+        Ninmonkey.Console\Join-Hashtable
+    .link
+        Ninmonkey.Console\Merge-HashtableList
+    .link
+        Ninmonkey.Powershell\Join-Hashtable
+    .link
+        PSScriptTools\Join-Hashtable
+    #>
+    [cmdletbinding()]
+    [outputType('System.Collections.Hashtable')]
+    param(
+        # base hashtable
+        [Parameter(Mandatory, Position = 0)]
+        [hashtable]$BaseHash,
+
+        # New values to append and/or overwrite
+        [AllowNull()]
+        [Parameter(Position = 1)]
+        [hashtable]$OtherHash,
+
+        # normal is to not modify left, return a new hashtable
+        [Parameter()][switch]$MutateLeft
+    )
+
+    # don't mutate $BaseHash
+    process {
+        $OtherHash ??= @{}
+        if (! $MutateLeft ) {
+            $TargetHash = [hashtable]::new( $BaseHash )
+        } else {
+            Write-Debug 'Mutate enabled'
+            $TargetHash = $BaseHash
+        }
+        $OtherHash.GetEnumerator() | ForEach-Object {
+            $TargetHash[ $_.Key ] = $_.Value
+        }
+        $TargetHash
+    }
 }
 
 
@@ -36,8 +87,21 @@ old examples for previous  Join-Hashtablelist
         Ninmonkey.Powershell\Join-Hashtable
 #>
 
+<#
+to ask
 
-Function Join-Hashtable {
+    - <file:///C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Ninmonkey.Console\public_autoloader\Join-Hashtable.ps1>
+
+ask
+- does ExpectingInput() or input pipeline done
+- [1] allowe cleaner paramsets (or logic) ?
+
+- [2] does 'end-of-pipeline' let you  enable smart formatting, instead of
+
+#>
+
+
+Function Join-Hashtable.new {
     <#
     .description
         Updates default values if any keys collide. BaseHash is the default, its values are updated.
