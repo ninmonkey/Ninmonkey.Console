@@ -26,9 +26,13 @@ function _enumerateGhProperty {
     [CmdletBinding()]
     param(
         # future: [Parameter(Position = 0)][string]$CommandName
+
+
     )
     (gh repo list --json *>&1 | Select-Object -Skip 1) -replace '\s+', ''
 }
+
+
 
 function Invoke-GhRepoList {
     <#
@@ -67,6 +71,7 @@ function Invoke-GhRepoList {
         [string]$GitRepoOwner
     )
 
+    # second: 2022-06-20 : do attribute completer
     $ghArgs = @(
         'repo'
         'list'
@@ -83,7 +88,8 @@ function Invoke-GhRepoList {
 }
 
 
-if (! $publicToExport) {
+
+if ( $___debugInlineTest) {
     # example usage
     # gh implicitly uses your CWD, or else yourself --  when you don't specify an <owner>
     Push-Location 'G:\2021-github-downloads\Power-BI\dfinke🧑\NameIT\'

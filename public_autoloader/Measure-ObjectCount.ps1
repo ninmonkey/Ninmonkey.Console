@@ -11,6 +11,7 @@ if ( $publicToExport ) {
     )
 }
 
+# fix me
 function Measure-ObjectCount {
     <#
     .synopsis
@@ -20,6 +21,7 @@ function Measure-ObjectCount {
 
         PS> ... | Measure-Object | % Count | ...
     .notes
+        warning: currently iterates more than once
         future:
             - Parameter <condition> that works how Sort-Object's -Property param works
                 for custom counting conditions?
@@ -56,12 +58,66 @@ function Measure-ObjectCount {
     )
     begin {
         $objectList = [List[object]]::new()
+        # // number of iterations
+        [int]$pipeLineCount = 0
+        if ($IgnoreBlank) {
+            'nyi: next'
+        }
     }
     process {
-        $objectList.AddRange( $InputObject )
+
+        # $objectList.AddRange( $InputObject )
+
+        $pipeLineCount++
+        # todo: ignore null, ignore blannk to process block
+        # if( ! $IgnoreBlank ) {
+        #     $Item = $InputObject
+        # } else {
+        #     $Item = $InputObject
+        #     | Dev.Nin\?NotBlank
+        # }
+        # if($Item) {
+        #     $objectList.AddRange(
+        # }
 
     }
     end {
+
+        $IgnoreBlankCount = $ObjectList
+        | Dev.Nin\Where-IsNotBlank
+        | Measure-Object | ForEach-Object Count
+
+        $arrayCount = $objectList.Count
+        <#
+            or
+                $ObjectList
+                | Measure-Object | ForEach-Object Count
+
+        #>
+
+
+        $dbg = [ordered]@{
+            PipelineCount    = $pipeLineCount
+            arrayCount       = $arrayCount
+            ignoreBlankCount = $IgnoreBlankCount
+            IgnoreBlank      = $IgnoreBlank
+            PassThru         = $PassThru
+        }
+        # if($IgnoreBlank) {
+
+        # }
+        if ( ! $PassThru ) {
+            # normal returns int, else object with infa action
+            if ($IgnoreBlank) {
+                return $ignoreBlankCount
+            } else {
+                return $arrayCount
+            }
+        }
+
+        $dbg | Format-Table -AutoSize -Wrap | Out-String | Write-Verbose
+
+
         if ($PassThru) {
             $objectList
             | ForEach-Object {
@@ -70,7 +126,6 @@ function Measure-ObjectCount {
                 } else {
                     $_
                 }
-
             }
             | Measure-Object
             | ForEach-Object Count

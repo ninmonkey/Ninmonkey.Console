@@ -122,11 +122,16 @@ function Get-ObjectProperty {
         # max number of input-objects
         [alias('Limit')]
         [Parameter()]
-        [int]$MaxItem, # Sci said that [uint] type has unecessary casts/additional coercion,
+        [int]$MaxItem = 9999, # when null, currently ignores all
+
 
         # TypeName of the InputObject you are enumerating
         [Alias('TitleHeader')]
-        [Parameter()][switch]$IncludeTypeTitle = $true
+        [Parameter()][switch]$IncludeTypeTitle = $true,
+
+        # refactor args into options param
+        [hashtable]$Options = @{}
+
     )
 
     begin {
@@ -181,6 +186,7 @@ function Get-ObjectProperty {
         # Write-Warning 'should not be a raw table'
         # Write-Debug 'use: <C:\Users\cppmo_000\Documents\2020\powershell\consolidate\2020-12\custom formatting for property names\Custom format using PsTypeNames on PSCO 2020-12.ps1>'
         # | Get-Unique -OnType # ddon't force it,
+        $WarningPreference = 'silentlycontinue'
         $inputList
         | ForEach-Object {
             $curObject = $_
@@ -251,5 +257,6 @@ function Get-ObjectProperty {
             Update-TypeData @splat_TypeData_PropertyList -Force
         }
         #>
+        $WarningPreference = 'continue'
     }
 }

@@ -16,6 +16,9 @@ enum WrapStyle {
     PwshStaticMember
     PwshMember
     PwshVariable
+    Html_Href # <a href=1>0</a>
+    Markdown_Link # [0](1)
+    Markdown_DetailsSummary
     # PwshVarOptionalItem
     Parenthesis
     Bracket
@@ -71,6 +74,10 @@ function Format-WrapText {
     <#
     .SYNOPSIS
         sugar allows composable custom strings
+    .link
+        Ninmonkey.Console\Format-ShortStr
+    .link
+        Ninmonkey.Console\Format-WrapText
     #>
 
     [Alias('wrapText')]

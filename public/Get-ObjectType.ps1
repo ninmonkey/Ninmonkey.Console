@@ -33,6 +33,9 @@
     #>
     param(
         # InputObject[s] to get type[s] of
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [object]$InputObject,
 
@@ -54,7 +57,7 @@
         # if ($PassThru) {
         #     throw "NotImplementedError: -PassThru"
         # }
-        $typeList = [list[object]]::new()
+        [List[Object]]$typeList = @()
         if ([string]::IsNullOrWhiteSpace( $Format)) {
             $Format = 'GetType'
         }
@@ -73,6 +76,7 @@
             'GetType' {
                 if ($Null -eq $curObject) {
                     Write-Error "`$CurObject is $null"
+                    break
                 }
                 $typeInstance = $curObject.GetType()
                 if ($PassThru) {

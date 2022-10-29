@@ -19,6 +19,7 @@ enum StopWatchAction {
     StartNew
     Stop
     StopAndGet
+    Remove
 }
 function Get-StopWatch {
     <#
@@ -38,6 +39,19 @@ function Get-StopWatch {
             stopWatch -Name "in_$_" -Action StopAndGet
         }
         stopWatch -Name "outside" -Action StopAndGet
+    .example
+        
+        Pwsh> stopWatch -GetAll | %{ $_.psobject.properties | s name -exp value } | Ft
+
+            Name    IsRunning Elapsed          ElapsedMilliseconds ElapsedTicks
+            ----    --------- -------          ------------------- ------------
+            in_3        False 00:00:00.4193357                 419      4193357
+            in_2        False 00:00:00.4167248                 416      4167248
+            in_0        False 00:00:00.4102604                 410      4102604
+            outside     False 00:00:02.3053855                2305     23053855
+            in_4        False 00:00:00.4120919                 412      4120919
+            no-op       False 00:00:00.3524748                 352      3524748
+            in_1        False 00:00:00.4124001                 412      4124001
     #>
     [Alias(
         # 'Get-StopWatch',
@@ -61,7 +75,10 @@ function Get-StopWatch {
 
         # print all watches
         [Parameter(Mandatory, ParameterSetName = 'Get-All')]
-        [switch]$GetAll
+        [switch]$GetAll,
+
+        # ansi colors
+        [Parameter()][switch]$Fancy
     )
     # Write-Warning 'validate-working, indirect ref "$Target" or the ??= might be losing state'
 
@@ -71,7 +88,13 @@ function Get-StopWatch {
     # although I do not like default construction of script scope being hidden
     $state = $script:__watches ??= @{} # [Dict[Str, StopWatch]]
     if ($GetAll) {
-        return $state
+        if(-not $fancy) {
+            return [pscustomobject]$state
+        }
+            $state.GetEnumerator()  | Sort-Object { $_.Key }
+             | %{
+                $_.Value.elapsed.TotalMilliSeconds | label $_.Key }        
+        return
     }
     # better
     # $state = $script:watches
@@ -79,12 +102,13 @@ function Get-StopWatch {
     # $state[$Name] ??= [Diagnostics.Stopwatch]::StartNew()
     if (! $State.ContainsKey($Name)) {
         $state[$Name] = [Diagnostics.Stopwatch]::StartNew()
+    } else {
+        $Target = $state[$Name]
     }
-    $Target = $state[$Name]
 
     # $PSBoundParameters | format-dict | Write-Debug
     $PSBoundParameters | Format-HashTable -Force -LinesBefore 2 | Write-Debug
-    Write-Warning "target: $Target"
+    
 
     switch ($Action) {
         ([StopWatchAction]::StartNew) {
@@ -93,6 +117,11 @@ function Get-StopWatch {
         }
         ([StopWatchAction]::Resume) {
             $target.Start()
+            break
+        }
+        ([StopWatchAction]::Remove) {
+            if($Name) { $state.Remove( $Name )  }
+            else { $state.Clear() }
             break
         }
         ([StopWatchAction]::Stop) {

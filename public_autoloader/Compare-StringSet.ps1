@@ -1,5 +1,6 @@
 using namespace System.Collections.Generic
 
+
 #Requires -Version 7
 
 if ( $publicToExport ) {
@@ -104,6 +105,9 @@ function Compare-StringSet {
 
     }
 
+    # example:
+    # \
+# [HashSet[String]]::new( [string[]]$letters, [StringComparer]::InvariantCultureIgnoreCase )
     # if($Insensitive) {
     #     $SetA = [HashSet[string]]::new(
     #         [string[]]$ListA,
