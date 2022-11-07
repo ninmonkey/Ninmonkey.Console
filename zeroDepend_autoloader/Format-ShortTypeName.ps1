@@ -9,6 +9,7 @@ if ( $publicToExport ) {
     $publicToExport.alias += @(
         'shortTypeName' # 'Format-ShortTypename'
         'UL'
+        'join.UL'
         'shortType' # 'Format-ShortSciTypeName
     )
 }
@@ -16,6 +17,9 @@ if ( $publicToExport ) {
 
 function Format-UnorderedList {
     <#
+    .SYNOPSIS
+        Pipe a list of something, convert to an Unordered List, or list of checkboxes
+        fairly powerfull
     .EXAMPLE
         PS>   @(gi . ; get-date; 'hi', 'world') | ul
 
@@ -23,6 +27,57 @@ function Format-UnorderedList {
             - 05/23/2022 20:28:17
             - hi
             - world
+    .example
+        PS>
+        h1 'experimental features?'
+
+        Get-ExperimentalFeature | ? Enabled -Not
+        | %{ '{0} : {1}' -f @(  $_.Name.PadRight(30, ' '), $_.Description  ) }
+        | Ul -BulletStr 🧪 -Options @{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }
+
+    output:
+            # experimental features?
+            ------------------------------------------------------------------------------
+            🧪 PSAnsiRenderingFileInfo        : Enable coloring for FileInfo objects
+            🧪 PSCommandNotFoundSuggestion    : Recommend potential commands based on fuz
+            🧪 PSLoadAssemblyFromNativeCode   : Expose an API to allow assembly loading f
+            🧪 PSNativeCommandArgumentPassing : Use ArgumentList when invoking a native c
+            🧪 PSNativePSPathResolution       : Convert PSPath to filesystem path, if pos
+            🧪 PSSubsystemPluginModel         : A plugin model for registering and un-reg
+            ------------------------------------------------------------------------------
+    .EXAMPLE
+        PS>
+            ls -File C:\Temp\ | sort lastWriteTime -Descending -Top 4 | % Name
+            | UL -BulletStr '→' -Options @{
+                ULHeader =  @( (hr 1) ; Label "Newest Files" 'c:/temp'  ) | Join-String
+                ULFooter  = (hr 0);
+            }
+    output:
+            ----------------------
+            Newest Files: c:/temp
+            → delta_this.json
+            → test-Dotsource.ps1
+            → fzf.man.txt
+            → forGrep3.txt
+            ----------------------
+
+    .example
+        PS> 'before'
+            Get-Process | Get-Random -Count 5 | % Name
+            | UL -BulletStr '👍' -Options @{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }
+            'end'
+
+    output:
+
+        before
+        ------------------------------------------------------------------------------
+        👍 firefox
+        👍 svchost
+        👍 fdhost
+        👍 svchost
+        👍 python3.9
+        ------------------------------------------------------------------------------
+        end
 
     .notes
         render-* implies ansi colors
@@ -33,19 +88,88 @@ function Format-UnorderedList {
         Ninmonkey.Console\Render-ShortTypeName
 
     #>
-    [Alias('UL')]
+    [Alias(
+        'UL',
+        'join.UL'
+    )]
     param(
+        # list of objects/strings to add
+        [AllowEmptyCollection()]
+        [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [string[]]$InputObject
+        [string[]]$InputObject,
+
+        # todo: Make custom arg completer
+        # with parameter, so I can say 'use set X'
+        # like 'arrows', or 'bars', or 'checkbox'
+        [ArgumentCompletions(
+            '•', '-', '‣',
+            '[ ]', '[x]',
+            '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎'
+        )]
+
+        # sets bullet types, but if overriden in -Options, Options has priority
+        [string]$BulletStr = '-',
+        [ArgumentCompletions(
+            '@{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }',
+            '@{
+                ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String
+                ULFooter  = (hr 0);
+            }',
+            '@{ BulletStr = "•" }'
+        )]
+        [hashtable]$Options = @{}
     )
     begin {
-        $Items = [list[object]]::new()
+        $Config = mergeHashtable -OtherHash $Options -BaseHash @{
+            BulletStr    = $BulletStr
+            PaddingStr   = ' '
+            BulletPrefix = "`n"
+            ULHeader     = ''
+            ULFooter     = ''
+        }
+        [Collections.Generic.List[Object]]$Items = @()
     }
     process {
-        $Items.AddRange( $InputObject )
+        foreach ($str in $InputObject) {
+            $items.Add( $str )
+        }
     }
     end {
-        $Items | Join-String -sep "`n - " -op "`n - " -os "`n"
+        <#
+        Tip: Join-String gracefully handles empty types, gracefully.
+        $null values are not passed as input
+
+        #>
+        # was
+
+        $joinStringSplat = @{
+            Separator    = "`n $StrBullet "
+            OutputPrefix = "`n $StrBullet "
+            OutputSuffix = "`n"
+        }
+        $joinStringSplat = @{
+            # -sep and prefix are normally the same
+            Separator    = '{0}{1}{2}{1}' -f @( # "`n $StrBullet "
+                $Config.BulletPrefix
+                $Config.PaddingStr
+                $Config.BulletStr
+            )
+            OutputPrefix = '{0}{1}{2}{1}' -f @( # "`n $StrBullet "
+                $Config.BulletPrefix
+                $Config.PaddingStr
+                $Config.BulletStr
+            )
+            OutputSuffix = $Config.BulletPrefix
+        }
+
+        $Items
+        | Join-String @joinStringSplat
+        | Join-String -op $COnfig.ULHeader -os $Config.ULFooter
+
+
+        # original:
+        # $Items | Join-String -sep "`n $StrBullet " -op "`n $StrBullet " -os "`n"
     }
 }
 $script:__moduleExists = @{

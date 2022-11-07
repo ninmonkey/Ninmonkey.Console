@@ -54,7 +54,12 @@ function Enable-NinHistoryHandler {
         }
         $Log = Get-Item $LogPath
         if ($Log.Length -gt 5mb) {
-            Write-Warning "LogMaxSizeLimitException: '$Log'"
+            Write-Warning "LogMaxSizeLimitException: '$Log', rotating (source: $($PSCommandPath))"
+            write-warning 'rotate to safe time filename'
+            $rotateDest = $Log.FullName -replace '\.log^', '.0.log' # should use file time
+            $log | Move-Item -dest "$($log.FullName).0.log"
+            Write-Warning "rotated log -> $($log.FullName).0.log"
+            Clear-content $Log -ea ignore
             return
         }
 
