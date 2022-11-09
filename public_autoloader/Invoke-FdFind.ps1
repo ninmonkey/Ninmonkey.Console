@@ -9,6 +9,25 @@ if ( $publicToExport ) {
     )
 }
 # new
+enum FDFindFiletype {
+
+}
+
+$__paramMapping = @(
+    @{
+        # // converttoClassStruct
+        'ShortName'       = '-H'
+        'LongName'        = '--hidden'
+        'HumanizedName'   = 'ShowHiddenFiles'
+        'Description'     = 'Include Hidden Files'
+        'LongDescription' = 'Include hidden directories and files in the search results (default: hidden files and directories are
+            skipped). Files and directories are considered to be hidden if their name starts with a `.` sign (dot). The
+            flag can be overridden with --no-hidden.'
+        'SeeAlso'         = @(
+            '--no-hidden'
+        )
+    }
+)
 
 function Invoke-FdFind {
     <#
@@ -24,6 +43,10 @@ function Invoke-FdFind {
 
         .example
             PS> Invoke-FdFind
+        .example
+            ($SavedPaths.GetEnumerator() | ? Key -match 'Pwsh|powershell' | % value)
+|            %{ $_ | Join-String -op '--search-path=' -DoubleQuote -os '' { $_}
+}
         .LINK
             https://github.com/sharkdp/fd
         .LINK

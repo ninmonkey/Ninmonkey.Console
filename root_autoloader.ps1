@@ -5,6 +5,11 @@ using namespace system.collections.generic
 
 Write-Warning "🐱‍👤finish $PSCommandPath"
 
+$____debug = @{
+    Export_Module_Listing_On_Startup = $false
+    Export_Super_ExcessiveTest       = $false
+}
+
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:publicToExport = @{
     'function' = @(
@@ -79,7 +84,8 @@ Function Join-Hashtable {
         # $NewHash = [hashtable]::new( $BaseHash )
         if (! $MutateLeft ) {
             $TargetHash = [hashtable]::new( $BaseHash )
-        } else {
+        }
+        else {
             Write-Debug 'mutating left'
             $TargetHash = $BaseHash
         }
@@ -109,16 +115,16 @@ class ModuleExportRecord {
     # future:// param that auto-logs when property is changed
     # maybe this is one instance per file
     # which gets appended to global state?
-    [List[object]]$function = [List[object]]::new()
-    [List[object]]$alias = [List[object]]::new()
-    [List[object]]$cmdlet = [List[object]]::new()
-    [List[object]]$variable = [List[object]]::new()
-    [List[object]]$typeData = [List[object]]::new()   # nyi
-    [List[object]]$formatData = [List[object]]::new() # nyi
+    [Collections.Generic.List[object]]$function = @()
+    [Collections.Generic.List[object]]$alias = @()
+    [Collections.Generic.List[object]]$cmdlet = @()
+    [Collections.Generic.List[object]]$variable = @()
+    [Collections.Generic.List[object]]$typeData = @()   # nyi
+    [Collections.Generic.List[object]]$formatData = @() # nyi
 
     # store source filename etc?
 
-    [List[object]]$meta = [List[object]]::new() # nyi
+    [Collections.Generic.List[object]]$meta = @() # nyi
 }
 
 # $ModuleExportRecord = [ModuleExportRecord]::new()
@@ -127,7 +133,7 @@ class NinModuleInfo {
     # global state
     #  PSRealine Exports
     # command line completers
-    [List[ModuleExportRecord]]$ExportInfo = [list[ModuleExportRecord]]::new()
+    [Collections.Generic.List[ModuleExportRecord]]$ExportInfo = [Collections.Generic.List[ModuleExportRecord]]::new()
 
     [object]$PSReadlineHandlers = @() # or hooks
     [object]$NativeCommand = @()
@@ -139,6 +145,7 @@ class NinModuleInfo {
     }
 }
 
+[ValidateNotNull()]
 $script:ninModuleInfo = [NinModuleInfo]::new()
 
 
@@ -332,10 +339,10 @@ $z = $Null
 class ParseResult {
     [IO.FileSystemInfo]$Name
     [bool]$Success
-    [list[object]]$Error = [list[object]]::new()
+    [Collections.Generic.List[object]]$Error = [Collections.Generic.List[object]]::new()
 }
 
-[List[ParseResult]]$parseResultSummary = [List[ParseResult]]::new()
+[Collections.Generic.List[ParseResult]]$parseResultSummary = [Collections.Generic.List[ParseResult]]::new()
 
 $newTest
 | ForEach-Object {
@@ -346,7 +353,8 @@ $newTest
     }
     try {
         . $Cur
-    } catch {
+    }
+    catch {
         $ParseResult.Success = $false
         $ParseResult.Error.AddRange( @($_) )
     }
@@ -412,25 +420,33 @@ if ($script:publicToExport['variable']) {
 $meta | Format-Table | Out-String | Write-Information
 
 if ($true) {
+    # tip: 'Join-String' does not require the empty and $null gaurds, left in for intent
     # detect not yet transferred over
     if ($publicToExport.function.Count -gt 0) {
-        Write-Warning 'not all functions are using ninModuleInfo'
-        $publicToExport.function | Join-String @strUl | Write-Warning # | Write-Debug
+        $publicToExport.function | Join-String @strUl
+        | Join-String -op "(eventually deprecated warning): `$publicToExport.function is not empty, migrate to 'ninModuleInfo' Items: `n"
+        | Write-Debug
     }
     if ($publicToExport.alias.Count -gt 0) {
-        Write-Warning 'not all aliass are using ninModuleInfo'
-        $publicToExport.alias | Join-String @strUl | Write-Warning # | Write-Debug
+        $publicToExport.alias | Join-String @strUl
+        | Join-String -op "(eventually deprecated warning): `$publicToExport.alias is not empty, migrate to 'ninModuleInfo' Items: `n"
+        | Write-Debug
+
     }
     if ($publicToExport.cmdlet.Count -gt 0) {
-        Write-Warning 'not all cmdlets are using ninModuleInfo'
         $publicToExport.cmdlet | Join-String @strUl | Write-Warning # | Write-Debug
+        | Join-String -op "(eventually deprecated warning): `$publicToExport.cmdlet is not empty, migrate to 'ninModuleInfo' Items: `n"
+        | Write-Debug
     }
     if ($publicToExport.variable.Count -gt 0) {
-        Write-Warning 'not all variables are using ninModuleInfo'
         $publicToExport.variable | Join-String @strUl | Write-Warning # | Write-Debug
+        | Join-String -op "(eventually deprecated warning): `$publicToExport.variable is not empty, migrate to 'ninModuleInfo' Items: `n"
+        | Write-Debug
     }
 }
 $devNinRoot = '~\.dev-nin\dump'
+
+
 $__exportPaths = @{
     DevNinRoot                               = $devNinRoot
     LogExportBase                            = $devvNinRoot #'~\.dev-nin\dump' #'\console-last_import.json'
@@ -447,7 +463,9 @@ if ($true) {
 
 
 
-if ($true) {
+if ($____debug.Export_Super_ExcessiveTest) {
+    "`$____debug.Export_Super_ExcessiveTest: `$true from '$PSCommandPath'"
+    | Write-Warning
     # dump json logs
     $publicToExport
     | ConvertTo-Json -Depth 9 -EnumsAsStrings #-EscapeHandling Default
@@ -482,10 +500,14 @@ if ($true) {
     Write-Warning 'finish formatter, replaces all file info with strings, datetime with string, process as string, etc'
 }
 
-if ($false) {
 
+if ($____debug.Export_Module_Listing_On_Startup) {
+    "`$____debug.Export_Module_Listing_On_Startup: `$true from '$PSCommandPath'"
     # $destPrefix = $PSScriptRoot
     $destPrefix = Get-Item 'C:\nin_temp\1234'
+
+    Write-Verbose "Exporting Modules to: '${destPrefix}/*' "
+    Write-Information "Exporting Modules to: '${destPrefix}/*' "
 
     $parseResultSummary
     | ConvertTo-Json -Depth 20
@@ -499,9 +521,8 @@ if ($false) {
     | ConvertTo-Json -Depth 20
     | Set-Content -Path (Join-String $destPrefix 'ninModuleInfo-exportInfo.json') -Encoding utf8
     # todo: shared clean and required conditions 2022-03-30
-
-
 }
+
 # $fileList | ForEach-Object {
 #     $RelativePath = "$_.ps1"
 #     $src = Join-Path $PSSCriptRoot $RelativePath
