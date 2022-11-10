@@ -141,12 +141,19 @@ function iot.dev2 {
 function Inspect-ObjectProperty {
     <#
     .SYNOPSIS
-        quick obj property summarizes
+        quickly dump object property summaries 
     .NOTES
+        unstable, not ready for public consumption
         todo: make FormatData that sets max width on 'Value'
     .EXAMPLE
         $MyInvocation | io -SkipBlank | ? IsPrimitive -not  | ft
         $MyInvocation | io -SkipBlank -SkipPrimitive | ft
+    .example
+            gi . | io -SortBy <tab>
+
+        # completes to this. but keep hitting it.
+
+            gi . | io -SortBy Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize
     #>
     [Alias(
         'InspectObject',
@@ -159,20 +166,24 @@ function Inspect-ObjectProperty {
         [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [object]$InputObject,
+        [ArgumentCompletions(
+            # experimenting with completing more than one command
+            'Name | ft Type, Name, Value -AutoSize',   # experimenting with completing more than one command
+            'Type | ft Type, Name, Value -AutoSize',   
+            'Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize'   # experimenting with completing more than one command
+        )]
+        # [ValidateSet('Type', 'Value', 'Name', 'Length')]
+        $SortBy = 'Type',
 
         # [switch]$SkipBasic, # Primitive,
-        [Alias('sm')]
+        [Alias('sm')] # make skips also be a [string[]] list? 
         [switch]$SkipMost, # Primitive,
         [switch]$SkipPrimitive, # Primitive,
 
         [switch]$SkipNull,
 
         # empty, null or whitespace
-        [switch]$SkipBlank,
-
-        [ValidateSet('Type', 'Value', 'Name', 'Length')]
-        $SortBy = 'Type'
-
+        [switch]$SkipBlank
         # s
     )
     begin {
@@ -192,6 +203,10 @@ function Inspect-ObjectProperty {
     process {
         if ($Null -eq $InputObject) {
             return
+        }
+        $validateSetValues = 'Type', 'Value', 'Name', 'Length', 'Reported', 'IsBlank', 'IsNull', 'IsEmptyStr'
+        if( $SortBy  -notin $validateSetValues) {
+            Throw "invalid sortby type"
         }
         $summary = $InputObject.psobject.properties | ForEach-Object {
             $IsNull = $null -eq $_.Value

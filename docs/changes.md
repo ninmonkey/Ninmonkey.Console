@@ -1,6 +1,8 @@
 ## Version 0.2.20
 
-- When a Function's parameter is named `-Options`, it takes a hashtable top modify behavior
+### Functions with `-Options` Parameters
+
+- When a Function's parameter is named `-Options`, it takes a hashtable to modify behavior
 - Internally, functions always reference `-Options` as the hashtable `$Config`. This is to make it clear it's the merged settings
 - `-Options` functions often have a few templates that autocomplete. 
 
@@ -19,6 +21,16 @@ $Config = mergeHashtable -BaseHash @{ Name = 'fred' ; Region = 'east' } -OtherHa
 ```ps1
 # silently import
 Import-Module ninmonkey.Console -wa Ignore *>$null
+```
+
+- `Import-Module CompletionPredictor` is optional. 
+
+It's not the default because it has a pretty significant import cost relative most modules.
+```ps1
+# my default
+nin.ImportPSReadLine MyDefault_HistListView
+# if you don't care about the initial import time, try the CompletionPredictor
+nin.ImportPSReadLine Using_Plugin
 ```
 
 ### `Format-UnorderedList` aliased as `UL` and `join.UL`
