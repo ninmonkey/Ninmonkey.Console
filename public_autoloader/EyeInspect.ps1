@@ -26,14 +26,16 @@ function _inspectMacro {
     )
     # using -unique to only show one signature per Name
     if ($Short) { 
-        $target | Find-Member | Sort-Object Name -Unique | Format-Table -group MemberType
+        $target | Find-Member | Sort-Object Name -Unique | Format-Table #-group MemberType
     }
     else {     
-        $target | Find-Member | Sort-Object Name | Format-Table -group MemberType
+        $target | Find-Member | Sort-Object Name -unique | sort Type | Format-Table #-group MemberType
     }
     Write-ConsoleHorizontalRule
 
-    $target | Inspect-ObjectProperty
-    | sort name
-    | ? Type -NotMatch 'String' | Format-Table Name, Type, Value
+    $Target
+    | Inspect-ObjectProperty
+    | sort name -Unique | sort Type
+    # | ? Type -NotMatch 'String' 
+    | Format-Table Name, Type, Value
 }

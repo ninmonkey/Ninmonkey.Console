@@ -193,6 +193,7 @@ function Inspect-ObjectProperty {
         # s
     )
     begin {
+        $IsBasicTypeNames_list = @('Int32', 'Int16', 'long', 'double', 'Byte', 'String')
         $Str = @{
             'NullSymbol' = "<`u{2400}>"
             'TrueNull'   = '<Null>'
@@ -218,11 +219,19 @@ function Inspect-ObjectProperty {
             $IsNull = $null -eq $_.Value
             $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
             $IsEmptyStr = $_.Value -is 'string' -and $_.Value -eq [String]::Empty
+            $typeInfo = if( -not $blank) { $_.Value.GetType() }
+            
+            $isBasic = $false
+            if($typeInfo.Name -in $IsBasicTypeNames_list) { 
+                # to be extended
+                $isBasic = $true
+            }
+
             # $IsStrEmpty = $null -ne $_.Value -and $_.Value -is 'string' -and $_.Value.Length -eq 0 # overkill?
             # $_ | Format-List
 
             $reportedTypeName = $_.TypeNameOfValue -as 'type' | shortType
-            $typeName = if (! $IsNull) {
+            $typeName = if ( -not $IsNull) {
                 $_.Value | shortType
             }
             $HasSameTypes = $reportedTypeName -eq $typeName
@@ -230,12 +239,14 @@ function Inspect-ObjectProperty {
             $meta = @{
                 PSTypeName = 'nin.SummarizedObject.Property'
                 Reported   = $reportedTypeName
-                Type       = $typeName
                 Name       = $_.Name
+                Type       = $typeName
                 Value      = $_.Value
                 IsBlank    = $IsBlank
                 IsNull     = $isNull
                 IsEmptyStr = $IsEmptyStr
+                IsBasic    = $isBasicType
+                TypeInfo   = $TypeInfo
                 # IsEmptyList = $something -and $_.count -eq 0
             }
 
