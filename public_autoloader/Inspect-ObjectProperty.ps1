@@ -141,12 +141,24 @@ function iot.dev2 {
 function Inspect-ObjectProperty {
     <#
     .SYNOPSIS
-        quick obj property summarizes
+        quickly dump object property summaries 
     .NOTES
+        unstable, not ready for public consumption
         todo: make FormatData that sets max width on 'Value'
     .EXAMPLE
         $MyInvocation | io -SkipBlank | ? IsPrimitive -not  | ft
         $MyInvocation | io -SkipBlank -SkipPrimitive | ft
+    .example
+
+        gi . | io -SortBy <tab>
+
+        # pressing tab to complete  -SortBy will cycle full templates. This
+        
+            gi . | io -SortBy <tab>
+
+        # completes to this
+
+            gi . | io -SortBy Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize
     #>
     [Alias(
         'InspectObject',
@@ -159,23 +171,29 @@ function Inspect-ObjectProperty {
         [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [object]$InputObject,
+        [ArgumentCompletions(
+            # experimenting with completing more than one command
+            'Reported | Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize',
+            'Name | ft Type, Name, Value -AutoSize',   # experimenting with completing more than one command
+            'Type | ft Type, Name, Value -AutoSize',   
+            'Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize'   # experimenting with completing more than one command
+        )]
+        # [ValidateSet('Type', 'Value', 'Name', 'Length')]
+        $SortBy = 'Type',
 
         # [switch]$SkipBasic, # Primitive,
-        [Alias('sm')]
+        [Alias('sm')] # make skips also be a [string[]] list? 
         [switch]$SkipMost, # Primitive,
         [switch]$SkipPrimitive, # Primitive,
 
         [switch]$SkipNull,
 
         # empty, null or whitespace
-        [switch]$SkipBlank,
-
-        [ValidateSet('Type', 'Value', 'Name', 'Length')]
-        $SortBy = 'Type'
-
+        [switch]$SkipBlank
         # s
     )
     begin {
+        $IsBasicTypeNames_list = @('Int32', 'Int16', 'long', 'double', 'Byte', 'String')
         $Str = @{
             'NullSymbol' = "<`u{2400}>"
             'TrueNull'   = '<Null>'
@@ -193,15 +211,27 @@ function Inspect-ObjectProperty {
         if ($Null -eq $InputObject) {
             return
         }
+        $validateSetValues = 'Type', 'Value', 'Name', 'Length', 'Reported', 'IsBlank', 'IsNull', 'IsEmptyStr'
+        if( $SortBy  -notin $validateSetValues) {
+            Throw "invalid sortby type"
+        }
         $summary = $InputObject.psobject.properties | ForEach-Object {
             $IsNull = $null -eq $_.Value
             $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
             $IsEmptyStr = $_.Value -is 'string' -and $_.Value -eq [String]::Empty
+            $typeInfo = if( -not $blank) { $_.Value.GetType() }
+            
+            $isBasic = $false
+            if($typeInfo.Name -in $IsBasicTypeNames_list) { 
+                # to be extended
+                $isBasic = $true
+            }
+
             # $IsStrEmpty = $null -ne $_.Value -and $_.Value -is 'string' -and $_.Value.Length -eq 0 # overkill?
             # $_ | Format-List
 
             $reportedTypeName = $_.TypeNameOfValue -as 'type' | shortType
-            $typeName = if (! $IsNull) {
+            $typeName = if ( -not $IsNull) {
                 $_.Value | shortType
             }
             $HasSameTypes = $reportedTypeName -eq $typeName
@@ -209,12 +239,14 @@ function Inspect-ObjectProperty {
             $meta = @{
                 PSTypeName = 'nin.SummarizedObject.Property'
                 Reported   = $reportedTypeName
-                Type       = $typeName
                 Name       = $_.Name
+                Type       = $typeName
                 Value      = $_.Value
                 IsBlank    = $IsBlank
                 IsNull     = $isNull
                 IsEmptyStr = $IsEmptyStr
+                IsBasic    = $isBasicType
+                TypeInfo   = $TypeInfo
                 # IsEmptyList = $something -and $_.count -eq 0
             }
 

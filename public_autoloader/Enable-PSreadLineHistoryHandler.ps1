@@ -38,7 +38,7 @@ function Enable-NinHistoryHandler {
         autosave paths for future completions
     #>
     $LogPath = $script:__historyHandler.Path
-    Write-Debug "setting PSReadLine: AddToHistoryHandler '$LogPath'"
+    Write-warning "Enable-NinHistoryHandler: adding PSReadLine AddToHistoryHandler '$LogPath'"
     Set-PSReadLineOption -AddToHistoryHandler {
         <#
         .synopsis
