@@ -219,7 +219,7 @@ function Inspect-ObjectProperty {
             $IsNull = $null -eq $_.Value
             $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
             $IsEmptyStr = $_.Value -is 'string' -and $_.Value -eq [String]::Empty
-            $typeInfo = if( -not $blank) { $_.Value.GetType() }
+            $typeInfo = if( -not $isNull) { ($_.Value)?.GetType() }
             
             $isBasic = $false
             if($typeInfo.Name -in $IsBasicTypeNames_list) { 

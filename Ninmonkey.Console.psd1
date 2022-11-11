@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.22'
+    ModuleVersion     = '0.2.24'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
