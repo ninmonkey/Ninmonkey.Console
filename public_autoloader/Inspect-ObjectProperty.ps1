@@ -168,6 +168,7 @@ function Inspect-ObjectProperty {
         [object]$InputObject,
         [ArgumentCompletions(
             # experimenting with completing more than one command
+            'Reported | Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize',
             'Name | ft Type, Name, Value -AutoSize',   # experimenting with completing more than one command
             'Type | ft Type, Name, Value -AutoSize',   
             'Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize'   # experimenting with completing more than one command
