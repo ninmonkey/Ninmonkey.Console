@@ -21,6 +21,11 @@ function Format-UnorderedList {
         Pipe a list of something, convert to an Unordered List, or list of checkboxes
         fairly powerfull
     .EXAMPLE
+        PS># pressing tab on -Options will cycle templates
+
+            'a'..'f' | ul -Options <tab>
+
+    .EXAMPLE
         PS>   @(gi . ; get-date; 'hi', 'world') | ul
 
             - C:\test\Format-UnorderedList
@@ -95,6 +100,7 @@ function Format-UnorderedList {
     param(
         # list of objects/strings to add
         [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
         [string[]]$InputObject,
@@ -112,10 +118,15 @@ function Format-UnorderedList {
         [string]$BulletStr = '-',
         [ArgumentCompletions(
             '@{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }',
-            '@{
-                ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String
-                ULFooter  = (hr 0);
-            }',
+@'
+@{ ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String ; ULFooter  = (hr 0); }
+'@, #-replace '\r?', '',
+# @'
+# @{  todo: Can I use the -replace operator, acting as a const expression?
+#     ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String
+#     ULFooter  = (hr 0);
+# }
+# '@, #-replace '\r?', '',
             '@{ BulletStr = "•" }'
         )]
         [hashtable]$Options = @{}
@@ -176,6 +187,11 @@ $script:__moduleExists = @{
     'ClassExplorer' = [bool](Get-Module 'ClassExplorer')
 }
 
+
+@'
+## Header Text
+world
+'@ -eq "## Header Text`nworld"
 function Format-ShortSciTypeName {
     <#
     .synopsis

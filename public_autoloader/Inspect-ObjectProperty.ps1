@@ -149,9 +149,14 @@ function Inspect-ObjectProperty {
         $MyInvocation | io -SkipBlank | ? IsPrimitive -not  | ft
         $MyInvocation | io -SkipBlank -SkipPrimitive | ft
     .example
+
+        gi . | io -SortBy <tab>
+
+        # pressing tab to complete  -SortBy will cycle full templates. This
+        
             gi . | io -SortBy <tab>
 
-        # completes to this. but keep hitting it.
+        # completes to this
 
             gi . | io -SortBy Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize
     #>
