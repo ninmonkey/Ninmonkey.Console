@@ -40,8 +40,57 @@ nin.ImportPSReadLine Using_Plugin
 
 ![image](img/format-ul-completer.png)
 
+### New Experimental commands `Eye` and `io`
+
+- You can use `Eye` to get a quick view of something. 
+- For filterable output, `Inspect-ObjectProperty` aliased as `io` returns objects
+
+```ps1
+eye (get-date)
+eye (gi .)
+```
+- `io` inspects and views `psobject.properties`
+- `Eye` also uses `ClassExplorer\Find-Member`
+```ps1
+$PSStyle | io -SortBy Reported
+| ? Type  -notmatch 'string'
+| Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize
+```
+
+examples
+
+```ps1
+
+$t = gi .
+
+h1 'find non-blank properties'
+$t 
+| io -SortBy Reported
+| ? IsBlank -Not
+| Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize
+
+h1 'find blank properties'
+$t
+| io -sortBy Type
+| ? IsBlank
+| Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize
+
+h1 'ignore any null properties'
+$t
+| io -sortBy Type
+| ? -not IsNull
+| Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize
+```
+
+![image](https://user-images.githubusercontent.com/3892031/201253572-be9547ec-4587-4521-a66d-d75c8f445782.png)
+![image](https://user-images.githubusercontent.com/3892031/201253858-8091eb77-9747-4646-b4d7-ed711e7e3d10.png)
+
 ### bugfix
 
 - Auto reset the log from `Enable-NinHistoryHandler`, if it when size >= 5MB.
 - (Even before) It shouldn't have ran unless you explicitly call `Enable-NinHistoryHandler` 
 - changed the message to a warning, to prevent accidentally enabling it in a profile
+
+See: [changes.md](docs/changes.md) for more
+
+
