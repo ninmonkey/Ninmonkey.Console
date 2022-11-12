@@ -54,96 +54,106 @@ function Compare-StringSet {
         Compare-StringSet ('a'..'g') ('A'..'E')
     .example
         Compare-StringSet ('a'..'g') ('A'..'E') -Insensitive
+        Compare-StringSet ('a'..'g') ('A'..'E') -ci
     .LINK
         https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-6.0#hashset-and-linq-set-operations
-
     .NOTES
+        Future:
+            add custom [StringComparer] to enable **Smart Case Sensitive** 
+
+        Add Custom formatData     
+            When empty column format string as '∅'
+            intersect as ..
+            union ∪
+            '∉' etc
+
         other functions:
             .ctor, Add, Clear, Comparer, Contains, CopyTo, Count, CreateSetComparer, EnsureCapacity, Enumerator, ExceptWith, GetEnumerator, GetObjectData, IntersectWith, IsProperSubsetOf, IsProperSupersetOf, IsSubsetOf, IsSupersetOf, OnDeserialization, Overlaps, Remove, RemoveWhere, SetEquals, SymmetricExceptWith, TrimExcess, TryGetValue, UnionWith
     #>
     [Alias(
         'Set->CompareString'
     )]
+    [CmdletBinding()]
+    [OutputType('Object', 'StringSetComparisonResult')]
     param(
+        # First group of strings to compare
+        [Alias('Str1')]
         [string[]]$ListA,
-        [string[]]$ListB,
-        [switch]$Insensitive,
-        $ComparerKind
-        # [object]$ComparerFunc
-        # [hashtable]$Options
-    )
-    <#
-    todo: future:
-        When empty column format string as '∅'
-        intersect as ..
-        union ∪
-        '∉' etc
-    #>
-    class StringSetComparisonResult {
-        [Collections.Generic.List[String]]$Intersect
-        [Collections.Generic.List[String]]$RemainingLeft
-        [Collections.Generic.List[String]]$RemainingRight
-        [Collections.Generic.List[String]]$Union
-    }
-    $Config = @{
-        Insensitive  = $Insensitive
-        ComparerKind = $ComparerKind ?? [StringComparer]::InvariantCultureIgnoreCase
-    }
-    # wait-debugger
 
+        # second group of strings to compare
+        [Alias('Str2')]
+        [string[]]$ListB,
+
+        # sugar to choose current insensitive compare
+        [Alias('ci')]
+        [switch]$Insensitive,
+        # sugar to choose current sensitive compare
+        [Alias('cs')]
+        [switch]$Sensitive,
+
+        # If none is specified, then the inner 
+        # func _newSet uses the implicit constructor
+        [ArgumentCompletions(
+'([StringComparer]::CurrentCulture)',
+'([StringComparer]::CurrentCultureIgnoreCase)',
+'([StringComparer]::Ordinal)',
+'([StringComparer]::OrdinalIgnoreCase)',
+'([StringComparer]::InvariantCulture)',
+'([StringComparer]::InvariantCultureIgnoreCase)'
+        )]
+        [System.StringComparer]$ComparerKind
+    )
+    
+    class StringSetComparisonResult {
+        [Collections.Generic.HashSet[String]]$Intersect
+        [Collections.Generic.HashSet[String]]$RemainingLeft
+        [Collections.Generic.HashSet[String]]$RemainingRight
+        [Collections.Generic.HashSet[String]]$Union
+        [System.StringComparer]$ComparerKind = $ComparerKind # ?? "[`u{2400}]"
+    }
+    if($Sensitive) { 
+        $ComparerKind = [StringComparer]::CurrentCulture
+    }
+    if($Insensitive) { 
+        $ComparerKind = [StringComparer]::CurrentCultureIgnoreCase
+    }
     $results = [ordered]@{}
 
     function _newSet {
         # macro for a fresh instance
-        param( $InputList, $Comparer )
-        $Comparer ??= $Config.ComparerKind = [StringComparer]::InvariantCultureIgnoreCase
-        if($Config.Insensitive ) {
-            [Collections.Generic.List[String]]::new( $InputList )
+        # there's probably an easier way using .clone() but it didn't appear to work at the time
+        param( [string[]]$InputList, $Comparer )
+        $cmp = $Comparer ?? ([StringComparer]::InvariantCultureIgnoreCase)
+
+        if($Comparer ) {
+            [Collections.Generic.HashSet[String]]::new( [string[]]$InputList, $cmp )            
         } else {
-            [Collections.Generic.List[String]]::new( $InputList, $Comparer )
+            [Collections.Generic.HashSet[String]]::new( [string[]]$InputList )
         }
 
     }
 
-    # example:
-    # \
-# [Collections.Generic.List[String]]::new( [string[]]$letters, [StringComparer]::InvariantCultureIgnoreCase )
-    # if($Insensitive) {
-    #     $SetA = [Collections.Generic.List[String]]::new(
-    #         [string[]]$ListA,
-    #         [StringComparer]::InvariantCultureIgnoreCase )
-    #     $SetB = [Collections.Generic.List[String]]::new(
-    #         [string[]]$ListB,
-    #         [StringComparer]::InvariantCultureIgnoreCase )
-    # } else {
-    #     $SetA = [Collections.Generic.List[String]]::new( [string[]]$ListA)
-    #     $SetB = [Collections.Generic.List[String]]::new( [string[]]$ListB)
-    # }
-    $SetA = _newSet $ListA
-    $SetB = _newSet $ListB
+    $splatNew = @{
+        Comparer = $ComparerKind
+    }
+    $SetA = _newSet @splatNew $ListA
+    $SetB = _newSet @splatNew $ListB
 
     $SetA.IntersectWith( $setB )
     $results['Intersect'] = $SetA
 
-    $SetA = _newSet $ListA
-    $SetB = _newSet $ListB
+    $SetA = _newSet @splatNew $ListA
+    $SetB = _newSet @splatNew $ListB
 
     # $SetA -notin $results.Intersect
-    $results.'RemainingLeft' =  $SetA | ?{
-        $results.'Intersect' -notcontains $_
-    }
-    $results.'RemainingRight' =  $SetB | ?{
-        $results.'Intersect' -notcontains $_
-    }
+    $results.'RemainingLeft'  =  $SetA | ?{ $results.'Intersect' -notcontains $_ }
+    $results.'RemainingRight' =  $SetB | ?{ $results.'Intersect' -notcontains $_ }
 
-    $SetA = _newSet $ListA
-    $SetB = _newSet $ListB
+    $SetA = _newSet @splatNew $ListA
+    $SetB = _newSet @splatNew $ListB
 
     $SetA.UnionWith( $SetB )
     $results.'Union' = $SetA
 
-
     [StringSetComparisonResult]$Results
-
-    # [Collections.Generic.List[String]]::new( [string[]]('a', 'b')
 }
