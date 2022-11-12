@@ -95,7 +95,7 @@ function Compare-StringSet.experiment {
             [Collections.Generic.HashSet[String]]::new( [string[]]$List )
         }
     }
-    wait-debugger
+    # wait-debugger
 
     $results = [ordered]@{}
     $SetA = __rebuildSet $ListA
