@@ -187,11 +187,6 @@ $script:__moduleExists = @{
     'ClassExplorer' = [bool](Get-Module 'ClassExplorer')
 }
 
-
-@'
-## Header Text
-world
-'@ -eq "## Header Text`nworld"
 function Format-ShortSciTypeName {
     <#
     .synopsis

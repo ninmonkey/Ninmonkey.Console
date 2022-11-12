@@ -80,10 +80,10 @@ function Compare-StringSet {
         '∉' etc
     #>
     class StringSetComparisonResult {
-        [list[string]]$Intersect
-        [list[string]]$RemainingLeft
-        [list[string]]$RemainingRight
-        [list[string]]$Union
+        [Collections.Generic.List[String]]$Intersect
+        [Collections.Generic.List[String]]$RemainingLeft
+        [Collections.Generic.List[String]]$RemainingRight
+        [Collections.Generic.List[String]]$Union
     }
     $Config = @{
         Insensitive  = $Insensitive
@@ -98,26 +98,26 @@ function Compare-StringSet {
         param( $InputList, $Comparer )
         $Comparer ??= $Config.ComparerKind = [StringComparer]::InvariantCultureIgnoreCase
         if($Config.Insensitive ) {
-            [HashSet[string]]::new( $InputList )
+            [Collections.Generic.List[String]]::new( $InputList )
         } else {
-            [HashSet[string]]::new( $InputList, $Comparer )
+            [Collections.Generic.List[String]]::new( $InputList, $Comparer )
         }
 
     }
 
     # example:
     # \
-# [HashSet[String]]::new( [string[]]$letters, [StringComparer]::InvariantCultureIgnoreCase )
+# [Collections.Generic.List[String]]::new( [string[]]$letters, [StringComparer]::InvariantCultureIgnoreCase )
     # if($Insensitive) {
-    #     $SetA = [HashSet[string]]::new(
+    #     $SetA = [Collections.Generic.List[String]]::new(
     #         [string[]]$ListA,
     #         [StringComparer]::InvariantCultureIgnoreCase )
-    #     $SetB = [HashSet[string]]::new(
+    #     $SetB = [Collections.Generic.List[String]]::new(
     #         [string[]]$ListB,
     #         [StringComparer]::InvariantCultureIgnoreCase )
     # } else {
-    #     $SetA = [HashSet[string]]::new( [string[]]$ListA)
-    #     $SetB = [HashSet[string]]::new( [string[]]$ListB)
+    #     $SetA = [Collections.Generic.List[String]]::new( [string[]]$ListA)
+    #     $SetB = [Collections.Generic.List[String]]::new( [string[]]$ListB)
     # }
     $SetA = _newSet $ListA
     $SetB = _newSet $ListB
@@ -145,5 +145,5 @@ function Compare-StringSet {
 
     [StringSetComparisonResult]$Results
 
-    # [hashset[string]]::new( [string[]]('a', 'b')
+    # [Collections.Generic.List[String]]::new( [string[]]('a', 'b')
 }

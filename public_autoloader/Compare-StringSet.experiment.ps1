@@ -79,28 +79,29 @@ function Compare-StringSet.experiment {
         see also: [System.StringComparer]::InvariantCultureIgnoreCase
     #>
     class StringSetComparisonResult {
-        [list[string]]$Intersect
-        [list[string]]$RemainingLeft
-        [list[string]]$RemainingRight
-        [list[string]]$Union
+        [Collections.Generic.List[String]]$Intersect
+        [Collections.Generic.List[String]]$RemainingLeft
+        [Collections.Generic.List[String]]$RemainingRight
+        [Collections.Generic.List[String]]$Union
     }
-
     function __rebuildSet {
         param(
-            [List[String]] $List
+            [Parameter(Mandatory)]
+            [Collections.Generic.List[String]] $List = @()
         )
         if($Insensitive)  {
-            [HashSet[string]]::new( [string[]]$List,[stringComparer]::CurrentCultureIgnoreCase )
+            [Collections.Generic.HashSet[String]]::new( [string[]]$List,[StringComparer]::CurrentCultureIgnoreCase )
         } else {
-            [HashSet[string]]::new( [string[]]$List )
+            [Collections.Generic.HashSet[String]]::new( [string[]]$List )
         }
     }
+    wait-debugger
 
     $results = [ordered]@{}
     $SetA = __rebuildSet $ListA
     $SetB = __rebuildSet $ListB
-    # $SetA = [HashSet[string]]::new( [string[]]$ListA)
-    # $SetB = [HashSet[string]]::new( [string[]]$ListB)
+    # $SetA = [Collections.Generic.HashSet[String]]::new( [string[]]$ListA)
+    # $SetB = [Collections.Generic.HashSet[String]]::new( [string[]]$ListB)
 
     $SetA.IntersectWith( $setB )
     $results['Intersect'] = $SetA
@@ -125,5 +126,5 @@ function Compare-StringSet.experiment {
 
     [StringSetComparisonResult]$Results
 
-    # [hashset[string]]::new( [string[]]('a', 'b')
+    # [Collections.Generic.HashSet[String]]::new( [string[]]('a', 'b')
 }
