@@ -105,6 +105,8 @@ function Compare-StringSet {
         https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-6.0#hashset-and-linq-set-operations
     .LINK
         https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-7.0
+    .link
+        https://learn.microsoft.com/en-us/dotnet/api/system.predicate-1?view=net-7.0
     .NOTES
         Future:
             add custom [StringComparer] to enable **Smart Case Sensitive** 
@@ -118,7 +120,9 @@ function Compare-StringSet {
 
 
         other functions:
-            .ctor, Add, Clear, Compraer, Contains, CopyTo, Count, CreateSetComparer, EnsureCapacity, Enumerator, ExceptWith, GetEnumerator, GetObjectData, IntersectWith, IsProperSubsetOf, IsProperSupersetOf, IsSubsetOf, IsSupersetOf, OnDeserialization, Overlaps, Remove, RemoveWhere, SetEquals, SymmetricExceptWith, TrimExcess, TryGetValue, UnionWith
+            .ctor, Add, Clear, Comparer, Contains, CopyTo, Count, CreateSetComparer, EnsureCapacity, Enumerator, ExceptWith, GetEnumerator, GetObjectData, IntersectWith, IsProperSubsetOf, IsProperSupersetOf, IsSubsetOf, IsSupersetOf, OnDeserialization, Overlaps, Remove, RemoveWhere, SetEquals, SymmetricExceptWith, TrimExcess, TryGetValue, UnionWith
+        where-predicates
+            https://learn.microsoft.com/en-us/dotnet/api/system.predicate-1?view=net-7.0        
         LINQ:
             Union, Intersect, Except, Distinct
             <https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.hashset-1?view=net-7.0#hashset-and-linq-set-operations>    
@@ -131,10 +135,14 @@ function Compare-StringSet {
     param(
         # First group of strings to compare
         [Alias('Str1')]
+        [ValidateNotNull()]
+        [Parameter(Mandatory)]
         [string[]]$ListA,
 
         # second group of strings to compare
         [Alias('Str2')]
+        [ValidateNotNull()]
+        [Parameter(Mandatory)]
         [string[]]$ListB,
 
         # sugar to choose current insensitive compare
@@ -159,6 +167,7 @@ function Compare-StringSet {
         )]
         [System.StringComparer]$ComparerKind
     )
+    if($Sorted) { throw "NYI" }
     <#
     todo: future:
         When empty column format string as '∅'
@@ -207,166 +216,72 @@ function Compare-StringSet {
         # https://en.wikipedia.org/wiki/Symmetric_relation
         # https://en.wikipedia.org/wiki/Set_theory
 
-        
-
         [System.StringComparer]$ComparerKind = $ComparerKind # ?? "[`u{2400}]"
-        # todo: technically needs to be insensitive to ensure preserving original
-        # close enough for this sketch
-        [Collections.Generic.HashSet[String]]$OriginalSetA
-        [Collections.Generic.HashSet[String]]$OriginalSetB
+        
+        [ValidateNotNull()]
+        [Collections.Generic.List[Object]]$OriginalSetA = @()
+
+        [ValidateNotNull()]
+        [Collections.Generic.List[Object]]$OriginalSetB = @()
+
+        
+        <#
+        todo: technically needs to be insensitive to ensure preserving original
+        will it break, or be cleaner to have the list for original values
+        instead of [StringComparer]::InvariantCultureIgnoreCase
+        was:
+                # [Collections.Generic.HashSet[String]]::new( $OriginalSetA ),
+                # [Collections.Generic.HashSet[String]]::new( $OriginalSetB ),
+        vs
+        #>
+
 
         [Hashtable]$Meta = @{}
 
-        [string] PrettyPrint (  ) {
-            # return    ''               
+#         [string] PrettyPrint () { 
+# $template = @'
+# union A ∪ B 
+# intersection A ∩ B
+#     If A ∩ B = ∅, then A and B are said to be disjoint.
 
-            # https://www.compart.com/en/unicode/category/Sm
-            $Uni_Sources = @{
-                # more to get
-                'equalityTesting' = 0x223c..0x2281
-            }
-            $Uni = @{
-                'Equal'                   = @{
-                    'IsIdentical'       = "`u{2261}"
-                    'NotIsIdentical'    = "`u{2262}"
-                    'StrictlyEqual'     = "`u{2263}"
-                    'EqualByDefinition' = "`u{225D}"
-                    'QuestionedEqualTo' = "`u{225F}"
-                    'NotEqual'          = "`u{2260}"
-                    'ApproxEqualTo'     = "`u{2245}"            
-                }
-                # 'MathSymbol' = @{
-                #     Therefore = ''
-                    
-                # }
-                'Therefore'               = "`u{2234}"
-                'Because'                 = "`u{2235}"
-                Set                       = @{
-                    ForAll              = "`u{2200}"
-                    Complement          = "`u{2201}"
-                    ThereExists         = "`u{2203}"
-                    ThereDoesNotExist   = "`u{2204}"
-                    EmptySet            = "`u{2205}"
-                    ElementOf           = "`u{2208}"
-                    NotElementOf        = "`u{2209}"
-                    Empty               = "`u{2205}"
-                    ContainsAsMember    = "`u{220b}"
-                    NotContainsAsMember = "`u{220c}"                    
-                }
-                Operator                  = @{
-                    True           = "`u{22a6}"                    
-                    Assertion      = "`u{22a8}"                    
-                    Logical        = @{
-                        And = "`u{2227}"
-                        Or  = "`u{2228}"
-                    }
-                    Ring           = "`u{2218}"
-                    Bullet         = "`u{2219}"
-                    Intersection   = "`u{2229}"
-                    Union          = "`u{222a}"
-                    
-                    XOR            = "`u{22bb}"
-                    NAnd           = "`u{22bc}"
-                    Nor            = "`u{22bd}"
+# set difference A \ B (also written A − B)
+# symmetric difference A Δ B is
 
-                    LeftOuterJoin  = "`u{27d5}"
-                    RightOuterJoin = "`u{27d6}"
-                    FullOuterJoin  = "`u{27d7}"
+# symmetric difference A Δ B is the set of all things that belong to A or B but not both. One has
 
+#     A Δ B == (A \ B) u (B \ A)
 
-                }
-                
-                # todo: refactor: pipescript grab range and inline symbols
-                EmptySet                  = '∅'
+# cartesian product A × B is the set of all ordered pairs (a,b) such that a is an element of A and b is an element of B.
+# '@
+#             return $template
+#         }
 
-                Subset                    = "`u{2282}" # 
-                Superset                  = "`u{2283}" # 
-                NotSubset                 = "`u{2284}" # 
-                NotSuperSet               = "`u{2285}" # 
-                SubsetOrEqual             = "`u{2286}" # 
-                SupersetOrEqual           = "`u{2287}" # 
-                NeitherSubsetNorEqual     = "`u{2288}" # 
-                NeitherSuperSetNorEqual   = "`u{2289}" # 
-                 
-                SubsetOfWithNotEqual      = "`u{228a}" # 
-                SupersetOfWithNotEqual    = "`u{228b}" # 
-                NeitherSuperSetOfNorEqual = "`u{228c}" # 
-
-
-            }
-            function _addPair {
-                param(
-                    [Parameter(mandatory)][string]$KeyStr,
-                    [Parameter(mandatory)][string]$ValueStr
-                )
-                $meta[ $KeyStr ] = $ValueStr
-            }
-            $SetA = $This.OriginalSetA    
-            $SetB = $This.OriginalSetB
-            $meta = @{
-                Overlaps           = $SetA.Overlaps( $SetB )
-                SetEquals          = $SetA.SetEquals( $SetB )          
-                IsSubsetOf         = $SetA.IsSubsetOf($SetB)
-                IsProperSubsetOf   = $SetA.IsProperSubsetOf($SetB)
-                IsSupersetOf       = $SetA.IsSupersetOf($SetB)
-                IsProperSupersetOf = $SetA.IsProperSupersetOf($SetB)        
-            }
-            _addPair -KeyStr @(
-                'a {0} b' -f @( $Uni.Subset )
-            ) -ValueStr @(
-                $SetA.IsSubsetOf( $SetB )
-            )
-            _addPair -KeyStr @(
-                'b {0} a' -f @( $Uni.Subset )
-            ) -ValueStr @(
-                $SetB.IsSubsetOf( $SetA )
-            )
-            _addPair -KeyStr @(
-                'a {0} b' -f @( $Uni.IsProperSubsetOf )
-            ) -ValueStr @(
-                $SetA.IsProperSubsetOf( $SetB )
-            )
-            _addPair -KeyStr @(
-                'b {0} a' -f @( $Uni.Subset )
-            ) -ValueStr @(
-                $SetB.IsSubsetOf( $SetA )
-            )
-            # IsProperSubsetOf   = $SetA.IsProperSubsetOf($SetB)
-            # IsSupersetOf       = $SetA.IsSupersetOf($SetB)
-            # IsProperSupersetOf = $SetA.IsProperSupersetOf($SetB)
-
-            # $keyStr = 'a {0} b' -f @(
-            #     $Uni.Subset
-            # )
-            # $valueStr = '{0}' -f @(
-            #     $SetA.IsSubsetOf( $SetB )                                
-            # )
-            # $meta[$KeyStr] = $valueStr
-
-            $meta | Format-List -Force | Out-String | Write-Host
-            return [string]($Meta | Format-List -Force | Out-String | Join-String)
-            # 'ASubB?' = $SetA.IsSubsetOf($SetB)
-
-            if ($Sensitive) { 
-                $ComparerKind = [StringComparer]::CurrentCulture
-            }
-            if ($Insensitive) { 
-                $ComparerKind = [StringComparer]::CurrentCultureIgnoreCase
-            }
-            $results = [StringSetComparisonResult]@{
-                OriginalSetA = $ListA
-                OriginalSetB = $ListB
-            }
-        }
     }
-
     function _newSet {
         # macro for a fresh instance
         # there's probably an easier way using .clone() but it didn't appear to work at the time
-        param( [string[]]$InputList, $Comparer )
-        $cmp = $Comparer ?? ([StringComparer]::InvariantCultureIgnoreCase)
+        [OutputType('System.Collections.Generic.HashSet[String]]')]
+        [CmdletBinding()]
+        param( 
+            [Parameter(Mandatory)]
+            [string[]]$InputList,
 
-        if ($Comparer ) {
+            [AllowNull()]
+            [Parameter()]
+            [ArgumentCompletions(
+                '([StringComparer]::CurrentCulture)',
+                '([StringComparer]::CurrentCultureIgnoreCase)',
+                '([StringComparer]::Ordinal)',
+                '([StringComparer]::OrdinalIgnoreCase)',
+                '([StringComparer]::InvariantCulture)',
+                '([StringComparer]::InvariantCultureIgnoreCase)'
+            )]
+            [System.StringComparer]$ComparerKind
+            # default compares
+        )
+        $cmp = $ComparerKind # ?? Actually, maybe *do* throw ojn invalid comparer
+
+        if ($ComparerKind ) {
             [Collections.Generic.HashSet[String]]::new( [string[]]$InputList, $cmp )            
         }
         else {
@@ -378,7 +293,10 @@ function Compare-StringSet {
     $splatNew = @{
         Comparer = $ComparerKind
     }
-    
+    $results = [StringSetComparisonResult]@{
+        OriginalSetA = $ListA
+        OriginalSetB = $ListB
+    }
     # Note: without strongly typing, "_newSet" returns wrong types
     # I'm not exactly sure why , because the return statement is literally a constructor
     [ValidateNotNull()]
@@ -386,23 +304,12 @@ function Compare-StringSet {
 
     [ValidateNotNull()]
     [Collections.Generic.HashSet[String]]$SetB = _newSet @splatNew $ListB
-
-    $SetA.Intersect( $setB )
-    $results['Intersect'] = $SetA
-
-    $SetA = _newSet @splatNew $ListA
-    $SetB = _newSet @splatNew $ListB
-    
-    # $SetA -notin $results.Intersect
-    $results.'RemainingLeft' = '?' 
-    # $SetA | ?{ $results.'Intersect' -notcontains $_ }
-    $results.'RemainingRight' = '?'
-    #$SetB | ?{ $results.'Intersect' -notcontains $_ }
-    
+   
     $SetA = _newSet @splatNew $ListA
     $SetB = _newSet @splatNew $ListB
     $results.Intersect = $SetA.IntersectWith( $SetB ) && $SetA
 
+    
     $SetA = _newSet @splatNew $ListA
     $SetB = _newSet @splatNew $ListB
     $results.RemainingLeft = $SetA.ExceptWith( $SetB ) && $SetA
