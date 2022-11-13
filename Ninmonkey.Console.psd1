@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.25'
+    ModuleVersion     = '0.2.28'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -22,7 +22,7 @@
     Copyright         = '(c) Jake Bolton 2021-2022'
 
     # Description of the functionality provided by this module
-    Description       = 'Utilities to improve the quality of interactive use, the Command Line'
+    Description       = 'Utilities making the Command Line more fun'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion = ''

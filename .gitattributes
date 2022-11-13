@@ -1,11 +1,18 @@
+# 
+# binary files, custom handlers: https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
+# Custom determining text diffs
+# https://www.git-scm.com/docs/gitattributes/2.18.0#_generating_diff_text
+# 
+# [SO Examples diffing binary text files](https://superuser.com/a/706286)
 # Auto detect text files and perform LF normalization
 * text=auto
 
 # pwsh
 *.psd1 text=auto
+*.psm1 text=auto # fixes
 
 # Custom for Visual Studio
 *.cs     diff=csharp
 # PowerShell
-*.psd1  diff=astextplain
-*.xml   diff=astextplain
+#*.psd1  diff=astextplain
+#*.xml   diff=astextplain
