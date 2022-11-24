@@ -3,6 +3,7 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Format-RemoveAnsiEscape'
+        'Format-RemoveLogAnsiContent'
     )
     $publicToExport.alias += @(
         'StripAnsi' # 'Format-RemoveAnsiEscape'
@@ -54,9 +55,29 @@ function Format-RemoveAnsiEscape {
         }
         if ($StripEverything) {
             $InputObject -replace $Regex.StripAll, ''
-        } else {
+        }
+        else {
             $InputObject -replace $Regex.StripColor, ''
         }
 
     }
 }
+
+
+
+function Format-RemoveLogAnsiContent {
+    <#
+    .SYNOPSIS
+        strip ansi escapes, saving the result to the original file
+    .EXAMPLE
+        formatRemoveLogAnsiContent -LogPath 'c:\foo.log'
+    #>
+    param( [string]$LogPath )
+    if ( -not (Test-Path $LogPath) ) {
+        throw "Log does not exist: '$LogPath'"
+    }
+    # note, if not using -raw, some escapes are not replaced
+    $newContent = Get-Content $LogPath -Raw | StripAnsi
+    $newContent | Set-Content -Path $LogPath
+}
+

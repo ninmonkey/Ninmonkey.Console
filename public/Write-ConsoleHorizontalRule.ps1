@@ -52,6 +52,7 @@ function Write-ConsoleHorizontalRule {
             $padding, $chars, $padding
         ) -join ''
 
+        $NoColor = $NoColor -or $ENV:NO_COLOR
         if ($NoColor) {
             $output
         }
