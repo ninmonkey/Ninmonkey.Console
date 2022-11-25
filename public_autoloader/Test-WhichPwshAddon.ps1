@@ -79,8 +79,17 @@ function __format_whichPwshAddon {
         formats output from (Test-WhichPwshAddon)
     #>
     param()
+    $Str = @{
+        PSVersion = $PSVersionTable.PSVersion -join ''
+    }
+    $render = @(
+        '{0}' -f @(
+            $PSVersion
+        )
 
-    return "nyi func: __format_whichPwshAddon: $PSCommandPath"
+
+    )
+    return $render # "nyi func: __format_whichPwshAddon: $PSCommandPath"
 }
 function Test-WhichPwshAddon {
     <#
@@ -118,10 +127,17 @@ function Test-WhichPwshAddon {
         # string to either print to the user, or as a template for posting in bug reports
         [switch]$AsGitIssueReportString,
 
+        [switch]$CacheResults,
         [hashtable]$Options = @{}
     )
     $Config = Join-Hashtable -OtherHash $Options -BaseHash @{
 
+    }
+    $optionalEnvVar_splat = @{
+        ea = 'ignore'
+    }
+    if ( $CacheResults ) {
+        throw 'NYI: cache expensive/all tests'
     }
 
     $family = $script:___t_wpa.familyTree
@@ -131,11 +147,11 @@ function Test-WhichPwshAddon {
     }
     else { [string]::Empty }
 
-    if($false -and 'disabled') {
+    if ($false -and 'disabled') {
         @{
-            IsDbgEnabled = (get-host).DebuggerEnabled
+            IsDbgEnabled           = (Get-Host).DebuggerEnabled
             ListExtensionsVersions = & 'code.cmd' --list-extensions --show-versions | Select-String '(ms-vscode.power|powerquery)' -Raw | Join-String -sep "`n"
-            Runspace  = (get-host).Runspace
+            Runspace               = (Get-Host).Runspace
         }
     }
 
@@ -145,23 +161,29 @@ function Test-WhichPwshAddon {
         IsPSEditor         = $PSEditor
         PwshEdition_Dll    = $PSEdition.GetType().Assembly.Location | Get-Item
         EditorServices_Dll = $EditServicesDLL
-        ParentName  = (Get-Process -Id $pid).Parent.name # so far: Code|WindowsTerminal, probably insiders/previews
+        ParentName         = (Get-Process -Id $pid).Parent.name # so far: Code|WindowsTerminal, probably insiders/previews
 
         Is                 = [Ordered]@{
-            Host = @{
-                VsCode = (get-host).Name -match 'Visual Studio Code'
-                DebuggerEnabled =  (get-host).DebuggerEnabled
+            Host             = @{
+                VsCode          = (Get-Host).Name -match 'Visual Studio Code'
+                DebuggerEnabled = (Get-Host).DebuggerEnabled
             }
-            Ivy       = 'nyi'
-            Code      = (get-host).Name -match 'Visual Studio Code'
-            Any       = 'nyi'
-            WT        = (Get-ChildItem Env:\WT_*).count -gt 0
-            WslEnv    = (Get-ChildItem Env:\WSLENV).count -gt 0
-            NoProfile = ( [Environment]::GetCommandLineArgs() -join '' -match '(-nop|-noprofile)' )
-            UsingProfile = ''
+            In = @{
+                GitRepo = 'nyi: any subpath'
+                GitRoot = 'nyi: root or not subpath'
+            }
+            ShellIntegration = (Get-Command prompt).ScriptBlock -match '(`e|[\x1b])\]633'
+            Ivy              = 'nyi'
+            Code             = (Get-Host).Name -match 'Visual Studio Code'
+            Any              = 'nyi'
+            WT               = (Get-ChildItem @optionalEnvVar_splat 'Env:\WT_*').count -gt 0
+            WslEnv           = (Get-ChildItem @optionalEnvVar_splat 'Env:\WSLE').count -gt 0
+            NoProfile        = ( [Environment]::GetCommandLineArgs() -join '' -match '(-nop|-noprofile)' )
+            UsingProfile     = -not ( [Environment]::GetCommandLineArgs() -join '' -match '(-nop|-noprofile)' )
 
-            Addon     = @{
-                Any  = $null
+
+            Addon            = @{
+                Any     = $null
                 Preview = ($EditServicesDLL.FullName -match 'ms-vscode.powershell-preview') -or (
                     [Environment]::GetCommandLineArgs() -join '' -match 'ms-vscode.powershell-preview')
                 Regular = ($EditServicesDLL.FullName -match 'ms-vscode.powershell') -and (
@@ -169,14 +191,14 @@ function Test-WhichPwshAddon {
 
             }
 
-            OSWindows = $PSVersionTable.Platform -match 'win(32|64)' -or $PSVersionTable.OS -match 'microsoft.*windows'
+            OSWindows        = $PSVersionTable.Platform -match 'win(32|64)' -or $PSVersionTable.OS -match 'microsoft.*windows'
             # OSLinux = if ($PSVersionTable.Platform -match 'linux|ubuntu' -or $PSVersionTable.OS -match 'linux|ubuntu') {
             #     else { 'to be expanded. partially not done' }
 
             #     OSDocker = if ($PSVersionTable.Platform -match 'linux|ubuntu' -or $PSVersionTable.OS -match 'linux|ubuntu') {
             #         else { 'to be expanded. partially not done' }
             #     }
-            Pwsh      = [ordered]@{
+            Pwsh             = [ordered]@{
                 Version   = $PSVersionTable.ToString()
                 PSEdition = $PSVersionTable.PSEdition
 
@@ -212,7 +234,7 @@ function Test-WhichPwshAddon {
     # $meta.Is.UsingProfile = -not $meta.Is.NoProfile
 
     $obj = [pscustomobject]$Meta
-    if($AsGitIssueReportString) {
+    if ($AsGitIssueReportString) {
         return (__format_whichPwshAddon $Obj)
     }
 
