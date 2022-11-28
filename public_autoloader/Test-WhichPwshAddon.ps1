@@ -103,6 +103,8 @@ function Test-WhichPwshAddon {
         Pwsh>   _collectProcFamilyTree
     .notes
 
+        see: <https://github.com/PowerShell/PowerShellEditorServices#named-pipesunix-domain-sockets-recommended>
+
         maybe:
 
                 EditorServicesRunning = if ( (Get-Module 'EditorServicesCommandSuite', 'PowerShellEditorServices.Commands', 'PowerShellEditorServices.VSCode').count -gt 2 ) {

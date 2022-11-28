@@ -1,6 +1,6 @@
 
 using namespace System.Collections.Generic
-using namespace System.Management.Automation;
+using namespace System.Management.Automation
 
 #Requires -Version 7
 

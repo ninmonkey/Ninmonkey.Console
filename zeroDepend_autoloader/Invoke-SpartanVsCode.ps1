@@ -1,12 +1,20 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
-        'Invoke-SpartanVsCode'
+
+        'Invoke-VsCodeProfile'
         'New-SpartanVsCodeEnvironment'
     )
     $publicToExport.alias += @(
+        'Invoke-SpartanVsCode' # backward compat alias, to remove next build. 'Invoke-VsCodeProfile'
 
-        # 'GoCode' # 'Invoke-SpartanVsCode'
-
+        'Code-vEnv' # 'Invoke-VsCodeProfile'
+        'CodeI-vEnv' # 'Invoke-VsCodeProfile'
+        # extra alias to consolidate from dev.nin
+        # 'Code-vEnv',
+        # 'CodeI-vEnv',
+        # 'Collect-VSCodeEnv',
+        # 'Out-CodeIvEnv',
+        # 'Out-CodevEnv'
     )
 }
 
@@ -16,17 +24,24 @@ function New-SpartanVsCodeEnvironment {
 
     )
     throw 'NYI, then update: <https://github.com/PowerShell/vscode-powershell/issues/4280>'
-    $QualifiedRootPath = JOin-Path  'h:\env\code_auto' $NameOfVenv
-    if( -not (Test-Path )) {
+    $QualifiedRootPath = Join-Path 'h:\env\code_auto' $NameOfVenv
+    if ( -not (Test-Path )) {
         throw "Path Already Exists! $QualifiedRootPath"
     }
     # New-Item -ItemType -Directory -
     # H:\env\code
 }
-function Invoke-SpartanVsCode {
+function Invoke-VsCodeProfile {
     <#
     .synopsis
-        launch "virtualenvs" for vs code
+        launch "virtualenvs" for vs code, with their own user data dir, and addons dir
+    .DESCRIPTION
+        Useuful for creating minimally-reproduced test cases for error reporting
+        Or, different settings when you aren't using a workspace config
+
+        I had an older 'venv' which was hacky. New arguments make
+        loading custom environments (with the same VsCode binary instance)
+
     .example
         Invoke-SpartanVsCode
     .example
@@ -38,37 +53,72 @@ function Invoke-SpartanVsCode {
             - [ ] better invocation so that STDIN can be used
             - [ ] log paths used
     #>
-    PARAM(
-        [ArgumentCompletions('h:\env')]
-        [Parameter()]
-        [string]$VEnvRootPath = 'h:\env',
-
-
-        [Parameter()]
-        [ArgumentCompletions('code_fast', 'TestOf.PowerQuery', 'TestOf.PwshConsole')]
+    [Alias(
+        'Invoke-SpartanVsCode',
+        # extra alias to consolidate from dev.nin
+        'Code-vEnv',
+        'CodeI-vEnv'
+        # 'Collect-VSCodeEnv',
+        # 'Out-CodeIvEnv',
+        # 'Out-CodevEnv'
+    )] # make alias always auto invoke mini profile?
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] # To be mandatory, or always do the mini one?
+        [Alias('Label')]
+        [ArgumentCompletions(
+            'forTest.vscode_EditorServices',
+            'forTest.vscode_PowerQuery',
+            'forTest.vscode_EditorServices',
+            'forTest.Pwsh_console',
+            'fast_load'
+            # 'TestOf.PowerQuery'
+        )]
         [string]$NameVEnv = 'code_fast',
+
+        # Root path for all 'venv'.
+        # Added to $Label for FullPath
+
+        [Parameter()]
+        [Alias('EnvRoot')]
+        [ArgumentCompletions(
+            'h:/env/code',
+            'h:/env'
+        )]
+        [string]$VEnvRootPath = 'h:/env/code',
+
+        # todo: currentlyh a quick hack before ShouldProcess
+        [switch]$WhatIf,
+
+
 
         [hashtable]$Options = @{}
     )
     $Config = Join-Hashtable -OtherHash $Options -BaseHash @{
-        PathVenvRoot = Get-Item $VEnvRootPath
+        # PathVenvRoot = (Get-Item $VEnvRootPath -ea ignore ) ?? ()
+        UserDataDir = Join-Path $VenvRootPath $NameVenv 'data' # ex: H:\env\code\env_fast\data
+        AddonsDir   = Join-Path $VenvRootPath $NameVenv 'addons' # ex: H:\env\code\env_fast\addons
     }
 
-    $Config | Format-Table -auto | Join-String -op "SpartanConfig: `n" | Write-Warning
+    $COnfig | Format-Table -auto | oss | Join-String -sep "`n" | Write-Verbose
 
-    $user_data_dir = Join-Path 'H:\env\code\env_fast' 'data'
-    $addons_dir = Join-Path 'H:\env\code\env_fast' 'addons'
+    # $user_data_dir = Join-Path 'H:\env\code\env_fast' 'data'
+    # $addons_dir = Join-Path 'H:\env\code\env_fast' 'addons'
     $c_args = @(
-        '--extensions-dir',
-        $addons_dir,
-        '--user-data-dir',
-        $user_data_dir,
-        '--profile',
-        'fast',
-        '--add',
-     (Get-Item $Path)
+        '--extensions-dir'
+        $addons_dir | Join-String -DoubleQuote  # Don't even need ?
+        '--user-data-dir'
+        $user_data_dir | Join-String -DoubleQuote  # Don't even need ?
+        '--profile'
+        $NameVenv # Label
+        '--add'
+        # (Get-Item $Path) # Don't even need ?
+        (Get-Item 'H:\data\2022') | Join-String -DoubleQuote  # Don't even need ?
     )
 
-    $c_args | Format-Table -auto | Join-String -op "code.cmd args: " | Write-Warning
+    $c_args | Format-Table -auto | Join-String -op 'code.cmd args: ' | Write-Warning
+    if ($WhatIf) {
+        return
+    }
     & code.cmd @c_args
 }
