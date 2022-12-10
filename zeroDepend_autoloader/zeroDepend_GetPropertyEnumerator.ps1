@@ -4,6 +4,7 @@ if ( $publicToExport ) {
     $publicToExport.function += @(
         'Get-PropertyEnumerator'
         'Get-BaseTypeInfo'
+        'iprop.basic'
     )
     $publicToExport.alias += @(
         'iter->Prop' # 'Get-PropertyEnumerator'
@@ -12,6 +13,25 @@ if ( $publicToExport ) {
     )
 }
 
+
+function iprop.basic {
+    <#
+        .synopsis
+            sugar to iterate over properties
+        .example
+            gi . |  iprop | ft Name, TypeNameOfValue, Value
+        .example
+            gi . | iprop
+            | sort TypeNameOfValue, Name
+            | ft -AutoSize Name, Value -GroupBy TypeNameOfValue
+        .example
+             get-date | iprop | ? TypeNameOfValue -notmatch 'string|int' |Ft
+        #>
+
+    process {
+        $_.PSObject.Properties | Sort-Object Name
+    }
+}
 
 function Get-BaseTypeInfo {
     <#
@@ -55,7 +75,7 @@ function Get-BaseTypeInfo {
 function Get-PropertyEnumerator {
     <#
     .synopsis
-        iterate/enumerate an object's properties  [zero depend]
+        iterate/enumerate an object's properties  [zero dependency]
     .example
         PS> gi . | IterProp
     .example
@@ -75,17 +95,18 @@ function Get-PropertyEnumerator {
     # [OuptputType('[System.Management.Automation.PSMemberInfoCollection[[System.Management.Automation.PSPropertyInfo, System.Management.Automation]]]')]
     [CmdletBinding()]
     param(
-        # What to enumerate
+        # Object[s] to enumerate
         [Parameter(Mandatory, ValueFromPipeline)]
         [object[]]$InputObject
     )
     begin {
-        [list[object]]$items = [list[object]]::new()
+        [Collections.Generic.List[Object]]$items = @()
     }
     process {
         $items.AddRange( $InputObject )
     }
     end {
-        return $items.psobject.properties
+        $items.psobject.properties | Sort-Object Name -Descending
     }
 }
+

@@ -72,12 +72,15 @@ function Format-RemoveLogAnsiContent {
     .EXAMPLE
         formatRemoveLogAnsiContent -LogPath 'c:\foo.log'
     #>
+    [CmdletBinding()]
     param( [string]$LogPath )
     if ( -not (Test-Path $LogPath) ) {
-        throw "Log does not exist: '$LogPath'"
+        Write-Verbose "Log does not exist: '$LogPath'"
+        return
     }
     # note, if not using -raw, some escapes are not replaced
     $newContent = Get-Content $LogPath -Raw | StripAnsi
+
     $newContent | Set-Content -Path $LogPath
 }
 
