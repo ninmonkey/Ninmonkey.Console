@@ -143,8 +143,6 @@ function Find-FunctionChildItem {
             if ($PassThru) {
                 return $cmd.ScriptBlock.Ast.Extent
             }
-            # todo: simplify using Ninmonkey.Console\Code-Venv
-
 
             $cmd.ScriptBlock.Ast.Extent.File
             | Join-String -op 'loading:... <' -os '>' { $_ }
