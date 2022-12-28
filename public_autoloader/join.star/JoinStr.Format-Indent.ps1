@@ -2,8 +2,12 @@
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
-        '?? Format-UnorderedList'
-        '?? Format-JoinLines'
+        # '?? Format-UnorderedList'
+        # '?? Format-JoinLines'
+        'StrFormat-NormalizeLines'
+        'StrFormat-Replace'
+        'StrJoin-Lines'
+        'StrSplit-Lines'
     )
     $publicToExport.alias += @(
         # 'UL'      # 'Format-UnorderedList'
@@ -12,36 +16,92 @@ if ( $publicToExport ) {
 }
 # Requires: Ninmonkey.Console\zeroDepend_autoloader\Format-ShortTypeName.ps1
 
-function StrSplit-Lines  {
+'📚 NOT FINISHED : Experiment ==> init ==>  C:\Users\cppmo_000\SkyDrive\Documents\2021\powershell\My_Github\ninmonkey.console\public_autoloader\join.star\JoinStr.Format-Indent.ps1/02d9a678-f388-4f18-bc03-f8f4939bb216' | Write-Warning
+function StrSplit-Lines {
+    # Split on lines parameter set experiment
+    <#
+    .SYNOPSIS
+        Split on common delimiters
+
+    .example
+        PS> 0..4 -join "`r`n"
+        | StrSplit-Lines -SplitPattern '\n'
+        | fcc | Should -BeExactly '0␍1␍2␍3␍4'
+
+    #>
+    param(
+        # potential input lines
+        [Alias('Text')]
+        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'fromPipe')]
+        [Parameter(Mandatory, Position = 0, ParameterSetName = 'fromParam')]
+        [string[]]$InputLines,
+
+        [ArgumentCompletions(
+            "'\r?\n'",
+            "'\n'",
+            "';'",
+            "','",
+            "'='"
+        )]
+        [Parameter(Position = 0, ParameterSetName = 'fromPipe')]
+        [Parameter(Position = 1, ParameterSetName = 'fromParam')]
+        [string]$SplitPattern = '\r?\n' # maybe it can be non-mandatory
+    )
+    process {
+        foreach ($line in $InputLines) {
+            # more performant string builder
+            # $sb = [Text.StringBuilder]::new($Line)
+            $Line -split $SplitPattern
+        }
+    }
+}
+
+function StrFormat-Replace {
+    <#
+    .notes
+        refactor will have
+        fn 'StrFormat-NormalizeLines'
+        call this:
+
+            PS> StrFormat-Replace '\r?\n', "`n"
+
+    #>
+    # [NotYetImplementedAttibute('reason: abcd')]
+    [CmdletBinding()]
+    param()
+    throw "NYI: but this will be part of 'StrFormat-NormalizeLines' refactor"
 
 }
-write-warning "NOT FINISHED $PSCommandPath"
 function StrFormat-NormalizeLines {
     <#
     .SYNOPSIS
         normalize line endings
     .notes
+        first:
+            - [ ] generalize, then the impl. will invoke
+                PS> StrFormat-Replace '\r?\n', "`n"
+
         future: perhaps split command, sometimes
             - [ ] replace as steppable pipe,
             - [ ] verses merge all then replace
-            
+
             and whether the final value should be split string or not
-            - [ ] test on giant strings, to discover if anything is super anti-performant.                    
+            - [ ] test on giant strings, to discover if anything is super anti-performant.
     #>
     [OutputType('System.String')]
     param(
         [string[]]
         $InputLines
-        
+
     )
     begin {
-        write-warning "NOT FINISHED $PSCommandPath"
+        Write-Warning "NOT FINISHED $PSCommandPath"
         # [Text.StringBuilder]$StringBuilder = [String]::Empty
         [Text.StringBuilder]$StringBuilder = ''
     }
     process {
-        
-        foreach($Line in $Lines) {
+
+        foreach ($Line in $Lines) {
             "StrFormat-NormalizeLines: Line:`n    '$Line'" | Write-Debug
             $StrBuild.AppendLine($Line)
         }
@@ -133,37 +193,37 @@ function StrJoin-Lines {
         # 'join.UL'
     )]
     param(
-#         # list of objects/strings to add
-#         [AllowEmptyCollection()]
-#         [AllowEmptyString()]
-#         [AllowNull()]
-#         [Parameter(Mandatory, ValueFromPipeline)]
-#         [string[]]$InputObject,
+        #         # list of objects/strings to add
+        #         [AllowEmptyCollection()]
+        #         [AllowEmptyString()]
+        #         [AllowNull()]
+        #         [Parameter(Mandatory, ValueFromPipeline)]
+        #         [string[]]$InputObject,
 
-#         # todo: Make custom arg completer
-#         # with parameter, so I can say 'use set X'
-#         # like 'arrows', or 'bars', or 'checkbox'
-#         [ArgumentCompletions(
-#             '•', '-', '‣',
-#             '[ ]', '[x]',
-#             '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎'
-#         )]
+        #         # todo: Make custom arg completer
+        #         # with parameter, so I can say 'use set X'
+        #         # like 'arrows', or 'bars', or 'checkbox'
+        #         [ArgumentCompletions(
+        #             '•', '-', '‣',
+        #             '[ ]', '[x]',
+        #             '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎'
+        #         )]
 
-#         # sets bullet types, but if overriden in -Options, Options has priority
-#         [string]$BulletStr = '-',
-#         [ArgumentCompletions(
-#             '@{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }',
-# @'
-# @{ ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String ; ULFooter  = (hr 0); }
-# '@, #-replace '\r?', '',
-# # @'
-# # @{  todo: Can I use the -replace operator, acting as a const expression?
-# #     ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String
-# #     ULFooter  = (hr 0);
-# # }
-# # '@, #-replace '\r?', '',
-#             '@{ BulletStr = "•" }'
-#         )]
+        #         # sets bullet types, but if overriden in -Options, Options has priority
+        #         [string]$BulletStr = '-',
+        #         [ArgumentCompletions(
+        #             '@{ ULHeader = (hr 0) ; ULFooter  = (hr 0); }',
+        # @'
+        # @{ ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String ; ULFooter  = (hr 0); }
+        # '@, #-replace '\r?', '',
+        # # @'
+        # # @{  todo: Can I use the -replace operator, acting as a const expression?
+        # #     ULHeader =  @( (hr 1) ; Label "Newest Files" "c:/temp"  ) | Join-String
+        # #     ULFooter  = (hr 0);
+        # # }
+        # # '@, #-replace '\r?', '',
+        #             '@{ BulletStr = "•" }'
+        #         )]
         [hashtable]$Options = @{}
     )
     begin {

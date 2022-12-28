@@ -1,5 +1,4 @@
-﻿using namespace System.Text
-
+﻿#requires -Version 7.0
 
 function Format-ControlChar {
     <#
@@ -91,7 +90,7 @@ function Format-ControlChar {
         $controlMin = $Filters.'ControlChars_C0'.min
         $controlMax = $Filters.'ControlChars_C0'.max + 1 # Because space isn't in C0
         $NullStr = "`u{2400}"
-        $bufferSB = [StringBuilder]::new()
+        $bufferSB = [Text.StringBuilder]::new()
 
         $Config = Join-Hashtable $Config ($Options ?? @{})
     }
@@ -108,6 +107,7 @@ function Format-ControlChar {
                 $Codepoint = $RuneInfo.Value
                 if ($Codepoint -ge $controlMin -and $Codepoint -le $controlMax ) {
                     if ($PreserveNewline) {
+                        # todo: support '\r?\n' pairs
                         if ($Codepoint -in $Filters.Newlines.values ) {
                             [void]$bufferSB.Append( [char]::ConvertFromUtf32( $Codepoint ) )
                             return
