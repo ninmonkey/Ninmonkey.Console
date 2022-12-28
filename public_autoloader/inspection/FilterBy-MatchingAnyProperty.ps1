@@ -5,8 +5,8 @@ if ( $publicToExport ) {
         'FilterBy-MatchesAnyProperty'
     )
     $publicToExport.alias += @(
-        'experiment.MatchesAnyProp' # is 'FilterBy-MatchesAnyProperty'
-        '?PropMatch'                # is 'FilterBy-MatchesAnyProperty'
+        # 'experiment.MatchesAnyProp' # is 'FilterBy-MatchesAnyProperty'
+        '?AnyPropMatch'                # is 'FilterBy-MatchesAnyProperty'
     )
 }
 
@@ -24,8 +24,7 @@ function FilterBy-MatchesAnyProperty {
     [Alias(
         # 'FilterBy-MatchesAnyProperty'
         # 'FilterBy-MatchesAnyProperty'
-
-        '?PropMatch',
+        '?AnyPropMatch',
         'experiment.MatchesAnyProp'
     )]
     # [NinCmdInfo(isExperimental=$true, reason|details='brand new, name will change'] # create attribute
@@ -41,18 +40,24 @@ function FilterBy-MatchesAnyProperty {
         [string]$Regex,
 
         [Parameter(ValueFromPipeline)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # Test-MatchesAnyProperty should be a proxy instead?
+        [Alias('AsBool')]
+        [switch]$TestAsBool
     )
 
     process {
-        $matchedAny = $false
+        [bool]$matchedAny = $false
 
         foreach ($curPropName in $PropertyNames) {
             $isMatching = $InputObject.PSObject.Properties['name'].Value -match $Regex
-            'Regex: "{0}" isMatching {1} on property "{2}"' -f @(
+            $curPropValue = $InputObject.PSObject.Properties['name'].Value
+            'Regex: "{0}" isMatching? {1} on property "{2}" with value "{3}"' -f @(
                 $Regex
                 $isMatching
                 $curPropName
+                $curPropValue
             )
             | Write-Verbose
             if ($isMatching) {
@@ -61,7 +66,11 @@ function FilterBy-MatchesAnyProperty {
             }
 
         }
+        if ($TestAsBool) {
+            return $matchedAny
+        }
 
+        # else act as a filter
         if (-not $matchedAny) {
             return
         }
