@@ -8,15 +8,85 @@ if ( $publicToExport ) {
         'StrFormat-Replace'
         'StrJoin-Lines'
         'StrSplit-Lines'
+        'StrFormat-Predent.proto' # replace with: 'StrFormat-Predent
+
     )
     $publicToExport.alias += @(
-        # 'UL'      # 'Format-UnorderedList'
-        # 'join.UL' # 'Format-UnorderedList'
+        'Join.Predent' # is 'StrFormat-Predent.proto'
+        # or alias to  'StrJoin-Predent' ?
+        # 'UL'      # is 'Format-UnorderedList'
+        # 'join.UL' # is 'Format-UnorderedList'
     )
 }
 # Requires: Ninmonkey.Console\zeroDepend_autoloader\Format-ShortTypeName.ps1
 
 '📚 NOT FINISHED : Experiment ==> init ==>  C:\Users\cppmo_000\SkyDrive\Documents\2021\powershell\My_Github\ninmonkey.console\public_autoloader\join.star\JoinStr.Format-Indent.ps1/02d9a678-f388-4f18-bc03-f8f4939bb216' | Write-Warning
+
+function StrFormat-Predent.proto {
+    <#
+    .SYNOPSIS
+        predent each line. doesn't force a string join, returns array
+    .EXAMPLE
+        PS> # Fun
+            0..10 | %{ "Item: $_";  $_ | Join.Predent | Join.Predent }
+    .EXAMPLE
+        PS> #now crazy
+        # compare
+
+        0..20 | %{ $_ | Join.Predent $_ | Join.Predent ($_ % 3) }
+        0..10| %{ $_ | Join.Predent $_ | Join.Predent ($_ % 2) }
+    .EXAMPLE
+    Ps7┐ 0..10| %{ $_ | Join.Predent ($_ % 5) | Join.Predent ($_ % 2) }
+
+            0
+            1
+            2
+                3
+                4
+            5
+            6
+            7
+            8
+                9
+            10
+    Ps7┐ 0..40| %{ $_ | Join.Predent ($_ % 5) | Join.Predent ($_ % 2) }
+            0
+            1
+            2
+                3
+                4
+            5
+            6
+            7
+            8
+                9
+            10
+            11
+            12
+                13
+                14
+            15
+            16
+            17
+            18
+                19
+            20
+            21
+            22
+                23
+                24
+
+    #>
+    [Alias('Join.Predent')]
+    param(
+        [int]$Depth = 4,
+        [string]$IndentString = ' '
+    )
+    $PrefixStr = $IndentString * $Depth -join ''
+    $Input | ForEach-Object {
+        return "${PrefixStr}${_}"
+    }
+}
 function StrSplit-Lines {
     # Split on lines parameter set experiment
     <#
