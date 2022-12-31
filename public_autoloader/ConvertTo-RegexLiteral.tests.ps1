@@ -1,44 +1,67 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
+BeforeAll {
+    Import-Module Ninmonkey.Console -Force
+    # $ErrorActionPreference = 'Stop'
+}
 
 Describe 'ConvertTo-RegexLiteral' -Tag Unit {
     BeforeAll {
-        Import-Module Ninmonkey.Console -Force
-        $ErrorActionPreference = 'Stop'
-        $Sample = @{
-            Spaces = 'hi!   # world'
-        }
+
     }
     It 'Runs without error' {
         { ConvertTo-RegexLiteral 'stuff', 'other' }
         | Should -Not -Throw
-    }
-    Describe 'Verify Patterns for Dotnet are still valid' {
 
-        It 'Whether Escaped braces match - hardcoded' {
-            ('sdjf}dfsd' -match 'sdjf\}dfsd') -and ('sdjf}dfsd' -match 'sdjf}dfsd')
-            | Should -Be $True
-        }
-        It 'Whether Escaped braces match - Convert to Foreach' {
-            # $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
-            $RawInput = 'sdjf}dfsd'
-            $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
-            $EscapeVS = $RawInput | ConvertTo-RegexLiteral -AsVSCode
-            $EscapeRg = $RawInput | ConvertTo-RegexLiteral -AsRipgrepPattern
-
-            ($RawInput -match $EscapeBasic) | Should -Be $True
-            ($RawInput -match $EscapeVS) | Should -Be $True
-            ($RawInput -match $EscapeRg) | Should -Be $True
-            # ('sdjf}dfsd' -match 'sdjf\}dfsd') -and ('sdjf}dfsd' -match 'sdjf}dfsd')
-            # | Should -be $True
-        }
-
+        { 'stuff', 'other' | ConvertTo-RegexLiteral 'stuff', 'other' }
+        | Should -Not -Throw
     }
     It 'Whitespace for "<Label>" is "<Expected>"' -ForEach @(
-        @{ Sample = $Sample.Spaces ; Label = 'ripgrep' ; expected = 'hi!   \# world' }
-        @{ Sample = $Sample.Spaces ; Label = 'default' ; expected = 'hi!\ \ \ \#\ world' }
-        @{ Sample = $Sample.Spaces ; Label = 'js' ; expected = 'hi!   # world' }
+        @{
+            Sample   = 'ab.$#@'
+            Label    = 'ab.$#@'
+            expected = 'ab\.\$\#@'
+        }
+        @{
+            Sample   = 'z2341-0'
+            Label    = 'z2341-0 nothing to escape'
+            expected = 'z2341-0'
+            # // --StartsWith] [-EndsWith] [-Enclose
+        }
+        @{
+            Sample   = 'z2341-0'
+            Label    = 'ab.$#@'
+            expected = 'z2341-0'
+
+        }
+        @{
+            Sample   = 'foo.png'
+            Label    = 'foo.png'
+            expected = 'foo\.png$'
+            Extra    = @{
+                EndsWith = $True
+                # StartsWith = $True
+                # Enclose = $True
+            }
+            # -StartsWith] [-EndsWith] [-Enclose
+
+        }
+        @{
+            Sample   = '.git'
+            Label    = '.git'
+            expected = '\.git$'
+            Extra    = @{
+                EndsWith = $True
+                # StartsWith = $True
+                # Enclose = $True
+            }
+            # -StartsWith] [-EndsWith] [-Enclose
+
+        }
     ) {
-        $Sample | RegexLiteral | Should -Be $Expected -Because 'Manually tested'
+        $Extra ??= @{} # simplifies hash splatting
+        $Sample
+        | RegexLiteral @Extra
+        | Should -Be $Expected -Because 'Manually written tests'
 
     }
 }

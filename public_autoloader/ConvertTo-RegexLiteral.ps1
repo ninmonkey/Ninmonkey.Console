@@ -19,6 +19,8 @@ function ConvertTo-RegexLiteral {
         ls $ENv:UserProfile | %{ RegexLit $_ } | Join-String -sep '|' { $_ }
         ## or
         ls .. -Depth 2 | group Extension | % Name | Join-string -sep '|' { RegexLit -end $_ }
+    .NOTES
+
     .LINK
         ConvertTo-RegexLiter
     #>
@@ -28,8 +30,10 @@ function ConvertTo-RegexLiteral {
     param(
         # Input Text
         [Alias('InputObject')]
-        [Parameter( Mandatory, Position = 0, ParameterSetName = 'FromParam')]
-        [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'FromPipeline')]
+        # [Parameter( Mandatory, Position = 0, ParameterSetName = 'FromParam')]
+        # [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'FromPipeline')]
+        # Maybe command line ewill resolve easier without mandatory
+        [Parameter( ValueFromPipeline, ParameterSetName = 'FromPipeline')]
         [string[]]$TextInput,
 
         # starts With the anchor ^
