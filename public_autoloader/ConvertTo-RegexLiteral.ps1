@@ -3,16 +3,67 @@ using namespace System.Collections
 if ($script:publicToExport) {
     $script:publicToExport.function += @(
         'ConvertTo-RegexLiteral'
+        'ConvertTo-RegexLiteral.v1'
     )
     $script:publicToExport.alias += @(
-        'ReLit', 'RegexLiteral'
+        'RegexLit' # 'ConvertTo-RegexLiteral
     )
 }
 
+
 function ConvertTo-RegexLiteral {
     <#
+    .SYNOPSIS
+        Converts text to regex-escaped literals
+    .EXAMPLE
+        ls $ENv:UserProfile | %{ RegexLit $_ } | Join-String -sep '|' { $_ }
+        ## or
+        ls .. -Depth 2 | group Extension | % Name | Join-string -sep '|' { RegexLit -end $_ }
+    .LINK
+        ConvertTo-RegexLiter
+    #>
+    [Alias('RegexLit')]
+    [OutputType('System.String')]
+    [CmdletBinding(DefaultParameterSetName = 'FromPipeline')]
+    param(
+        # Input Text
+        [Alias('InputObject')]
+        [Parameter( Mandatory, Position = 0, ParameterSetName = 'FromParam')]
+        [Parameter( Mandatory, ValueFromPipeline, ParameterSetName = 'FromPipeline')]
+        [string[]]$TextInput,
+
+        # starts With the anchor ^
+        [switch]$StartsWith,
+
+        # starts With the anchor $
+        [switch]$EndsWith,
+
+        # Fully surround the final pattern in parenthesis
+        [Alias('Parenthesis')]
+        [switch]$Enclose
+    )
+    begin {}
+
+    process {
+        foreach ($line in $TextInput) {
+
+            @(
+                if ($Enclose) { '(' }
+                if ($StartsWith) { '^' }
+                [Regex]::Escape( $Line )
+                if ($EndsWith) { '$' }
+                if ($Enclose) { ')' }
+            ) -join ''
+        }
+    }
+}
+
+
+
+function ConvertTo-RegexLiteral.v1 {
+    <#
     .synopsis
-        sugar to quickly escape values to thier regex-literal
+        my original function.  sugar to quickly escape values to thier regex-literal
     .description
         .example
         $PS> re 'something'
@@ -50,7 +101,10 @@ function ConvertTo-RegexLiteral {
     .outputs
 
     #>
-    [alias('ReLit', 'RegexLiteral')]
+    [alias(
+        # 'ReLit',
+        # 'RegexLiteral'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Text to convert to a literal
@@ -70,10 +124,12 @@ function ConvertTo-RegexLiteral {
         $Text | ForEach-Object {
             if ((! $AsRipgrepPattern) -and (! $AsVSCode)) {
                 [regex]::Escape($_)
-            } elseif ($AsRipgrepPattern) {
+            }
+            elseif ($AsRipgrepPattern) {
                 [regex]::Escape($_) -replace
                 '\\ ', ' '
-            } elseif ($AsVSCode) {
+            }
+            elseif ($AsVSCode) {
                 [regex]::Escape($_) -replace
                 '\\ ', ' ' -replace
                 '\\#', '#' -replace
