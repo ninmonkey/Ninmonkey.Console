@@ -1,4 +1,5 @@
-#requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
+#requires -Version 7.0
+#requires -modules @{ ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 BeforeAll {
     Import-Module Ninmonkey.Console -Force
     # $ErrorActionPreference = 'Stop'
@@ -12,8 +13,45 @@ Describe 'ConvertTo-RegexLiteral' -Tag Unit {
         { ConvertTo-RegexLiteral 'stuff', 'other' }
         | Should -Not -Throw
 
-        { 'stuff', 'other' | ConvertTo-RegexLiteral 'stuff', 'other' }
+        { 'stuff', 'other' | ConvertTo-RegexLiteral }
         | Should -Not -Throw
+
+    }
+    It 'Does Not Throw on Empty' {
+        { $null, $null | ConvertTo-RegexLiteral }
+        | Should -Not -Throw -Because 'falsy does not error for usability'
+
+        { '' | ConvertTo-RegexLiteral }
+        | Should -Not -Throw -Because 'falsy does not error for usability'
+
+    }
+    Describe 'Supports Arrays' {
+        It 'aaf' {
+            $Items = @('a', '$')
+            $Expected = '(^a$)|(^\$$)'
+
+            $render = $Items
+            | ConvertTo-RegexLiteral -StartsWith -EndsWith -Enclose
+            | Join-String -sep '|'
+
+            $render | Should -Be $Expected -Because 'manually written'
+
+        }
+        @{
+            # original: 'a', '$' | RegexLit -StartsWith -EndsWith -Enclose | join-string -sep '|'
+            Sample   = @('a', '$')
+            Label    = 'as an array'
+            expected = '(^a$)|(^\$$)'
+            Extra    = @{
+                EndsWith   = $True
+                StartsWith = $True
+                Enclose    = $True
+            }
+
+            #  | RegexLit -StartsWith -EndsWith -Enclose | join-string -sep '|'
+
+        }
+
     }
     It 'Whitespace for "<Label>" is "<Expected>"' -ForEach @(
         @{
@@ -33,6 +71,7 @@ Describe 'ConvertTo-RegexLiteral' -Tag Unit {
             expected = 'z2341-0'
 
         }
+
         @{
             Sample   = 'foo.png'
             Label    = 'foo.png'

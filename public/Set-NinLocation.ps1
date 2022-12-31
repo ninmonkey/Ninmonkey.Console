@@ -107,7 +107,7 @@ function Set-NinLocation {
             return
         }
         if (
-            ($InputObject -match ( ReLit 'git@github.com:')) -or
+            ($InputObject -match ( Ninmonkey.Console\ConvertTo-RegexLiteral -Text 'git@github.com:')) -or
             ($inputobject -match ( '\.git$' )) ) {
             'git detected: wip use regex' | Write-Warning
             return
@@ -158,7 +158,8 @@ function Set-NinLocation {
         if ($Back) {
             try {
                 Pop-Location -StackName 'NinLocation' -ea Stop
-            } catch {
+            }
+            catch {
                 Write-Debug 'stack was empty'
             }
             return
@@ -166,7 +167,8 @@ function Set-NinLocation {
 
         try {
             $DestItem = Get-Item $Path -ea stop
-        } catch {
+        }
+        catch {
             Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ ."
             $DestItem = Get-Item ($path | Split-Path )
         }
