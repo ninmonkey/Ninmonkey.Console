@@ -3,7 +3,11 @@ if ($script:publicToExport) {
         'Invoke-Robocopy.Minimalism'
     )
     $script:publicToExport.alias += @(
+        'RoboCopy📁'
         'RoboCopy▸'
+        'Robo.Copy▸'
+        'Robo.Copy'
+        'Robo.Copy.Mini'
 
         # 'RoboCopy Copy'  <# and #> 'RoboCopy Copy'
         # 'Robo.Copy'      <# and #> 'Robo.Mirror'
@@ -31,14 +35,6 @@ if ($script:publicToExport) {
         # # 'Robo🗄', # 'Invoke-Robocopy.Minimalism'
         # 'RoboCopy📁' # 'Invoke-Robocopy.Minimalism'
         # # 'Invoke-Robocopy.Minimalism'
-
-
-
-
-
-
-
-
     )
 }
 
@@ -111,12 +107,19 @@ function Invoke-Robocopy.Minimalism {
         robo.spartan.copy -SourcePath $From -DestPath $to -RoboWhatIf
     #>
     [Alias(
-        'Robo.Copy.Minimal',
-        'Robo.minimal',
-        'Robo⁞Copy',
+        # todo: re-evaluate these aliases after fixing tabexpansion: autocompleter to evaluate which complete cleaner
+        'RoboCopy▸',        
+        'Robo.Copy',
+        'Robo.Copy.Mini',
+
+        # 'Robo.Copy.Mini',
+        # 'Robo.Copy',
+        # 'Robo.Copy▸',
+        # 'Robo.minimal',
+        # 'Robo⁞Copy',
+        # 'Robo▸Copy',        
+        # 'RoboCopy▸',
         # 'Robo⇢⁞ ┐⇽▂Copy📁',
-        'RoboCopy▸',
-        'Robo▸Copy',
         # 'Robo🗄',
         'RoboCopy📁'
         # 'RoboCopy🗄'
@@ -150,24 +153,26 @@ function Invoke-Robocopy.Minimalism {
         # future: even better, custom attribute suggets values using the argument completer
         # then autocomplete like "-x +ETA +RoboWhatIf -debug -color"
         [Alias(
-            '+',
-            'opt+', # wonder if this parses on bind
-            'On',
-            'Using',
-            'Include',
+            # '+',
+            # 'opt+', # wonder if this parses on bind
+            'On'
+            # 'Using',
+            # todo: re-evaluate these aliases after fixing tabexpansion: autocompleter to evaluate which complete cleaner
+            # 'Include',
             # 'IncludeConfig'
-            'IncludeOptions'
+            # 'IncludeOptions'
         )]
         [string[]]$IncludeConfig = @(),
         [Alias(
-            '-', # wonder if this parses on bind
-            'opt-', # this parses easier
+            # todo: re-evaluate these aliases after fixing tabexpansion: autocompleter to evaluate which complete cleaner
+            # '-', # wonder if this parses on bind
+            # 'opt-', # this parses easier
 
-            'On',
-            'Using',
-            'Exclude',
-            # 'IncludeConfig'
-            'IncludeOptions'
+            'Off'
+            # 'Using',
+            # 'Exclude',
+            # 'Exclude',
+            # 'ExcludeOptions'
         )]
         [string[]]$ExcludeConfig = @(),
 
@@ -175,7 +180,9 @@ function Invoke-Robocopy.Minimalism {
 
         [hashtable]$Options
     )
+
     if ($Silent) { throw 'NYI param' }
+    if($IncludeConfig -or $ExcludeConfig) { throw 'param NYI' }
     $binRobo = Get-Command 'RoboCopy' -CommandType Application -ea stop
     New-Item -Path $RoboAppConf.Log.Path -ItemType File -ea ignore # [EnsureFileExists( $RoboAppConf.Log.Path )]
 
@@ -197,11 +204,13 @@ function Invoke-Robocopy.Minimalism {
         if ($RoboWhatIf) { '/L' }
         if ( -not $WithoutETA) { '/ETA' }
     )
-    $RoboArgs | Join-String -sep ' ' -op 'robocopy.exe args: ' | Write-Information
-    $RoboArgs | Join-String -sep ' ' -op 'robocopy.exe args: ' | Write-Verbose
+    $renderRoboArgs = $RoboArgs | Join-String -sep ' ' -op 'robocopy.exe args: '
+
+    $renderRoboArgs | Write-Information
+    $renderRoboArgs | Write-Verbose
 
     if ($WhatIf) {
-        $RoboArgs | Join-String -sep ' ' -op 'robocopy.exe args: '
+        $renderRoboArgs
         # & RoboCopy @RoboArgs
         return
     }
