@@ -1,11 +1,10 @@
-﻿using namespace System.Collections.Generic
+﻿#Requires -Version 7
 
-#Requires -Version 7
+
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Edit-FunctionSource'
-
     )
     $publicToExport.alias += @(
         'editFunc' # 'Edit-FunctionSource'
@@ -55,7 +54,7 @@ function Edit-FunctionSource {
         [switch]$PassThru
     )
     begin {
-        [List[object]]$items = [list[object]]::new()
+        [Collections.Generic.List[Object]]$Items = @()
         $binCode = Get-Command 'code.cmd' -CommandType Application -ea stop
     }
 
@@ -87,15 +86,10 @@ function Edit-FunctionSource {
                 return $cmd.ScriptBlock.Ast.Extent.File | Get-Item | ForEach-Object FullName
             }
 
-
-
-
-
             if ($PassThru) {
                 return $cmd.ScriptBlock.Ast.Extent
             }
             # todo: simplify using Ninmonkey.Console\Code-Venv
-
 
             $cmd.ScriptBlock.Ast.Extent.File
             | Join-String -op 'loading:... <' -os '>' { $_ }
