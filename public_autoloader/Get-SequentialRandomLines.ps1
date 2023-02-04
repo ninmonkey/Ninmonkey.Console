@@ -1,6 +1,7 @@
+#Requires -Version 7
 using namespace System.Collections.Generic
 
-#Requires -Version 7
+# finish as new notebook
 
 if ( $publicToExport ) {
     $publicToExport.function += @(

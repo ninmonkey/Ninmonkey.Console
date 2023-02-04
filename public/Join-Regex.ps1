@@ -88,7 +88,40 @@ function Join-Regex {
         Write-Debug "Regex: Merged Regex: $Regex_MergedRegex"
         Write-Debug "Regex: Merged all: $Regex_Final"
         Write-Debug "`$Regex = $Regex_Final"
-        return $regex_Final
+
+        # something was wip then went on a tangent
+        # 'final regex := {0}' -f $( $Rregex_final)
+        # 'regex {0}' -f $( $Rregex_final)
+        # # write-verbose
+        # $gray1 = .9 * 255
+        # $gray2 = .7 * 255
+        # $gray3 = .5 * 255
+        # $gray4 = .3 * 255
+
+
+        # $c = @{
+        #     fgBright = $PSStyle.Foreground.FromRgb($gray1, $gray1, $gray1)
+        #     fg       = $PSStyle.Foreground.FromRgb($gray2, $gray2, $gray2)
+        #     fgDim    = $PSStyle.Foreground.FromRgb($gray3, $gray3, $gray3)
+        #     fgDim2    = $PSStyle.Foreground.FromRgb($gray4, $gray4, $gray4)
+        #     bgBright = $PSStyle.Background.FromRgb($gray1, $gray1, $gray1)
+        #     bg       = $PSStyle.Background.FromRgb($gray2, $gray2, $gray2)
+        #     bgDim    = $PSStyle.Background.FromRgb($gray3, $gray3, $gray3)
+        #     bgDim2    = $PSStyle.Background.FromRgb($gray4, $gray4, $gray4)
+        # }
+
+        # @(
+        #     $
+        # )
+        # "${fg:gray90}"
+        # "${fg:gray70}"
+        # "${fg:gray70}"
+        # "${fg:gray90}"
+        
+        # '𝄚 gcm join-regex | editfunc -PassThru | % File  | % fullname'
+
+
+        # return $regex_Final
     }
     end {
 

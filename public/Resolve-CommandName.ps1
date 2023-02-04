@@ -7,6 +7,8 @@ function Resolve-CommandName {
             Resolve a Command from names or aliases
         .description
             Currently returns all types, including CommandType 'Application'
+        .NOTES
+            if alias is defined, but th
         .example
             PS> Resolve-Command 'ls'
             Get-ChildItem

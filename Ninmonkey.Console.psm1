@@ -13,12 +13,15 @@ $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 
 . (Get-Item -ea stop (Join-Path $PSScriptRoot 'private/safe_prompt.ps1'))
 
+
+# disable for now, because shell integration breaks it
 & {
     $hasFunc = (Get-PSReadLineKeyHandler -Bound -Unbound | ForEach-Object Function ) -contains 'ShowCommandHelp'
     if ($hasFunc) {
         Set-PSReadLineKeyHandler -Key 'f12' -Function ShowCommandHelp
     }
 }
+
 
 Set-PSReadLineOption -Colors @{
     Comment = '#E58BEB' # " e[38;2;229;139;235m"
@@ -92,11 +95,13 @@ foreach ($file in $private_seeminglySci) {
     try {
         # Write-Warning "file: seeminglySci -> : $File"
         if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-        } else {
+        }
+        else {
             Write-Error "Import: failed: private_seeminglySci: private: $File"
         }
         . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
-    } catch {
+    }
+    catch {
         Write-Error -ErrorRecord $_ -Message "Loading '$file' failed!`n$_" -ea stop
     }
 }
@@ -112,7 +117,8 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+    }
+    else {
         Write-Error "Import: private: failed: private: $File"
     }
     . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
@@ -128,7 +134,8 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
     . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
@@ -240,7 +247,8 @@ $public_toDotSource = @(
 foreach ($file in $public_toDotSource) {
     if (Test-Path ('{0}\public\{1}.ps1' -f $psscriptroot, $file)) {
         # good
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public: $File"
     }
     . ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
@@ -463,7 +471,8 @@ foreach ($typeName in $formatData) {
     if (Test-Path $FileName ) {
         Update-FormatData -PrependPath $FileName
         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    } else {
+    }
+    else {
         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
     }
 }
@@ -556,7 +565,8 @@ $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1'
 
 if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
     Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
-} else {
+}
+else {
     Write-Warning '[w] root ⟹ Completer-Loader: Invoke-Build...'
 
     $curSplat = @{

@@ -80,12 +80,12 @@ function iot2 {
     }
     process {
         $splat = @{}
-        if( $NotSkipMost ) { $splat.sm = $false } else { $splat.sm = $true }
+        if ( $NotSkipMost ) { $splat.sm = $false } else { $splat.sm = $true }
 
         $query = $_ | Ninmonkey.Console\Inspect-ObjectProperty @splat
-        | Sort Name
+        | Sort-Object Name
 
-        if($PassTHru) { return $query }
+        if ($PassTHru) { return $query }
 
         $query | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
     }
@@ -116,14 +116,14 @@ function iot.dev2 {
     )
     begin {
         [hashtable]$Config = Join-Hashtable -OtherHash $Options -BaseHash @{
-            ColumnNames = if( $Columns ) { $columns } else { @('Name', 'Reported', 'Value', 'Type') }
+            ColumnNames = if ( $Columns ) { $columns } else { @('Name', 'Reported', 'Value', 'Type') }
         }
-        if($SortBy -isnot 'string') {
-            throw "ScriptBlock Implementation NYI, use string[s]."
+        if ($SortBy -isnot 'string') {
+            throw 'ScriptBlock Implementation NYI, use string[s].'
         }
     }
     process {
-        if($Config.ColumnNames.count -eq 1 -and $Config.ColumnNames -match ',\s+') {
+        if ($Config.ColumnNames.count -eq 1 -and $Config.ColumnNames -match ',\s+') {
             $Config.ColumnNames = [string[]]@($Config.ColumnNames -split ',\s+')
         }
         # gi . | iot | ft
@@ -141,7 +141,7 @@ function iot.dev2 {
 function Inspect-ObjectProperty {
     <#
     .SYNOPSIS
-        quickly dump object property summaries 
+        quickly dump object property summaries
     .NOTES
         unstable, not ready for public consumption
         todo: make FormatData that sets max width on 'Value'
@@ -153,7 +153,7 @@ function Inspect-ObjectProperty {
         gi . | io -SortBy <tab>
 
         # pressing tab to complete  -SortBy will cycle full templates. This
-        
+
             gi . | io -SortBy <tab>
 
         # completes to this
@@ -174,15 +174,15 @@ function Inspect-ObjectProperty {
         [ArgumentCompletions(
             # experimenting with completing more than one command
             'Reported | Ft Reported, Name, Type, IsNull, Is*, Value -AutoSize',
-            'Name | ft Type, Name, Value -AutoSize',   # experimenting with completing more than one command
-            'Type | ft Type, Name, Value -AutoSize',   
+            'Name | ft Type, Name, Value -AutoSize', # experimenting with completing more than one command
+            'Type | ft Type, Name, Value -AutoSize',
             'Type -SkipMost -SkipBlank -SkipPrimitive | ft Type, Name, Value -AutoSize'   # experimenting with completing more than one command
         )]
         # [ValidateSet('Type', 'Value', 'Name', 'Length')]
         $SortBy = 'Type',
 
         # [switch]$SkipBasic, # Primitive,
-        [Alias('sm')] # make skips also be a [string[]] list? 
+        [Alias('sm')] # make skips also be a [string[]] list?
         [switch]$SkipMost, # Primitive,
         [switch]$SkipPrimitive, # Primitive,
 
@@ -212,17 +212,27 @@ function Inspect-ObjectProperty {
             return
         }
         $validateSetValues = 'Type', 'Value', 'Name', 'Length', 'Reported', 'IsBlank', 'IsNull', 'IsEmptyStr'
-        if( $SortBy  -notin $validateSetValues) {
-            Throw "invalid sortby type"
+        if ( $SortBy -notin $validateSetValues) {
+            Throw 'invalid sortby type'
         }
         $summary = $InputObject.psobject.properties | ForEach-Object {
-            $IsNull = $null -eq $_.Value
-            $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
-            $IsEmptyStr = $_.Value -is 'string' -and $_.Value -eq [String]::Empty
-            $typeInfo = if( -not $isNull) { ($_.Value)?.GetType() }
-            
+            $value_str = ($_)?.Value ?? ''
+
+            $IsNull = $null -eq $value_str
+            $IsBlank = [String]::IsNullOrWhiteSpace( $value_str )
+            $IsEmptyStr = $_.Value -is 'string' -and $value_str -eq [String]::Empty
+            $typeInfo = if ( -not $isNull) { ($_.Value)?.GetType() }
+
+            <#
+            was:
+                $IsNull = $null -eq $_.Value
+                $IsBlank = [String]::IsNullOrWhiteSpace( $_.Value )
+                $IsEmptyStr = $_.Value -is 'string' -and $_.Value -eq [String]::Empty
+                $typeInfo = if ( -not $isNull) { ($_.Value)?.GetType() }
+            #>
+
             $isBasic = $false
-            if($typeInfo.Name -in $IsBasicTypeNames_list) { 
+            if ($typeInfo.Name -in $IsBasicTypeNames_list) {
                 # to be extended
                 $isBasic = $true
             }
@@ -232,7 +242,7 @@ function Inspect-ObjectProperty {
 
             $reportedTypeName = $_.TypeNameOfValue -as 'type' | shortType
             $typeName = if ( -not $IsNull) {
-                $_.Value | shortType
+               ($_)?.Value ?? '' | shortType
             }
             $HasSameTypes = $reportedTypeName -eq $typeName
 
@@ -252,7 +262,8 @@ function Inspect-ObjectProperty {
 
             if ($HasSameTypes) {
                 $MergedTypes = $reportedTypeName   # $typeName
-            } else {
+            }
+            else {
                 $MergedTypes = @(
                     "${fg:gray60}"
                     $reportedTypeName
@@ -262,7 +273,8 @@ function Inspect-ObjectProperty {
                     "${fg:gray90}"
                     if ($null -eq $_.Value) {
                         "`u{2400}"
-                    } else {
+                    }
+                    else {
                         $typeName
                     }
                 ) -join ''
@@ -293,9 +305,9 @@ function Inspect-ObjectProperty {
 
 
 
-
+            # warning: May need to redo this logic, because of the interaction
             if ('Extra' -or $true) {
-                $meta['IsPrimitive'] = $IsNull ? $false : ( $_.Value.GetType().IsPrimitive ?? $false )
+                $meta['IsPrimitive'] = $IsNull ? $false : ( ($_.Value)?.GetType().IsPrimitive ?? $false )
             }
             if ($True -and 'move to custom formatdata') {
                 if ($IsBlank) {

@@ -16,6 +16,7 @@ if ( $publicToExport ) {
 
 
 
+
 function New-RelativeDate {
     <#
     .synopsis
@@ -39,6 +40,9 @@ function New-RelativeDate {
             $files  | RelativeDt -newerThan 3day
 
             RelativeDt -newerThan 3d $files
+
+            all $files newerThan 9h
+            all (fd -e log) last 1days
 
             2h ago
             last 2h

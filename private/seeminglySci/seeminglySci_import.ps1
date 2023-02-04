@@ -13,7 +13,9 @@ see also:
 
 # [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', '', Target = '??')]
 param()
+write-warning '2022-09-03 -- ensure updated profile 🐛'
 
+"[1] Need to auto-clone latest Sci Dotfile [2] ensure that namespace continue fix is applied" | New-Text -bg 'gray50' -fg 'gray30' | Write-Warning
 <#
     [section]: alias
 #>
@@ -73,6 +75,7 @@ filter short { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $
 filter byte { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([byte]) } }
 filter sbyte { foreach ($currentItem in $PSItem) { Convert-Object -InputObject $currentItem -Type ([sbyte]) } }
 
+write-warning "update imports /w new Sci functions [Ninmonkey.Console/private/SeeminglySci/*]"
 
 $script:WellKnownNumericTypes = [type[]](
     [byte],

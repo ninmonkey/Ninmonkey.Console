@@ -171,7 +171,6 @@ function Invoke-VsCodeProfile {
         [Parameter(Mandatory)] # To be mandatory, or always do the mini one?
         [Alias('Label')]
         [ArgumentCompletions(
-            'forTest.vscode_EditorServices',
             'forTest.vscode_PowerQuery',
             'forTest.vscode_EditorServices',
             'forTest.Pwsh_console',
