@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.29'
+    ModuleVersion     = '0.2.32'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -69,7 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = '*'
+    # FunctionsToExport = '*'
+    FunctionsToExport = @(
+        # todo: build script automatically include exported commands
+        # not wildcard. otherwise wildcard is required if any are defined
+        'Edit-FunctionSource'
+        'mergeHashtable'
+        'Set-NinLocation'
+        'Write-ConsoleLabel'
+        '*'
+    )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
@@ -78,7 +87,17 @@
     VariablesToExport = @()
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = '*'  #@()
+    # AliasesToExport   = '*'  #@()
+    AliasesToExport   = @(
+        'Goto'
+        'EditFunc'
+        'Label'
+        'Hr'
+        'Iot'
+        'Iot2'
+        '*'
+
+    )
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()

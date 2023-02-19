@@ -1,6 +1,6 @@
 ﻿# Set-Alias 'Get=Encoding' -Value Get-TextEncoding -Description 'until the wrapper for both encodings is creating, link to this one'
 
-write-warning "Not imported <${PSCommandPath}>"
+if($global:__nin_enableTraceVerbosity) { write-warning "Not imported <${PSCommandPath}>" }
 
 function Get-TextEncoding {
     <#

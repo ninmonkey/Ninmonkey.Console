@@ -5,7 +5,8 @@ if ( $publicToExport ) {
         'New-NinPSCustomObject'
     )
     $publicToExport.alias += @(
-        'Obj' # 'New-NinPSCustomObject'
+        # 'Obj' # 'New-NinPSCustomObject'
+        'nin.Obj' # 'New-NinPSCustomObject'
 
 
     )
@@ -33,7 +34,7 @@ function New-NinPSCustomObject {
     .link
         Ninmonkey.Console\New-HashtableLookup
     #>
-    [Alias('Obj')]
+    [Alias('Obj', 'nin.Obj')]
     [outputtype([System.Management.Automation.PSObject] )]
     [cmdletbinding()]
     param(

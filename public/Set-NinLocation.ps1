@@ -145,7 +145,7 @@ function Set-NinLocation {
             $x = (Get-Command ls) -is 'scriptblock'
             $x = (Get-Command ls) -is 'commandinfo'
             $x | HelpFromType.2 -PassThru
-            $x | editfunc -PassThru
+            $x | editFunc -PassThru
             Resolve->Cmd $x
 
         }
@@ -169,7 +169,13 @@ function Set-NinLocation {
             $DestItem = Get-Item $Path -ea stop
         }
         catch {
-            Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ ."
+            #             Get-Item: C:\Users\cppmo_000\SkyDrive\Documents\2021\powershell\My_Github\ninmonkey.console\public\Set-NinLocation.ps1:173:34
+            # Line |
+            #  173 |              $DestItem = Get-Item ($path | Split-Path )
+            #      |                                   ~~~~~~~~~~~~~~~~~~~~~
+            #      | Cannot bind argument to parameter 'Path' because it is an empty string.
+            # Set-NinLocation: Non-filesystem providers are not supported
+            Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ . Did shellIntegration break prompt?"
             $DestItem = Get-Item ($path | Split-Path )
         }
         $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
