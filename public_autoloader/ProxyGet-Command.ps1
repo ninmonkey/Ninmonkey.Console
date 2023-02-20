@@ -13,8 +13,8 @@ if ( $publicToExport ) {
     )
 }
 
+# future: actually make it a proxy
 function proxy.Get-Command {
-    # future: actually make it a proxy
     <#
     .SYNOPSIS
         ignores many modules by default, making gcm cleaner, also ignores all native commands
@@ -40,8 +40,6 @@ function proxy.Get-Command {
         )]
         [string[]]$ExcludeAdditionalModules, # todo: completer, which allows for alias mappings /w extra properties on completion items
 
-
-        ),
 
         # Always Include these
         [Parameter(Position = 2)]
@@ -106,9 +104,16 @@ function proxy.Get-Command {
         $_.CommandType -ne 'Application'
     }
     | Where-Object {
-        $ToKeep =
-        ( @($AlwaysIgnore) -notcontains $_.Module.Name ) -and
-        ( @($AlwaysInclude) -contains $_.Module.Name )
+        $inAlwaysInclude = @($AlwaysInclude) -contains $_.Module.Name
+        $inExcludes = @($AlwaysIgnore) -notcontains $_.Module.Name
+        $toKeep = $true
+
+        if($inExcludes) {
+            $toKeep = $false
+        }
+        if($inAlwaysInclude) {
+            $toKeep = $true
+        }
 
         'Keep?: {2}: Module: {0} | Command: {1}' -f @(
             $_.Module.Name,
@@ -118,196 +123,21 @@ function proxy.Get-Command {
         return $ToKeep
     }
     | SOrt Module, Name
+
+}
+
+# nin.Gcm.Exclude 'email' -IncludeAdditionalModules AWS.Tools.SimpleEmail
+write-warning "NYI: $PSCommandPath"
+if($false) {
+    nin.Gcm.Exclude 'email' -IncludeAdditionalModules AWS.Tools.SimpleEmail
+    nin.Gcm.Exclude * -ExcludeAdditionalModules 'PowerShellGet', 'PackageManagement'
 }
 
 # proxy.Get-Command -QueryString 'set' -verbose
-nin.Gcm.Exclude *
+# nin.Gcm.Exclude *
 
     # [string[]]$ExcludeAdditionalModules = @( # todo: completer, which allows for alias mappings /w extra properties on completion items
         #     'ADEssentials'
         #     'AppBackgroundTask'
         #     'AppLocker'
         #     'AppvClient'
-        #     'Appx'
-        #     'Assert'
-        #     'AssignedAccess'
-        #     'AWS.Tools.Common'
-        #     'AWS.Tools.EC2'
-        #     'AWS.Tools.S3'
-        #     'AWS.Tools.SimpleEmail'
-        #     'BasicModuleTemplate'
-        #     'bdg_lib'
-        #     'Benchpress'
-        #     'BitLocker'
-        #     'BitsTransfer'
-        #     'BranchCache'
-        #     'BuildHelpers'
-        #     'chronometer'
-        #     'ClassExplorer'
-        #     'ConfigCI'
-        #     'ConfigDefender'
-        #     'ConfigDefenderPerformance'
-        #     'Configuration'
-        #     'Connectimo'
-        #     'DataMashup'
-        #     'dbatools'
-        #     'Defender'
-        #     'DeliveryOptimization'
-        #     'DirectAccessClientComponents'
-        #     'Dism'
-        #     'DnsClient'
-        #     'ErrorView'
-        #     'EventTracingManagement'
-        #     'EZOut'
-        #     'EzTheme'
-        #     'Fasdr'
-        #     'GetClrCallStack'
-        #     'HostComputeService'
-        #     'HostNetworkingService'
-        #     'Hyper-V'
-        #     'ILAssembler'
-        #     'ImpliedReflection'
-        #     'Indented.ChocoPackage'
-        #     'Indented.IniFile'
-        #     'Indented.Net.IP'
-        #     'Indented.ScriptAnalyzerRules'
-        #     'Indented.StubCommand'
-        #     'International'
-        #     'InvokeBuild'
-        #     'Irregular'
-        #     'iSCSI'
-        #     'ISE'
-        #     'Join-Object'
-        #     'JumpCloud'
-        #     'JumpCloud.SDK.DirectoryInsights'
-        #     'JumpCloud.SDK.V1'
-        #     'JumpCloud.SDK.V2'
-        #     'Kds'
-        #     'LanguagePackManagement'
-        #     'Microsoft.PowerShell.Archive'
-        #     'Microsoft.PowerShell.ConsoleGuiTools'
-        #     'Microsoft.PowerShell.Crescendo'
-        #     'Microsoft.PowerShell.Diagnostics'
-        #     'Microsoft.PowerShell.Host'
-        #     'Microsoft.PowerShell.LocalAccounts'
-        #     'Microsoft.PowerShell.ODataUtils'
-        #     'Microsoft.PowerShell.SecretManagement'
-        #     'Microsoft.PowerShell.TextUtility'
-        #     'Microsoft.PowerShell.WhatsNew'
-        #     'MMAgent'
-        #     'ModuleBuild'
-        #     'ModuleBuilder'
-        #     'MsDtc'
-        #     'NetAdapter'
-        #     'NetConnection'
-        #     'NetDiagnostics'
-        #     'NetEventPacketCapture'
-        #     'NetLbfo'
-        #     'NetNat'
-        #     'NetQos'
-        #     'NetSecurity'
-        #     'NetSwitchTeam'
-        #     'NetTCPIP'
-        #     'NetworkConnectivityStatus'
-        #     'NetworkSwitchManager'
-        #     'NetworkTransition'
-        #     'Pansies'
-        #     'PcsvDevice'
-        #     'PersistentMemory'
-        #     'Pester'
-        #     'Piecemeal'
-        #     'PipeScript'
-        #     'PKI'
-        #     'Plaster'
-        #     'platyPS'
-        #     'PnpDevice'
-        #     'posh-git'
-        #     'Posh-SSH'
-        #     'PoshInteractive'
-        #     'PoshNmap'
-        #     'PowerBIPS'
-        #     'PowerBIPS.Tools'
-        #     'PowerHTML'
-        #     'powershell-yaml'
-        #     'PowerShellAI'
-        #     'PowerShellBuild'
-        #     'PowerShellEditorServices'
-        #     'PowerShellEditorServices.Commands'
-        #     'PowerShellEditorServices.VSCode'
-        #     'PowerShellHumanizer'
-        #     'PowerShellNotebook'
-        #     'PowerShellPivot'
-        #     'PrintManagement'
-        #     'ProcessMitigations'
-        #     'Profiler'
-        #     'Provisioning'
-        #     'psake'
-        #     'PSConfig'
-        #     'PSDesiredStateConfiguration'
-        #     'PSDiagnostics'
-        #     'PSDiscord'
-        #     'PSEventViewer'
-        #     'PSFramework'
-        #     'PSFunctionInfo'
-        #     'PSFzf'
-        #     'PSKoans'
-        #     'PSLambda'
-        #     'PSLeap'
-        #     'PSModuleDevelopment'
-        #     'PSparklines'
-        #     'PSParseHTML'
-        #     'PSProfiler'
-        #     'PSReadLine'
-        #     'PSScheduledJob'
-        #     'PSScriptAnalyzer'
-        #     'PSScriptTools'
-        #     'PSStringTemplate'
-        #     'PSTree'
-        #     'PSWinDocumentation'
-        #     'PSWinDocumentation.AD'
-        #     'PSWinDocumentation.AWS'
-        #     'PSWinDocumentation.O365'
-        #     'PSWindowsUpdate'
-        #     'PSWorkflow'
-        #     'PSWorkflowUtility'
-        #     'PSWriteColor'
-        #     'PSWriteExcel'
-        #     'PSWriteHTML'
-        #     'PSWriteOffice'
-        #     'PSWriteWord'
-        #     'Revoke-Obfuscation'
-        #     'ScheduledTasks'
-        #     'ScriptBlockDisassembler'
-        #     'SecureBoot'
-        #     'Selenium'
-        #     'ShowPSAst'
-        #     'ShowUI'
-        #     'SmbShare'
-        #     'SmbWitness'
-        #     'Splatter'
-        #     'StartLayout'
-        #     'Storage'
-        #     'StorageBusCache'
-        #     'Stucco'
-        #     'SysInternals'
-        #     'Terminal-Icons'
-        #     'TerminalBlocks'
-        #     'Theme.PowerShell'
-        #     'Theme.PSReadLine'
-        #     'Theme.PSStyle'
-        #     'ThreadJob'
-        #     'TLS'
-        #     'TroubleshootingPack'
-        #     'TrustedPlatformModule'
-        #     'ugit'
-        #     'VpnClient'
-        #     'Wdac'
-        #     'Whea'
-        #     'WindowsDeveloperLicense'
-        #     'WindowsErrorReporting'
-        #     'WindowsSearch'
-        #     'WindowsUpdate'
-        #     'WindowsUpdateProvider'
-        #     'WTToolBox'
-        #     'ZLocation'
-        # ),
