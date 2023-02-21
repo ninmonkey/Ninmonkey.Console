@@ -9,7 +9,7 @@ if ( $publicToExport ) {
     $publicToExport.alias += @(
         'Grab' # 'Select-ListExpression
         'Slice.Basic' # 'Select-ListExpression
-        'Sl' # 'Select-ListExpression
+
     )
 }
 
@@ -36,7 +36,7 @@ function Select-ListExpression {
 
 
     #>
-    [ALias('Grab','Slice.Basic', 'Sl')]
+    [ALias('Grab','Slice.Basic')]
     [CmdletBinding()]
     param(
         [ArgumentCompletions(
@@ -49,10 +49,13 @@ function Select-ListExpression {
             'max 4'
         )]
         [Parameter(Mandatory, Position = 0)]
-        [string]$QueryString
+        [string]$QueryString,
+
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object]$InputObject,
+
 
         [int]$MaxCount = 3,
-        [switch]$verbose,
         [switch]$WhatIf
     )
 
@@ -60,7 +63,7 @@ function Select-ListExpression {
         [int]$count = 0
 
         $parse = @{ Raw = $QueryString.trim() }
-        $parse
+        $parse | write-verbose
     }
     process {
         if ($count -lt $number) {
@@ -69,9 +72,7 @@ function Select-ListExpression {
         }
     }
     end {
-        if ($verbose) {
-            "Grabbed $count objects"
-        }
+        "Grabbed $count objects" | Write-Information
     }
 
 }
