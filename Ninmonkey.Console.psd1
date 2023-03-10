@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.32'
+    ModuleVersion     = '0.2.4'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -19,7 +19,7 @@
     CompanyName       = 'Jake Bolton'
 
     # Copyright statement for this module
-    Copyright         = '(c) Jake Bolton 2021-2022'
+    Copyright         = '(c) Jake Bolton 2021-2023'
 
     # Description of the functionality provided by this module
     Description       = 'Utilities making the Command Line more fun'
