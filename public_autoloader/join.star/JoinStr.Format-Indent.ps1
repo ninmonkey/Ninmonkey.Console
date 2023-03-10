@@ -1,5 +1,7 @@
 #Requires -Version 7
 
+write-warning "Finish me $PSCommandPath"
+
 if ( $publicToExport ) {
     $publicToExport.function += @(
         # '?? Format-UnorderedList'

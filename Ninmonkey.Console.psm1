@@ -169,6 +169,7 @@ $public_toDotSource = @(
 
     'Format-Hashtable'
     'Format-ControlChar'
+    # 'Format-ControlChar2'
 
     # unicode + encoding
     'Get-TextEncoding'

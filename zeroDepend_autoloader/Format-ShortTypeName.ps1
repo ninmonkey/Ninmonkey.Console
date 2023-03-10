@@ -109,9 +109,10 @@ function Format-UnorderedList {
         # with parameter, so I can say 'use set X'
         # like 'arrows', or 'bars', or 'checkbox'
         [ArgumentCompletions(
-            '•', '-', '‣',
+            '•', '-',
             '[ ]', '[x]',
-            '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎'
+            '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎',
+            '⦿', '‣', '•', '⁃', '⁌', '◦'
         )]
 
         # sets bullet types, but if overriden in -Options, Options has priority

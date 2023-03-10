@@ -74,6 +74,7 @@
         # todo: build script automatically include exported commands
         # not wildcard. otherwise wildcard is required if any are defined
         'Edit-FunctionSource'
+        'Format-RemoveAnsiEscape'
         'mergeHashtable'
         'Set-NinLocation'
         'Write-ConsoleLabel'
@@ -95,7 +96,9 @@
         'Hr'
         'Iot'
         'Iot2'
+        'StripAnsi'
         '*'
+
 
     )
 

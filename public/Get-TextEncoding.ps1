@@ -2,6 +2,7 @@
 
 if($global:__nin_enableTraceVerbosity) { write-warning "Not imported <${PSCommandPath}>" }
 
+
 function Get-TextEncoding {
     <#
     .synopsis
