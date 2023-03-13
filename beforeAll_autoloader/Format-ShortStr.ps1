@@ -1,14 +1,14 @@
 if ($script:publicToExport) {
     $script:publicToExport.function += @(
-        'Format-ShortString'
+        'old_Format-ShortString'
     )
     $script:publicToExport.alias += @(
-        'shortStr'  # 'Format-ShortString'
-        'str->short'  # 'Format-ShortString'
+        # 'shortStr'  # 'Format-ShortString'
+
     )
 }
 
-function Format-ShortString {
+function old_Format-ShortString {
     <#
     .SYNOPSIS
         ensure text never goes over the expected limits, shorten if they do
@@ -47,8 +47,8 @@ function Format-ShortString {
         Ninmonkey.Console\Format-WrapText
     #>
     [Alias(
-        'shortStr',
-        'str->short'  # ??
+        # 'shortStr'
+        # 'str->short'  # ??
     )]
     [CmdletBinding()]
     [OutputType('System.String')]
