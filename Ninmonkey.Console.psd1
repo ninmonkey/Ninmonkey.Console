@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.41'
+    ModuleVersion     = '0.2.42'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -78,6 +78,7 @@
         'mergeHashtable'
         'Set-NinLocation'
         'Write-ConsoleLabel'
+        'Format-NativeCommandArguments'
         '*'
     )
 
