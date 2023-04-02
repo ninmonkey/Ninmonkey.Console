@@ -138,7 +138,7 @@ function Format-ControlChar {
         $controlMin = $Filters.'ControlChars_C0'.min
         $controlMax = $Filters.'ControlChars_C0'.max + 1 # Because space isn't in C0
         $NullStr = "`u{2400}"
-        [Text.StringBuider]$bufferSB = [string]::Empty
+        [Text.StringBuilder]$bufferSB = [string]::Empty
 
         $Config = Join-Hashtable $Config ($Options ?? @{})
     }

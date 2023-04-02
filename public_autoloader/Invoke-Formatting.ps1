@@ -1,5 +1,7 @@
 #Requires -Version 7
 
+# modernize
+
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'InvokeFormat_ps1' # 'fmt.ps1
