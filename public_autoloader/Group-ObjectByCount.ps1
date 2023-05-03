@@ -39,16 +39,16 @@ function Group-ObjectByCount {
             30 31 32 33 34 35 36 37
             38 39 3a 3b 3c 3d 3e 3f
     .example
-    @(
-        'a'..'z'
-        | CountOf 'total count '
-        | GroupCount 3 | CountOf 'groups '
-    ) | Join-String -sep ' '
+        @(
+            'a'..'z'
+            | CountOf 'total count '
+            | GroupCount 3 | CountOf 'groups '
+        ) | Join-String -sep ' '
 
-    # Outputs:
-    total count 26 items
-    groups 9 items
-    a b c d e f g h i j k l m n o p q r s t u v w x y z
+        # Outputs:
+        total count 26 items
+        groups 9 items
+        a b c d e f g h i j k l m n o p q r s t u v w x y z
 
     .example
 

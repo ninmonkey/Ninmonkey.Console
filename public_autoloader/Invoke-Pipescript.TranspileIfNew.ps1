@@ -87,6 +87,8 @@ function Invoke-NinCachedPipescriptExport {
         todo:
             - [ ]  make typedata and formatdata, removing the junk
                 - [ ] format-wide renders 'baseName <colorIcon>'
+            - [ ] cached filenames format as dim gray text for 'name'
+            - [ ] stale/new shows as red
         #>
         [String]$Name = [string]::Empty
         [string]$Status = [string]::Empty
