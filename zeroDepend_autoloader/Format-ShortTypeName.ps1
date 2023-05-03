@@ -3,13 +3,13 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Format-ShortTypename'
-        # 'Format-UnorderedList'
+        'Format-UnorderedList' # 'Join.UL'
         'Format-ShortSciTypeName'
     )
     $publicToExport.alias += @(
         'shortTypeName' # 'Format-ShortTypename'
         # 'UL'
-        # 'join.UL'
+        'join.UL' # 'Format-UnorderedList'
         'shortType' # 'Format-ShortSciTypeName
     )
 }
