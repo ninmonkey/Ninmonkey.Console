@@ -6,6 +6,7 @@ if ( $publicToExport ) {
     )
     $publicToExport.alias += @(
         'TranspileIfNew.🐒' # 'Invoke-NinCachedPipescriptExport'
+        'nin.BuildLazyPipes🐍' # 'Invoke-NinCachedPipescriptExport'
 
     )
 
@@ -17,15 +18,33 @@ function Invoke-NinCachedPipescriptExport {
         basic partial cache to simplfy pipe invoke'
     .NOTES
     .EXAMPLE
+        Invoke-NinCachedPipescriptExport -RootPath H:/data/2023/pwsh/PsModules/GitLogger
+        | Ft Name, Status, IsStale -AutoSize
+
+    .EXAMPLE
         TranspileIfNew 'H:/data/2023/pwsh/PsModules/GitLogger'
     .EXAMPLE
         TranspileIfNew -RootPath 'H:\data\2023\pwsh\PsModules\GitLogger'  # 1 items
         TranspileIfNew -RootPath 'H:\data\2023\pwsh\PsModules\GitLogger\Azure' # 26 items
+    .EXAMPLE
+        $query Invoke-NinCachedPipescriptExport -TestOnly -RootPath
+        $query | Ft Name, Status, IsStale -AutoSize
+        $query | ? IsStale -not
+        $query | ? IsStale
+
+        Export-Pipescript -InputPath $query.Source.FullName
+
+    .EXAMPLE
+        Export-Pipescript -InputPath @($query | ? IsStale | % Source |% Fullname)
+
+
+
     .LINK
         file:///H:/data/2023/dotfiles.2023/pwsh/vscode/editorServicesScripts/ExportPipescript.ps1
     #>
     [Alias(
-        'TranspileIfNew.🐒'
+        'TranspileIfNew.🐒',
+        'nin.BuildLazyPipes🐍'
     )]
     [OutputType('[object[]]', '[PipescriptTranspileIfNewRecord[]]')]
     [CmdletBinding()]
@@ -48,6 +67,11 @@ function Invoke-NinCachedPipescriptExport {
         [Alias('PassThru')]
         [switch]$TestOnly
     )
+    $Config = @{
+        AlwaysIgnoreRootModulesAsSource = $True
+    }
+
+
     Push-Location '.' -StackName 'pile'
     $InformationPreference = 'continue'
     $Root = Get-Item -ea 'stop' $RootPath
@@ -55,14 +79,22 @@ function Invoke-NinCachedPipescriptExport {
 
     $Regex = @{}
     $Regex.IsAPipescriptSource = '(?i)\.ps\.\w+$'
+    $Regex.IsAPipescriptRootModule = '(?i)\.ps\.psm1$'
     # $Regex.FindPipescriptExportName = '(?i)\.ps\.\w+$'
 
     class PipescriptTranspileIfNewRecord {
-        [System.IO.FileInfo]$Source
-        [System.IO.FileInfo]$Export
+        <#
+        todo:
+            - [ ]  make typedata and formatdata, removing the junk
+                - [ ] format-wide renders 'baseName <colorIcon>'
+        #>
+        [String]$Name = [string]::Empty
+        [string]$Status = [string]::Empty
         [bool]$IsStale = $true
-        [string]$Status
-
+        [System.IO.FileInfo]$Source
+        # [Nullable[System.IO.FileInfo]]$Export
+        # [object]$Export?
+        [object]$Export
     }
 
     # Get-Item . | Write-Verbose
@@ -79,32 +111,45 @@ function Invoke-NinCachedPipescriptExport {
 
     # $query | ForEach-Object FullName | ForEach-Object { $_ -replace '\.ps\.', '.' }
     $query
-    | % {
-        $Source = $_
-        $exportName = $Source.FullName -replace '\.ps\.', '.'
+    | ForEach-Object {
+        $SourceItem = Get-Item $_
+        $exportName = $SourceItem.FullName -replace '\.ps\.', '.'
         # $ExportPath = Get-Item -ea 'ignore' $ExportName
-        $ExportPath = $ExportName
+        $ExportPath? = Get-Item -ea 'ignore' $ExportName
+
+        if ($SourceItem.FullName -match $Regex.IsAPipescriptRootModule) {
+            'skipping module: {0}' -f @(
+                $SourceItem.FullName
+            ) | Write-Debug
+            return
+        }
 
         $record = [PipescriptTranspileIfNewRecord]@{
-            Source = Get-Item $Source
-            ExportPath = $ExportPath
+            Source  = $SourceItem
+            Name    = $SourceItem.Name
+            Export  = $ExportPath? ?? $null # todo: formatter renders as "␀"
             IsStale = $true
-            Status = 'other'
+            Status  = 'other'
+            # 'Export?' = 'yeah'
         }
 
-        if( test-path $record.ExportPath) {
-            if($record.ExportPath.LastWriteTime -gt $Source.LastWriteTime) {
-                $record.IsStale = $false
-                $record.Status = '🟢 cached'
-            } else {
+        if ( $record.Export -and (Test-Path ($record.Export))) {
+            # if($record.Export.LastWriteTime -gt $Source.LastWriteTime) {
+            if ($record.Source.LastWriteTime -gt $record.Export.LastWriteTime) {
                 $record.IsStale = $true
                 $record.Status = '🟡 stale'
+            }
+            else {
+                $record.IsStale = $false
+                $record.Status = '🟢 cached'
 
             }
-        } else {
-            $record.Status = '🔴 unknown'
         }
-        return $record
+        else {
+            $record.Status = '🔴 missing' # might not exist
+            $record.IsStale = $true
+        }
+        $record
 
 
 
@@ -133,6 +178,14 @@ function Invoke-NinCachedPipescriptExport {
 
 
     }
+
+    if($TestOnly) { return }
+
+    $query | Where-Object IsStale | ForEach-Object Source | ForEach-Object Fullname | ForEach-Object {
+        $_ | Join-String -f 'try: <file:///{0}>' | New-text -fg 'gray45' -bg 'gray20' | Write-information
+    }
+    write-warning 'left off, would normally build here...'
+
 
     # $all = gci $Root
 
