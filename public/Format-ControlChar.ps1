@@ -1,5 +1,53 @@
 ﻿#requires -Version 7.0
 
+# function Format-ControlChar2 {
+#     <#
+#     .SYNOPSIS
+#         replace control chars with safe-to-print-or-pipe symbols. simpler variant of Format-ControlChar
+#     .DESCRIPTION
+#         the 'trick' is add 0x2400 to the codepoint forr the safe symbol version
+#     .notes
+#         Here is the full block
+
+#             format unicode strings, making them safe.
+#             Null is allowed for the user's conveinence.
+#             allowing null makes it easier for the user to pipe, like:
+#             'gc' without -raw or '-split' on newlines
+#         .LINK
+#             https://www.compart.com/en/unicode/block/U+0000
+#         .link
+#             https://www.compart.com/en/unicode/block/U+2400
+#         #>
+#     param(
+#         # makes piping from gc or anything not spam errors
+#         [Alias('Text', 'Lines')]
+#         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+#         [AllowNull()]
+#         [AllowEmptyCollection()]
+#         [AllowEmptyString()]
+#         [string[]]$InputText,
+
+#         # extra options
+#         [Parameter()][hashtable]$Options
+
+#     )
+#     begin {
+
+#     }
+#     process {
+#         foreach($Line in $InputText)  {
+#             $Line.EnumerateRunes() | %{
+#                 if($_.Value -le 0x20) {
+#                     [Text.Rune]::new($_.Value + 0x2400)
+#                     return
+#                 }
+#                 return $_
+#             }
+#         }
+#     }
+#     end {}
+# }
+
 function Format-ControlChar {
     <#
     .synopsis
@@ -90,7 +138,7 @@ function Format-ControlChar {
         $controlMin = $Filters.'ControlChars_C0'.min
         $controlMax = $Filters.'ControlChars_C0'.max + 1 # Because space isn't in C0
         $NullStr = "`u{2400}"
-        $bufferSB = [Text.StringBuilder]::new()
+        [Text.StringBuilder]$bufferSB = [string]::Empty
 
         $Config = Join-Hashtable $Config ($Options ?? @{})
     }

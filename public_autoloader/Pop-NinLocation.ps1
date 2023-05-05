@@ -5,7 +5,7 @@ if ( $publicToExport ) {
         'Pop-NinLocation'
     )
     $publicToExport.alias += @(
-        'PopD' # 'Pop-NinLocation'
+        'nin.Popd' # 'Pop-NinLocation'
     )
 }
 
@@ -15,12 +15,12 @@ function  Pop-NinLocation {
         this proxy greatly simplififes trying to modify Stacks in user's scope
     #>
     [Alias(
-        'PopD'
-        # 'GotoPop' ?
+        'nin.Popd' # popd was conflicts with default
     )]
     [CmdletBinding()]
     param(
-        [switch]$PassThru
+        # [switch]$PassThru,
+        [string]$StackName
 
 
         #    [-PassThru]
@@ -28,13 +28,13 @@ function  Pop-NinLocation {
         #    [<CommonParameters>]
     )
 
-    $StackName = @{
-        StackName = 'ninLocationStack'
+    $splat_pop = @{
+        StackName = $StackName ?? 'ninLocationStack'
     }
 
 
     try {
-        Pop-Location @StackName -PassThru:$PassThru -ea stop
+        Pop-Location @splat_pop -PassThru:$PassThru -ea stop
         | Label 'pop <- ' | Write-Information
     } catch {
         if ( -not $_.Exception.Message -match 'Cannot find location stack' ) {

@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.4'
+    ModuleVersion     = '0.2.43'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -73,10 +73,17 @@
     FunctionsToExport = @(
         # todo: build script automatically include exported commands
         # not wildcard. otherwise wildcard is required if any are defined
-        'Edit-FunctionSource'
+        'Edit-FunctionSource' # 'EditFunc'
+        'Format-RemoveAnsiEscape' # 'StripAnsi'
         'mergeHashtable'
-        'Set-NinLocation'
-        'Write-ConsoleLabel'
+        'Set-NinLocation' # 'Goto'
+
+        'Write-ConsoleLabel' # 'Label'
+        'Format-NativeCommandArguments' # '
+        'Invoke-Explorer' # 'Here'
+        'Format-UnorderedList' # 'Join.UL'
+        'Write-ConsoleHorizontalRule' # 'Hr'
+        'Sort-Hashtable'
         '*'
     )
 
@@ -92,10 +99,14 @@
         'Goto'
         'EditFunc'
         'Label'
-        'Hr'
+        'Hr' # 'Write-ConsoleHorizontalRule'
         'Iot'
         'Iot2'
+        'Here' # 'Invoke-Explorer'
+        'StripAnsi' # 'Format-RemoveAnsiEscape'
+        'Join.UL' # 'Format-UnorderedList'
         '*'
+
 
     )
 

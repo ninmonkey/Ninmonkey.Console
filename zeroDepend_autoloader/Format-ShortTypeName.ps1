@@ -3,13 +3,13 @@
 if ( $publicToExport ) {
     $publicToExport.function += @(
         'Format-ShortTypename'
-        # 'Format-UnorderedList'
+        'Format-UnorderedList' # 'Join.UL'
         'Format-ShortSciTypeName'
     )
     $publicToExport.alias += @(
         'shortTypeName' # 'Format-ShortTypename'
         # 'UL'
-        # 'join.UL'
+        'join.UL' # 'Format-UnorderedList'
         'shortType' # 'Format-ShortSciTypeName
     )
 }
@@ -109,9 +109,10 @@ function Format-UnorderedList {
         # with parameter, so I can say 'use set X'
         # like 'arrows', or 'bars', or 'checkbox'
         [ArgumentCompletions(
-            '•', '-', '‣',
+            '•', '-',
             '[ ]', '[x]',
-            '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎'
+            '→', '☑️', '✅', '✔', '❌', '⛔', '⚠', '✔', '🧪', '📌', '👍', '👎',
+            '⦿', '‣', '•', '⁃', '⁌', '◦'
         )]
 
         # sets bullet types, but if overriden in -Options, Options has priority

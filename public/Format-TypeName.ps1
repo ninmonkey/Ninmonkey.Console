@@ -215,7 +215,7 @@ function Format-TypeName {
         } elseif( $InputObject -is 'type' ){
             $tinfo = $InputObject
         } else {
-            write-warning "maybe shouldn't reach here? '$PSCommandPath'"
+            write-debug "maybe (sometimes) shouldn't reach here? '$PSCommandPath'"
             $tinof = $InputObject
         }
 

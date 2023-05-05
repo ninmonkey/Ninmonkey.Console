@@ -102,6 +102,8 @@ Function Join-Hashtable {
     }
 }
 
+# export-moduleMember -Function 'Test-AnyTrueItems' -alias 'nin.AnyTrue', 'Test.AnyTrue'
+
 
 class ModuleExportRecord {
     <#
@@ -212,7 +214,8 @@ function Find-AutoloadChildItem {
                 $curFile.Name -match $pattern
             }
 
-            $answer = [bool](Test-Any $match_tests)
+            # $answer = [bool](Test-Any $match_tests)
+            $answer = nin.AnyTrue $match_tests
             # 'answer: ', $answer -join '' | Write-Information
             return -not $answer
         }

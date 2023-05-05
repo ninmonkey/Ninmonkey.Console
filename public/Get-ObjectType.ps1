@@ -57,7 +57,7 @@
         # if ($PassThru) {
         #     throw "NotImplementedError: -PassThru"
         # }
-        [List[Object]]$typeList = @()
+        [System.Collections.Generic.List[Object]]$typeList = @()
         if ([string]::IsNullOrWhiteSpace( $Format)) {
             $Format = 'GetType'
         }
@@ -68,6 +68,7 @@
         $typeList.Add( $InputObject )
     }
     end {
+        write-warning "nyi: Get-ObjectType => $PSCommandPath"
         # Write-Error 'rewrite from scratch'
         # $
 
@@ -75,22 +76,22 @@
 
             'GetType' {
                 if ($Null -eq $curObject) {
-                    Write-Error "`$CurObject is $null"
-                    break
+                    Write-Error '$CurObject is null'
+                    continue
                 }
                 $typeInstance = $curObject.GetType()
                 if ($PassThru) {
                     $typeInstance
-                    break
+                    continue
                 }
                 $typeInstance | Format-TypeName
-                break
+                continue
             }
 
             { 'PSTypeNames' -or 'List' } {
                 if ($PassThru) {
                     , $curObject.pstypenames
-                    break
+                    continue
                 }
 
                 # foreach ($Obj in $InputInputObjectect) {
@@ -100,7 +101,7 @@
                 }
 
                 $curObject.pstypenames | Join-String @splat_JoinPSTypeName
-                break
+                continue
             }
 
             default {
