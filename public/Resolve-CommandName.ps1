@@ -95,7 +95,8 @@ function Resolve-CommandName {
                 if ($PreserveAlias) {
                     $_
                 }
-            } else {
+            }
+            else {
                 $_
             }
         }
@@ -114,7 +115,8 @@ function Resolve-CommandName {
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
-            } else {
+            }
+            else {
                 "Match count 1 != $($Commands.count)" | Write-Warning
             }
         }
@@ -131,7 +133,8 @@ function Resolve-CommandName {
                 $cmd = $_
                 $source = if ($cmd -is 'Management.Automation.AliasInfo') {
                     $cmd | ForEach-Object ResolvedCommand | ForEach-Object Module | ForEach-Object Name
-                } else {
+                }
+                else {
                     # $cnds[2] -is 'functioninfo'
                     $cmd.Source
                 }

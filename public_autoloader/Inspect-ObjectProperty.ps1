@@ -309,6 +309,7 @@ function Inspect-ObjectProperty {
             if ('Extra' -or $true) {
                 $meta['IsPrimitive'] = $IsNull ? $false : ( ($_.Value)?.GetType().IsPrimitive ?? $false )
             }
+            # write as new format data
             if ($True -and 'move to custom formatdata') {
                 if ($IsBlank) {
                     # move to formatter
