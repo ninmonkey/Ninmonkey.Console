@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.45'
+    ModuleVersion     = '0.2.46'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -78,7 +78,7 @@
         'mergeHashtable'
         'Set-NinLocation' # 'Goto'
 
-        'Write-ConsoleLabel' # 'Label'
+        'Write-ConsoleLabel' # 'Label' # this doesn't auto import my module. maybe a binary lookup ignore already known aliases
         'Format-NativeCommandArguments' # '
         'Invoke-Explorer' # 'Here'
         'Format-UnorderedList' # 'Join.UL'
