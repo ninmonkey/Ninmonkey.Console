@@ -59,6 +59,12 @@ function iot2 {
     .NOTES
         todo:
             refactor into TypeData and FormatData, with optional views
+    .EXAMPLE
+        PS> gcm __func.*
+        | select -exclude definition, scriptblock
+        | iot2 -NotSkipMost -PassThru
+        | Ft Name, Value, Reported, Type -AutoSize
+
     .link
         Ninmonkey.Console\Inspect-ObjectProperty
     #>
@@ -72,10 +78,22 @@ function iot2 {
         # )]
         # [string[]]$ColumnName,
         # [object]$SortBy = 'Name',
+        # [Parameter(Position = 0)]
+        # [Alias('Layout')]
+        # [ValidateSet(
+        #     'Default', 'ByValue', 'ByRported'
+        # )]
+        # [string]$OutputFormat,
+
         [switch]$PassThru,
         [switch]$NotSkipMost
+
     )
     begin {
+        # gcm __func.* | select -exclude definition, scriptblock | iot2 -NotSkipMost -PassThru
+        # | Ft Name, Value, Reported, Type -AutoSize
+        # gcm __func.* | select * | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
+
 
     }
     process {
@@ -86,8 +104,19 @@ function iot2 {
         | Sort-Object Name
 
         if ($PassTHru) { return $query }
-
         $query | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
+
+        # switch($OutputFormat) {
+        #     'ByValue' {
+        #         $query | Format-Table -AutoSize 'Name', 'Value', 'Reported', 'Type'
+        #     }
+        #     'ByReported' {
+        #         $query | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
+        #     }
+        #     default {
+        #         $query | Format-Table -AutoSize 'Name', 'Reported', 'Value', 'Type'
+        #     }
+        # }
     }
     end {}
 

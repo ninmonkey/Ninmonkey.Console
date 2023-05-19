@@ -1,5 +1,4 @@
 #Requires -Version 7.0
-
 using namespace system.collections.generic
 # __init__.ps1
 
@@ -33,7 +32,7 @@ $strUL = @{
 }
 
 
-Write-Warning '[dev.nin] needs this'
+'[dev.nin] / refactor this {0}' -f $PSCommandPath | write-warning
 
 
 Function Join-Hashtable {
@@ -147,8 +146,7 @@ class NinModuleInfo {
     }
 }
 
-[ValidateNotNull()]
-$script:ninModuleInfo = [NinModuleInfo]::new()
+[ValidateNotNull()]$script:ninModuleInfo = [NinModuleInfo]::new()
 
 
 function Find-AutoloadChildItem {
@@ -336,9 +334,6 @@ $newTest = Find-AutoloadChildItem -InputPath $dirsToLoad -infa 'continue'
 # | Sort-Object { $_.fullname -match 'zeroDepend_autoloader' } -Descending
 | Sort-Object { $_.fullname -match '' } -Descending
 
-$z = $Null
-$z = $Null
-
 class ParseResult {
     [IO.FileSystemInfo]$Name
     [bool]$Success
@@ -466,7 +461,7 @@ if ($true) {
 
 
 
-if ($____debug.Export_Super_ExcessiveTest) {
+if ($false -and $____debug.Export_Super_ExcessiveTest) {
     "`$____debug.Export_Super_ExcessiveTest: `$true from '$PSCommandPath'"
     | Write-Warning
     # dump json logs
@@ -504,7 +499,7 @@ if ($____debug.Export_Super_ExcessiveTest) {
 }
 
 
-if ($____debug.Export_Module_Listing_On_Startup) {
+if ($false -and $____debug.Export_Module_Listing_On_Startup) {
     "`$____debug.Export_Module_Listing_On_Startup: `$true from '$PSCommandPath'"
     # $destPrefix = $PSScriptRoot
     $destPrefix = Get-Item 'C:\nin_temp\1234'
