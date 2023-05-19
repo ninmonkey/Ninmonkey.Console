@@ -10,7 +10,7 @@ $__origPrompt = $function:prompt
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
 # $PSDefaultParameterValues['Write-Text:AsString'] = $true
-
+$script:__disabled_UntilIUpdateSeeminglySciMerge = $true
 . (Get-Item -ea stop (Join-Path $PSScriptRoot 'private/safe_prompt.ps1'))
 
 
@@ -78,35 +78,37 @@ $psreadline_extensions = @(
 )
 
 
-$private_seeminglySci = @(
-    'seeminglySci_import'
-    'NamespaceAwareCompletion'
 
-    # 'Get-EnumInfo'
-    # 'EncodingCompletion'
-)
-if ($psEditor) {
-    Write-Debug 'loading namespaceAwareCompletions'
-    # see: <https://github.com/SeeminglyScience/dotfiles/b lob/a7a9bcf3624efe5be4988922ba2e35e8ff2fcfd8/PowerShell%2Fprofile.ps1#L147>
-    #  $private_seeminglySci.Remove('NamespaceAwareCompletion')
-    $private_seeminglySci = $private_seeminglySci -ne 'NamespaceAwareCompletion'
-}
+if ( $__disabled_UntilIUpdateSeeminglySciMerge ) {
+    $private_seeminglySci = @(
+        'seeminglySci_import'
+        'NamespaceAwareCompletion'
 
-foreach ($file in $private_seeminglySci) {
-    try {
-        # Write-Warning "file: seeminglySci -> : $File"
-        if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
-        }
-        else {
-            Write-Error "Import: failed: private_seeminglySci: private: $File"
-        }
-        . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
+        # 'Get-EnumInfo'
+        # 'EncodingCompletion'
+    )
+    if ($psEditor) {
+        Write-Debug 'loading namespaceAwareCompletions'
+        # see: <https://github.com/SeeminglyScience/dotfiles/b lob/a7a9bcf3624efe5be4988922ba2e35e8ff2fcfd8/PowerShell%2Fprofile.ps1#L147>
+        #  $private_seeminglySci.Remove('NamespaceAwareCompletion')
+        $private_seeminglySci = $private_seeminglySci -ne 'NamespaceAwareCompletion'
     }
-    catch {
-        Write-Error -ErrorRecord $_ -Message "Loading '$file' failed!`n$_" -ea stop
+
+    foreach ($file in $private_seeminglySci) {
+        try {
+            # Write-Warning "file: seeminglySci -> : $File"
+            if (Test-Path ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)) {
+            }
+            else {
+                Write-Error "Import: failed: private_seeminglySci: private: $File"
+            }
+            . ('{0}\private\seeminglySci\{1}.ps1' -f $psscriptroot, $file)
+        }
+        catch {
+            Write-Error -ErrorRecord $_ -Message "Loading '$file' failed!`n$_" -ea stop
+        }
     }
 }
-
 <#
     section: Private
 #>
