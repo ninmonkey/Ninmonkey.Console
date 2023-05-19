@@ -13,7 +13,7 @@ see also:
 
 # [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', '', Target = '??')]
 param()
-write-warning '2022-09-03 -- ensure updated profile 🐛'
+Write-Warning '2023-05-03 -- ensure updated profile 🐛'
 
 "[1] Need to auto-clone latest Sci Dotfile [2] ensure that namespace continue fix is applied" | New-Text -bg 'gray50' -fg 'gray30' | Write-Warning
 <#

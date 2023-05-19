@@ -42,6 +42,7 @@ future:
 $__Config = @{
     includeAliasesUnicode = $true
     includePSReadline     = $false
+    DisableTabCompleters  = $true
 }
 
 . (Get-Item -ea stop (Join-Path $PSScriptRoot 'root_autoloader.ps1'))
@@ -439,6 +440,8 @@ function Enable-NinCoreAlias {
 }
 
 $executionContext.SessionState.Module.OnRemove = {
+
+    New-BurntToastNotification -Text 'Module:NinConsole', 'onRemoveEvent fired' -Silent
     Get-Command ls -All | Format-Table | Out-String | Write-Warning
     Write-Warning 'alias "ls" isn''t reverting correctly, until next import'
     Remove-Alias 'ls'# -ea ignore
@@ -495,7 +498,8 @@ if ($true) {
     # Set-Alias 'Cd' -Value 'Set-NinLocation' -ea Continue #todo:  make this opt in
 
     # class-explorer
-    New-Alias @eaIgnore 'Fm' -Value 'Find-Member' -Description 'uses ClassExplorer'
+    New-Alias @eaIgnore 'Fm' -Value 'ClassExplorer\Find-Member' -Description 'uses ClassExplorer'
+    New-Alias @eaIgnore 'Fime' -Value 'ClassExplorer\Find-Member' -Description 'uses ClassExplorer'
     New-Alias @eaIgnore -Name 'Get-EnumInfo' -Value 'Get-EnumInfo'
 
     $aliasesToExport = @(
@@ -561,26 +565,32 @@ if ($true) {
     }
 }
 
-$FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1')
-. $FileName
-
-if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
-    Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
+if ( $__Config.DisableTabCompleters) {
+    Write-Verbose 'ninConsole => loaders migrating to typewriter' -Verbose
 }
 else {
-    Write-Warning '[w] root ⟹ Completer-Loader: Invoke-Build...'
+    Write-Verbose 'ninConsole => loaders migrating to typewriter' -Verbose
+    $FileName = ('{0}\public\completer\{1}' -f $psscriptroot, 'Completer-Loader.ps1')
+    . $FileName
 
-    $curSplat = @{
-        # Verbose = -Verbose
-        # Debug   = -Debug
-        # infa    = 'Continue'
-        # ea      = 'Continue'
+    if ( ($__ninConfig)?.HackSkipLoadCompleters ) {
+        Write-Warning '[w] root ⟹ Completer-Loader: Skipped'
     }
+    else {
+        Write-Warning '[w] root ⟹ Completer-Loader: Invoke-Build...'
 
-    Build-CustomCompleter @curSplat
-    Import-CustomCompleter @curSplat
-    Import-GeneratedCompleter @curSplat
+        $curSplat = @{
+            # Verbose = -Verbose
+            # Debug   = -Debug
+            # infa    = 'Continue'
+            # ea      = 'Continue'
+        }
 
-    # this version works, run it last.
-    . (Get-Item (Join-Path $PSScriptRoot '/public/PSReadLine/native-dotnet-completer.ps1'))
+        Build-CustomCompleter @curSplat
+        Import-CustomCompleter @curSplat
+        Import-GeneratedCompleter @curSplat
+
+        # this version works, run it last.
+        . (Get-Item (Join-Path $PSScriptRoot '/public/PSReadLine/native-dotnet-completer.ps1'))
+    }
 }

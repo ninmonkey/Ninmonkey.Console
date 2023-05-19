@@ -1,7 +1,7 @@
 ﻿function global:NewProxyTabExpansion2 {
     <#
     .synopsis
-        On tap completion, type names will strip out namespaces that are already imported
+        Old version. On tap completion, type names will strip out namespaces that are already imported
     .example
         PS> [System.Text.Encoder
         # then tab
