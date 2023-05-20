@@ -12,7 +12,7 @@ if ( $publicToExport ) {
 
 }
 
-function Invoke-NinCachedPipescriptExport {
+function Invoke-NinCachedPipescriptExport { # 2023-05-16 test against latest
     <#
     .SYNOPSIS
         basic partial cache to simplfy pipe invoke'

@@ -79,7 +79,7 @@ $psreadline_extensions = @(
 
 
 
-if ( $__disabled_UntilIUpdateSeeminglySciMerge ) {
+if ( -not $__disabled_UntilIUpdateSeeminglySciMerge ) {
     $private_seeminglySci = @(
         'seeminglySci_import'
         'NamespaceAwareCompletion'
