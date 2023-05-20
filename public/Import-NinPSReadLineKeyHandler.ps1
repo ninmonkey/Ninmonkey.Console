@@ -10,6 +10,7 @@ function Import-NinPSReadLineKeyHandler {
         # [Parameter()
         # [TypeName]$ParameterName
     )
+    '::Import-NinPSReadLineKeyHandler => enter' | Write-Host -fg 'orange'
 
     foreach ($extension in $psreadline_extensions) {
         $src = Join-Path $PSScriptRoot "PSReadLine\${extension}.ps1"

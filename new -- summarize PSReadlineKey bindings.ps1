@@ -13,6 +13,7 @@ function _summarizeKeybind {
 
             Alt+Enter = InsertLineBelow; Ctrl+Enter = InsertLineAbove; Enter = AcceptLine; Shift+Ctrl+Enter = InsertLineBelow; Shift+Enter = AddLine
     #>
+    [Alias('__Refactor.ForTypeWriter')]
     param(
         # Regex
         [Parameter(Position = 0)]
