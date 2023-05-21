@@ -65,16 +65,16 @@ function __safePrompt_sorta {
     # $errorString = ($global:Error.count ?? 0)
     $errorColor = switch ($errorCount) {
         { $_ -ge 1 -and $_ -lt 5 } {
-            'orange' ; break;
+            'orange' ; break
         }
         { $_ -ge 5 -and $_ -lt 12 } {
-            'darkorange'; break;
+            'darkorange'; break
         }
         { $_ -gt 12 -and $_ -lt 20 } {
-            'orangered'; break;
+            'orangered'; break
         }
         { $_ -ge 20 } {
-            'red'; break;
+            'red'; break
         }
         0 {
             'gray50'
@@ -189,7 +189,7 @@ function Enable-NinPrompt {
 
 function __systemDefaultPrompt {
 
-    "PS $($executionContext.SessionState.Path.CurrentLocation)`n$('>' * ($nestedPromptLevel + 1)) ";
+    "PS $($executionContext.SessionState.Path.CurrentLocation)`n$('>' * ($nestedPromptLevel + 1)) "
     # .Link
     # https://go.microsoft.com/fwlink/?LinkID=225750
     # .ExternalHelp System.Management.Automation.dll-help.xml

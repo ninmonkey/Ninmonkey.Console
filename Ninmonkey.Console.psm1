@@ -78,6 +78,169 @@ $psreadline_extensions = @(
 )
 
 
+if ('InlineAlwaysImportFirst') {
+    # $_cmds = Get-Command -m AwsLambdaPSCore
+    # nin.Help.Command.OutMarkdown -Debug -verbose -inputobject $_cmds
+    function nin.PSModulePath.Clean {
+        <#
+        .SYNOPSIS
+            -1] remove invalid paths
+            -2] remove duplicate paths, preserving sort order
+            -3] remove any all-whitespace values
+            -4] remove obsolete import path from 2021
+        .EXAMPLE
+            nin.CleanPSModulePath
+        .link
+            nin.PSModulePath.Clean
+        .link
+            nin.PSModulePath.Add
+        .link
+            nin.PSModulePath.AddNamedGroup
+        #>
+        [CmdletBinding()]
+        param(
+            # return the new value
+            [switch]$PassThru
+        )
+
+        Write-Warning "todo: ensure duplicates are removed: $PSCOmmandPath"
+
+        $records = $Env:PSMODulePath -split ([IO.Path]::PathSeparator)
+        | Where-Object { $_ } # drop false and empty strings
+        | Where-Object { -not [String]::IsNullOrWhiteSpace( $_ ) } # drop blank
+
+        $records | Join-String -op "initial: `n" -FormatString "`n- {0}" | Write-Debug
+        # $records | Join-String -op "`n- " -sep "`n- " -DoubleQuote | write-verbose
+        # $records | Join-String -op 'Was:' | Write-Debug
+
+        $records = $records
+        | Where-Object { $_ -notmatch ([Regex]::Escape('C:\Users\cppmo_000\SkyDrive\Documents\2021')) }
+
+        $records | Join-String -op "initial: `n" -FormatString "`n- {0}" | Write-Debug
+
+        $finalPath = $records | Join-String -sep ([IO.Path]::PathSeparator)
+
+        $finalPath | Join-String -op 'finalPath = ' | Write-Verbose
+        if ($PassThru) {
+            return $finalPath
+        }
+    }
+
+    function nin.PSModulePath.Add {
+        <#
+        .SYNOPSIS
+            add paths to PSModulePath, optionally require existing, or distinct
+        .EXAMPLE
+            PS> nin.CleanPSModulePath
+        .link
+            nin.PSModulePath.Clean
+        .link
+            nin.PSModulePath.Add
+        .link
+            nin.PSModulePath.AddNamedGroup
+        #>
+        [CmdletBinding()]
+        param(
+            [ArgumentCompletions('E:\PSModulePath.2023.root')]
+            [Parameter(Mandatory, Position = 0)]
+            [string[]]$LiteralPath,
+            [switch]$RequireExist,
+
+            # prefix rather than add to end?
+            [Alias('ToFront')]
+            [switch]$AddToFront
+            # [string[]]$GroupName
+        )
+
+        $Env:PSModulePath -split ([IO.Path]::PathSeparator) | Join-String -op "`n- " -sep "`n- " -DoubleQuote
+        | Join-String -op 'start: ' | Write-Debug
+
+        Write-Warning 'todo: ensure duplicates are removed'
+
+        foreach ($curPath in $LiteralPath) {
+            $Item = $curPath
+            if ($RequireExists) {
+
+                $Item = Get-Item -ea stop $curPath
+                if (-not (Test-Path $Item) ) {
+                    # does not always trigger as expected?
+                    Write-Error "Not Existing: $Item"
+                    continue
+                }
+            }
+            $records = $Env:PSModulePath -split ([IO.Path]::PathSeparator)
+            if ($records -contains $Item) { continue }
+
+            Join-String -inp $Item -FormatString 'Adding Path: <{0}>' | Write-Verbose
+
+            if ($AddToFront) {
+                $Env:PSModulePath = @(
+                    $Item
+                    $Env:PSModulePath
+                ) | Join-String -sep ([IO.Path]::PathSeparator)
+            }
+            else {
+                $Env:PSModulePath = @(
+                    $Env:PSModulePath
+                    $Item
+                ) | Join-String -sep ([IO.Path]::PathSeparator)
+            }
+
+            # Join-String -inp $Item 'adding: "{0}" to $PSModulePath'
+
+        }
+        $Env:PSModulePath -split ([IO.Path]::PathSeparator) | Join-String -op "`n- " -sep "`n- " -DoubleQuote
+        | Join-String -op 'end  : ' | Write-Debug
+    }
+    function nin.PSModulePath.AddNamedGroup {
+        <#
+    .synopsis
+        either add a group of custom PSModulePaths by GrupName else full name
+    .example
+        nin.PSModulePath.AddNamedGroup -GroupName AWS, JumpCloud   -verbose -debug4
+    .example
+
+    .example
+        nin.PSModulePath.Clean
+        nin.PSModulePath.AddNamedGroup -GroupName AWS, JumpCloud   -verbose -debug
+        nin.PSModulePath.Add -verbose -debug -RequireExist -LiteralPath @(
+            'E:\PSModulePath.2023.root\Main'
+            'H:\data\2023\pwsh\PsModules\ExcelAnt\Output'
+        )
+    #>
+        [CmdletBinding(DefaultParameterSetName = 'GroupName')]
+        param(
+            [ArgumentCompletions('AWS', 'Disabled', 'JumpCloud', 'Main')]
+            [Parameter(Mandatory, Position = 0, ParameterSetName = 'GroupName')]
+            [string[]]$GroupName,
+
+            [Alias('PSPath', 'Path', 'Name')]
+            [Parameter(Mandatory, ParameterSetName = 'LiteralPath', ValueFromPipelineByPropertyName)]
+            $LiteralPath
+        )
+        $Env:PSModulePath -split ([IO.Path]::PathSeparator) | Join-String -op "`n- " -sep "`n- " -DoubleQuote
+        | Join-String -op 'Was:' | Write-Debug
+
+        switch ( $PSCmdlet.ParameterSetName ) {
+            'GroupName' {
+                foreach ($item in $GroupName) {
+                    $mappedGroupPath = Join-Path 'E:\PSModulePath.2023.root' $Item
+                    nin.PSModulePath.Add -LiteralPath $mappedGroupPath -RequireExist -verbose -debug
+                }
+                continue
+            }
+
+            'LiteralPath' {
+                nin.PSModulePath.Add -LiteralPath $LiteralPath -RequireExist -verbose -debug
+                continue
+            }
+            default { throw "UnhandledSwitch ParameterSetItem: $Switch" }
+        }
+    }
+
+}
+
+
 
 if ( -not $__disabled_UntilIUpdateSeeminglySciMerge ) {
     $private_seeminglySci = @(
@@ -263,50 +426,53 @@ if ($public_toDotSource.count -ge 1 ) {
 }
 
 $functionsToExport = @(
-    # misc
-    'Get-NinMyVSCode'
 
-    'Join-Regex'
-    'Resolve-CommandName'
-    'Test-UserIsAdmin'
+
+    'nin.PSModulePath.Add'
+    'nin.PSModulePath.AddNamedGroup'
+    'nin.PSModulePath.Clean'
+
+    # misc
+    'ConvertTo-Timespan'
     'Get-NinModule'
+    'Get-NinMyVSCode'
     'Import-NinModule'
     'Import-NinPSReadLineKeyHandler'
-    'ConvertTo-Timespan'
+    'Join-Regex'
+    'Resolve-CommandName'
     'Select-NinProperty'
+    'Test-UserIsAdmin'
 
     # console formatting
-    'Write-ConsoleText'
-    'Invoke-Wget'
-    'Write-ConsoleLabel'
-    'Write-ConsoleHeader'
-    'Write-ConsoleNewline'
-
     'Find-GitRepo'
+    'Invoke-Wget'
+    'Write-ConsoleHeader'
     'Write-ConsoleHorizontalRule'
+    'Write-ConsoleLabel'
+    'Write-ConsoleNewline'
+    'Write-ConsoleText'
 
     # unicode + encoding
-    'Get-TextEncoding'
-    'Get-UnicodeInfo'
     'Compare-Directory'
     'Get-NinCommandProxy'
+    'Get-TextEncoding'
+    'Get-UnicodeInfo'
 
     # converters
-    'ConvertTo-Number'
-    'ConvertTo-HexString'
     'ConvertTo-Base64String'
-
+    'ConvertTo-HexString'
+    'ConvertTo-Number'
     'ConvertTo-PropertyList'
 
 
     # the rest
-    'Get-NativeCommand'
-    'Invoke-NativeCommand'
-    'Format-TypeName'
-    'Format-GenericTypeName'
-    'Format-Hashtable'
     'Edit-GitConfig'
     'Export-PlatformFolderPath'
+    'Format-GenericTypeName'
+    'Format-Hashtable'
+    'Format-TypeName'
+    'Get-NativeCommand'
+    'Invoke-NativeCommand'
 
     # history
 
@@ -319,51 +485,51 @@ $functionsToExport = @(
     # 'Get-NinNewestItem'
     'Format-Predent'
 
-    'Sort-Hashtable'
-    'Invoke-Explorer'
-    'Get-NinAppxPackage'
     'ConvertTo-PropertyList'
+    'Format-ControlChar'
+    'Format-FileSize'
     'Format-NullText'
-    'Test-NullArg'
+    'Get-NinAppxPackage'
     'Get-ObjectProperty'
     'Get-ObjectType'
-    'Format-FileSize'
-    'Format-ControlChar'
+    'Invoke-Explorer'
+    'Sort-Hashtable'
+    'Test-NullArg'
     'Trace-NinCommand'
 
 
-    'Set-NinLocation'
-    'Get-NinCommandSyntax'
-    'Get-NinTypeData'
-    # 'Get-NinFormatData'
     'Format-History'
-    'Get-TerminalName'
-    'Write-AnsiHyperlink'
-    'Get-NinChildItem'
     'Format-MeasureCommand'
     'Format-TestConnection'
     'Get-ConsoleEncoding'
     'Get-Docs'
     'Get-EnumInfo'
     # 'Get-EnumInfo'
+    'Get-NinChildItem'
+    'Get-NinCommandSyntax'
+    # 'Get-NinFormatData'
+    'Get-NinTypeData'
+    'Get-TerminalName'
+    'Set-NinLocation'
+    'Write-AnsiHyperlink'
 
     'Invoke-IPython'
     'Invoke-RipGrepChildItem'
     'Set-ConsoleEncoding'
     'Start-LogTestNet'
     'Test-Net'
-    # seemingly-sci
     # 'Get-ElementName'
+    # seemingly-sci
 
-    'ConvertTo-Number'
-    'ConvertTo-HexString'
     'ConvertTo-Base64String'
+    'ConvertTo-HexString'
+    'ConvertTo-Number'
 
-    'Out-Fzf'
-    'Format-PrettyJson'
-    # Pester: to remove from Public scope; should be private or only loaded by pester
-    'Test-PesterLinesAreEqual'
     'Format-HashTableList'
+    'Format-PrettyJson'
+    'Out-Fzf'
+    'Test-PesterLinesAreEqual'
+    # Pester: to remove from Public scope; should be private or only loaded by pester
 
 )
 Export-ModuleMember -Function $functionsToExport
