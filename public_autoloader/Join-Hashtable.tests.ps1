@@ -2,7 +2,35 @@ BeforeAll {
     Import-Module Ninmonkey.Console -Force
 }
 
-Describe 'Join-Hashtable Rewrite' {
+Describe 'Join-Hashtable Rewrite' -tags 'new' {
+    it 'by param is valid' {
+        $a = @{ a = 9 ; b = 4 ; z = 4; }
+        $b = @{ z = 9 }
+        $d = @{ a = 1 }
+
+        $expected = @{ a = 1; b = 4; z = 9 } | ConvertTo-Json
+
+        $a, $b
+            | Join-Hashtable.new -BaseHash $d
+            | ConvertTo-Json
+            | Json.From | SHould -Be ($expected |Json.From)
+    }
+    it 'require new assert function' {
+        throw 'todo: -BeExactly on two hashtables, when they enumerate keys in a different order'
+    }
+    it 'Pipeline is valid' {
+        $a = @{ a = 9 ; b = 4 ; z = 4; }
+        $b = @{ z = 9 }
+        $d = @{ a = 1 }
+
+        $expected = @{ a = 1; b = 4; z = 9 } | ConvertTo-Json
+        $d, $a, $b
+            | Join-Hashtable.new
+            | ConvertTo-Json
+            | Json.From | SHould -Be ($expected |Json.From) -because 'BaseHash is the is first hash'
+    }
+}
+Describe 'Join-Hashtable previous' {
     BeforeAll {
         $sample = @(
             @{a = 2}

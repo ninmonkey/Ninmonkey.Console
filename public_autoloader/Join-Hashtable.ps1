@@ -2,14 +2,20 @@ if ($script:publicToExport) {
     $script:publicToExport.function += @(
         'Join-Hashtable'
         'Join-Hashtable.basic'
+        'Join-Hashtable.new'
 
         # sort-of-private
         'sortedHashtable'
         'mergeHashtable'
     )
+    $script:publicToExport.alias += @(
+        'JoinHash'  # 'Join-Hashtable
+        'JoinHash2' # 'Join-Hashtable.new'
+    )
 }
 
 function sortedHashtable {
+    #  new.sortedHash
     # converts existing hash into a new, sorted hash
     param()
     throw "NYI: super simple though"
@@ -34,6 +40,7 @@ Function Join-Hashtable {
     .link
         PSScriptTools\Join-Hashtable
     #>
+    [Alias('JoinHash')]
     [cmdletbinding()]
     [outputType('System.Collections.Hashtable')]
     param(
@@ -111,7 +118,16 @@ Function Join-Hashtable.new {
             $hash1, $hash2 | Join-Hashtable -base $BaseHash
 
     .example
-        Join-Hashtable -Base $
+
+        $a = @{ a = 9 ; b = 4 ; z = 4; }
+        $b = @{ z = 9 }
+        $d = @{ a = 1 }
+
+        $a, $b, $d | Join-Hashtable.new
+        $a, $b | Join-Hashtable.new -BaseHash $d
+
+
+
     .link
         Ninmonkey.Console\Join-Hashtable
     .link
@@ -121,6 +137,7 @@ Function Join-Hashtable.new {
     .link
         PSScriptTools\Join-Hashtable
     #>
+    [Alias('JoinHash2')]
     [cmdletbinding()]
     [outputType('System.Collections.Hashtable')]
     param(
@@ -129,7 +146,7 @@ Function Join-Hashtable.new {
         # [AllowNull()]
         [ValidateNotNull()]
         [Parameter(Mandatory, ParameterSetName = 'FromParams')]
-        [Parameter(Mandatory, ParameterSetName = 'FromPipeline')]
+        [Parameter(ParameterSetName = 'FromPipeline')]
         [hashtable]$BaseHash,
 
         # one or many hashtables, applied order
@@ -203,6 +220,7 @@ Function mergeHashtable {
         'System.Collections.Hashtable'
         # 'System.Collections.Specialized.OrderedDictionary' # not currently, but may
     )]
+    [Alias('UpdateHash')]
     param(
         # base hashtable
         # [ValidateNotNull()] # ?

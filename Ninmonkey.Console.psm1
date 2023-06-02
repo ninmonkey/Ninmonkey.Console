@@ -1,11 +1,26 @@
 ﻿using namespace System.Collections.Generic
 
+$searchRoot = Join-path $PSScriptRoot 'public_autoloader/cmd-git'
+$found = gci $searchRoot *.ps1 -Recurse
+$SearchRoot
+    | Join-String -f '::SearchRoot: {0}'
+    | write-verbose
+
+foreach($obj in $found) {
+    $Obj | Join-String -f '::Dotsourcing: {0}'
+         | write-verbose
+
+    . $Obj
+}
+# public_autoloader\cmd-git\Getting.Resolve-Symbol.ps1
+
+# code below is from a long time ago. above here is 2023-06-01
+
 # __countDuplicateLoad -key 'Nimonkey.Console.psm1'
 # using namespace System.Management.Automation
 <# init
     todo: better config system, than copying my profile
 #>
-
 $__origPrompt = $function:prompt
 $PSDefaultParameterValues['Select-NinProperty:Out-Variable'] = 'SelProp'
 $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
@@ -88,6 +103,8 @@ if ('InlineAlwaysImportFirst') {
             -2] remove duplicate paths, preserving sort order
             -3] remove any all-whitespace values
             -4] remove obsolete import path from 2021
+        .NOTES
+            todo: use that hashset case-insesitive duplication and preserve ordering
         .EXAMPLE
             nin.CleanPSModulePath
         .link
@@ -100,8 +117,15 @@ if ('InlineAlwaysImportFirst') {
         [CmdletBinding()]
         param(
             # return the new value
-            [switch]$PassThru
+            # cleans up then returns the new value
+            [Alias('WhatIf')]
+            [switch]$PassThru,
+
+            # this actually writes to the env var
+            [switch]$Write
         )
+        $Env:PSMODulePath
+        | Write-Verbose
 
         Write-Warning "todo: ensure duplicates are removed: $PSCOmmandPath"
 
@@ -121,6 +145,10 @@ if ('InlineAlwaysImportFirst') {
         $finalPath = $records | Join-String -sep ([IO.Path]::PathSeparator)
 
         $finalPath | Join-String -op 'finalPath = ' | Write-Verbose
+        if ($Write) {
+            Write-Verbose 'wrote PSModulePath'
+            $Env:PSMODulePath = $finalPath
+        }
         if ($PassThru) {
             return $finalPath
         }
@@ -225,13 +253,13 @@ if ('InlineAlwaysImportFirst') {
             'GroupName' {
                 foreach ($item in $GroupName) {
                     $mappedGroupPath = Join-Path 'E:\PSModulePath.2023.root' $Item
-                    nin.PSModulePath.Add -LiteralPath $mappedGroupPath -RequireExist -verbose -debug
+                    nin.PSModulePath.Add -LiteralPath $mappedGroupPath -RequireExist -Verbose -Debug
                 }
                 continue
             }
 
             'LiteralPath' {
-                nin.PSModulePath.Add -LiteralPath $LiteralPath -RequireExist -verbose -debug
+                nin.PSModulePath.Add -LiteralPath $LiteralPath -RequireExist -Verbose -Debug
                 continue
             }
             default { throw "UnhandledSwitch ParameterSetItem: $Switch" }

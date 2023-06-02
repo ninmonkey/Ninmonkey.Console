@@ -9,7 +9,7 @@ if ( $publicToExport ) {
     $publicToExport.alias += @(
         'shortTypeName' # 'Format-ShortTypename'
         # 'UL'
-        'join.UL' # 'Format-UnorderedList'
+        'Join.UL' # 'Format-UnorderedList'
         'shortType' # 'Format-ShortSciTypeName
     )
 }
@@ -95,7 +95,7 @@ function Format-UnorderedList {
     #>
     [Alias(
         'UL',
-        'join.UL'
+        'Join.UL'
     )]
     param(
         # list of objects/strings to add

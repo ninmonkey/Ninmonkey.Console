@@ -1,6 +1,6 @@
 #Requires -Version 7
 
-write-warning "Finish me $PSCommandPath"
+Write-Warning "Finish me $PSCommandPath"
 
 if ( $publicToExport ) {
     $publicToExport.function += @(
@@ -9,11 +9,12 @@ if ( $publicToExport ) {
         'StrFormat-NormalizeLines'
         'StrFormat-Replace'
         'StrJoin-Lines'
-        'StrSplit-Lines'
+        'StrSplit-Lines' # '.Split.Lines'
         'StrFormat-Predent.proto' # replace with: 'StrFormat-Predent
 
     )
     $publicToExport.alias += @(
+        '.Split.Lines' # 'StrSplit-Lines'
         'Join.Predent' # is 'StrFormat-Predent.proto'
         # or alias to  'StrJoin-Predent' ?
         # 'UL'      # is 'Format-UnorderedList'
@@ -84,6 +85,10 @@ function StrFormat-Predent.proto {
         [int]$Depth = 4,
         [string]$IndentString = ' '
     )
+    if ($Depth -lt 0) {
+        "-Depth $Depth was negative" | Write-Verbose
+        $Depth = 0
+    }
     $PrefixStr = $IndentString * $Depth -join ''
     $Input | ForEach-Object {
         return "${PrefixStr}${_}"
@@ -101,6 +106,7 @@ function StrSplit-Lines {
         | fcc | Should -BeExactly '0␍1␍2␍3␍4'
 
     #>
+    [Alias('.Split.Lines')]
     param(
         # potential input lines
         [Alias('Text')]

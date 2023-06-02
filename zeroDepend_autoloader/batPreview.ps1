@@ -61,6 +61,11 @@ function batPreview {
         $nameList.AddRange( $InputObject )
     }
     end {
+        $LastPSNative = $PSNativeCommandArgumentPassing
+        $PSNativeCommandArgumentPassing = [System.Management.Automation.NativeArgumentPassingStyle]::Legacy
+# fd --changed-within 4hours -a -tf
+#    |  StripAnsi
+#    | fzf.exe -m --preview 'git diff -- "{}"'
 
         if ($false) {
             & rg -C 5 --column --line-number --no-heading --color=always --smart-case 'bdg'
@@ -76,12 +81,17 @@ function batPreview {
             | Where-Object { $null -ne $_ } # Where-IsNotBlank
             | Where-Object { -not ( Test-IsDirectory -InputObject $_ ) }
             | fzf.exe -m --preview 'bat --style=snip,header,numbers --line-range=:200 "{}"'
+
+            $PSNativeCommandArgumentPassing = $LastPSNative
             return
         }
         $NameList
         | Where-Object { $null -ne $_ } # Where-IsNotBlank
         | Where-Object { -not ( Test-IsDirectory -InputObject $_ ) }
         | fzf.exe -m --preview 'bat --style=snip,header,numbers --line-range=:200 "{}"'
+
+        $PSNativeCommandArgumentPassing = $LastPSNative
+
 
     }
 }
