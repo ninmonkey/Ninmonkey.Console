@@ -91,7 +91,7 @@ function Resolve-CommandName {
 
             gcm '*find*' | rescmd -QualifiedName -PreserveAlias
     #>
-        $commands = Get-Command @getCommandSplat | ForEach-Object {
+        $commands = Get-Command -ea 'ignore' @getCommandSplat | ForEach-Object {
             # Get-Command -Name $_.ResolvedCommand
             # if ($_.CommandType -eq 'Alias' -and (! $PreserveAlias)) {
             if ($_.CommandType -eq 'Alias') {
