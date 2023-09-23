@@ -47,7 +47,7 @@ function Join-Regex {
         [string[]]$Regex,
 
         # list of literal text values that are combined as a Logical OR
-        [alias('LiteralText', 'Lit')]
+        [alias('LiteralText', 'Lit', 'String')]
         [Parameter()][string[]]$Text
     )
 
@@ -82,7 +82,10 @@ function Join-Regex {
                 $Regex_MergedRegex
             }
         )
-        $Regex_Final = $finalItems | Join-String @splat_FinalJoin
+        $Regex_Final = $finalItems
+             | Join-String @splat_FinalJoin
+             | Join-String -f "({0})" # mostly redundant
+
 
         Write-Debug "Regex: Merged literals: $Regex_MergedLiteral"
         Write-Debug "Regex: Merged Regex: $Regex_MergedRegex"
@@ -117,11 +120,11 @@ function Join-Regex {
         # "${fg:gray70}"
         # "${fg:gray70}"
         # "${fg:gray90}"
-        
+
         # '𝄚 gcm join-regex | editfunc -PassThru | % File  | % fullname'
 
 
-        # return $regex_Final
+        return $regex_Final
     }
     end {
 

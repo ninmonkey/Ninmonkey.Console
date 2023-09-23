@@ -72,16 +72,25 @@ function Set-ConsoleEncoding {
     switch ($EncodingName) {
         { $_ -in 'Utf16-LE', 'Unicode' } {
             H1 'uni16'
-            $global:OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UnicodeEncoding]::new()
+            $global:OutputEncoding =
+                [console]::InputEncoding =
+                    [console]::OutputEncoding =
+                        [System.Text.UnicodeEncoding]::new()
             break
         }
         'utf8' {
-            $global:OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+            $global:OutputEncoding =
+                [console]::InputEncoding =
+                    [console]::OutputEncoding =
+                        [System.Text.UTF8Encoding]::new()
             break
         }
         default {
             Write-Error "Not recognized: '$EncodingName', falling back to utf8"
-            $global:OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+            $global:OutputEncoding =
+                [console]::InputEncoding =
+                    [console]::OutputEncoding =
+                        [System.Text.UTF8Encoding]::new()
             break
         }
     }
