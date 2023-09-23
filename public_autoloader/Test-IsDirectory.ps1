@@ -22,6 +22,8 @@ function Test-IsContainer {
             & $code $pathList $extraArgs
         }
     .link
+        https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_filesystem_provider?view=powershell-7.3
+    .link
         Ninmonkey.Console\Test-IsSubDirectory
     #>
     [Alias('Test-IsDirectory')] # probably a better name

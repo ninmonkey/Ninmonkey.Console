@@ -86,7 +86,7 @@ $__Config = @{
 
 $psreadline_extensions = @(
     'smart_brackets_braces'     # auto add/close quotes and braces
-    'ParenthesizeSelection'     # type alt+( to surround existing expression in parenthesis
+    'ParenthesizeSelection'     # type alt+( to surround existing `ession in parenthesis
     # 'ToggleQuoteArgument'       # cycles between qoute types, and none.
     'ExpandAliases'             # expands aliases.
     'IndentSelections_Jaykul'   # indent/dedent selected text:  alt+[ or ]
@@ -339,6 +339,8 @@ foreach ($file in $public_NativeWrapper) {
 Export-ModuleMember -Function $public_NativeWrapper
 
 $public_toDotSource = @(
+    # 2023-08-03
+    # 'Format-Join.Csv' # Format-Join.Csv = { 'Join.Csv' }
     # misc
     'Get-NinMyVSCode'
     'Join-Regex'
@@ -455,6 +457,8 @@ if ($public_toDotSource.count -ge 1 ) {
 
 $functionsToExport = @(
 
+    # 2023-08-03
+    'Format-Join.Csv' # = # Format-Join.Csv = { 'Join.Csv' }
 
     'nin.PSModulePath.Add'
     'nin.PSModulePath.AddNamedGroup'
@@ -600,6 +604,8 @@ function Enable-NinCoreAlias {
     }
 
     $aliases = @(
+        # '# 2023-08-03
+        'Join.Csv' # = # Format-Join.Csv = { 'Join.Csv' }'
         # group: builtins
         Set-Alias @splat -Name 'io' -Value 'ninmonkey.console\Inspect-ObjectProperty'
         Set-Alias @splat -Name 'ls' -Value 'Microsoft.PowerShell.Management\Get-ChildItem'

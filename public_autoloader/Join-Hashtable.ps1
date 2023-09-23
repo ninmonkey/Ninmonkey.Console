@@ -200,7 +200,8 @@ Function mergeHashtable {
     .description
         Copy and append BaseHash with new values from UpdateHash
     .notes
-        future: add valuefrom pipeline to $UpdateHash param ?
+        - todo: [ ] ImmutableDictionary
+        - future: add valuefrom pipeline to $UpdateHash param ?
 
     .example
         Join-Hashtable -Base $
@@ -234,25 +235,69 @@ Function mergeHashtable {
         [Parameter(Mandatory)][hashtable]$OtherHash,
 
         # default is case-insensitive, to align with regular defaults
+        # [ArgumentCompletions(
+        #     'InvariantCulture', # todo: make re-usable string comparer transformation attribute
+        #     'InvariantCultureIgnoreCase',
+        #     'CurrentCulture',
+        #     'CurrentCultureIgnoreCase',
+        #     'Ordinal',
+        #     'OrdinalIgnoreCase' )]
+        # [System.StringComparer]
+        # [Parameter()]$ComparerType = [StringComparer]::CurrentCultureIgnoreCase,
+
+        [Alias('StringComparer')]
+        [Parameter()]
         [ArgumentCompletions(
-            'InvariantCulture', # todo: make re-usable string comparer transformation attribute
+            # to rebuild, run: [StringComparer] | fime -MemberType Property | % Name | sort -Unique | join-string -sep ",`n" -SingleQuote
+            # todo: make re-usable string comparer transformation attribute, if PSRL doesn't already do it
+            'InvariantCulture',
             'InvariantCultureIgnoreCase',
             'CurrentCulture',
             'CurrentCultureIgnoreCase',
             'Ordinal',
-            'OrdinalIgnoreCase' )]
-        [System.StringComparer]
-        [Parameter()]$ComparerType = [StringComparer]::CurrentCultureIgnoreCase,
+            'OrdinalIgnoreCase'
+        )]
+        [string]
+        $ComparerKind = 'CurrentCultureIgnoreCase',
+        # currently does not resolve as a non-string
+            # [StringComparer]::CurrentCultureIgnoreCase,
+
+
 
         # normal is to not modify left, return a new hashtable
         [Parameter()][switch]$MutateLeft
     )
 
+
+        <#
+            this works without error
+                nin.MergeHash @{ a = 10 } @{ A = 3 } -Comparer CurrentCultureIgnoreCase
+
+            But sometimes, invoke is throwing, which is weird. Shouldn't it be an enum to a string?
+
+               9 |  … mpareType = New-NinStringComparer -PassThru -StringComparerKind $Comp …
+                |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                | Error creating [StringComparer]::FromComparison( "System.CultureAwareComparer" )
+
+        #>
+        # try {
+            $newCompareType = New-NinStringComparer -PassThru -StringComparerKind $ComparerKind
+        # } catch {
+            # $_
+#
+        # }
+
+        # $newCompareType = [StringComparer]::FromComparison(
+        #     [StringComparison]::InvariantCulture )
+        # $newCompareType = [StringComparer]::FromComparison( $Comparer )
+
+        # $p2 = [System.StringComparer]::FromComparison( [StringComparison]::InvariantCulture )
+
         $BaseHash ??= @{}
         $OtherHash ??= @{}
 
         if (! $MutateLeft ) {
-            $TargetHash = [hashtable]::new( $BaseHash, $ComparerType )
+            $TargetHash = [hashtable]::new( $BaseHash, $newCompareType )
         } else {
             Write-Debug 'Mutate enabled'
             $TargetHash = $BaseHash

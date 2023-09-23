@@ -4,7 +4,7 @@
     RootModule        = 'Ninmonkey.Console.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.2.49'
+    ModuleVersion     = '0.2.52'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -73,6 +73,8 @@
     FunctionsToExport = @(
         # todo: build script automatically include exported commands
         # not wildcard. otherwise wildcard is required if any are defined
+        #
+        # before: 2023-08-05
         'Edit-FunctionSource' # 'EditFunc'
         'Format-RemoveAnsiEscape' # 'StripAnsi'
         'mergeHashtable'
@@ -100,6 +102,9 @@
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
     # AliasesToExport   = '*'  #@()
     AliasesToExport   = @(
+        # 2023-08-05
+        # 'nin.mergeHash'
+        # before: 2023-08-05
         'Goto'
         'EditFunc'
         'Label'
