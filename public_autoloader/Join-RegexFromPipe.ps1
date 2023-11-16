@@ -1,39 +1,36 @@
 # 'not enabled'
-#Requires -Version 7
+
+# if ( $publicToExport ) {
+#     $publicToExport.function += @(
+#         'Join-RegexFromPipe'
+#     )
+#     $publicToExport.alias += @(
+#     )
+# }
+# # new
 
 
+# function Join-RegexFromPipe {
+#     [CmdletBinding()]
+#     param(
+#         [Parameter()][switch]$AsRegex,
+#         # [Parameter()][switch]$AsText,
 
-if ( $publicToExport ) {
-    $publicToExport.function += @(
-        'Join-RegexFromPipe'
-    )
-    $publicToExport.alias += @(
-    )
-}
-# new
+#         [Parameter(ValueFromPipeline)]
+#         [string[]]$InputText
+#     )
 
-
-function Join-RegexFromPipe {
-    [CmdletBinding()]
-    param(
-        [Parameter()][switch]$AsRegex,
-        # [Parameter()][switch]$AsText,
-
-        [Parameter(ValueFromPipeline)]
-        [string[]]$InputText
-    )
-
-    begin {
-        $segments = [list[string]]::new()
-    }
-    process {
-        $segments.AddRange( $InputText )
-    }
-    end {
-        if ($AsRegex) {
-            Join-Regex -Regex $segments
-            return
-        }
-        Join-Regex -Text $Segments
-    }
-}
+#     begin {
+#         $segments = [list[string]]::new()
+#     }
+#     process {
+#         $segments.AddRange( @($InputText) )
+#     }
+#     end {
+#         if ($AsRegex) {
+#             Join-Regex -Regex $segments
+#             return
+#         }
+#         Join-Regex -Text $Segments
+#     }
+# }
