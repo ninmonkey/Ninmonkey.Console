@@ -3,7 +3,11 @@
     .synopsis
         minimal function to return variable numbers of newlines
     #>
-    [Alias('Br', 'NL', 'LF')]
+    [Alias(
+        'Write.Br',
+        'Write.NL', # I don't want to collide NL, that's a step too far
+        'LF'
+    )]
     param (
         # how many lines?
         [Parameter(Position = 0)]
