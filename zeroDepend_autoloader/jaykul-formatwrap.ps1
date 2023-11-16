@@ -16,21 +16,46 @@ function Format-WrapJaykul {
     Instead of columns, use alternating colors.
 .DESCRIPTION
     source: https://gist.github.com/Jaykul/79b0f6f0ee44e06be56d2bd298ab084c
+    # todo: update/extend
 .example
-    Get-Module
+    🐒> Get-Module
     | Format-wrapJaykul -RgbColor BrightRed, BrightGreen -padding 0
 .example
-    Get-Content foo.txt
+    🐒> Import-module -PassThru -Name Pansies, ImportExcel, Pester
+        | Format-WrapJaykul -RgbColor (Get-Gradient 'gray90' 'gray30' -Width 3) -Property {
+        $_.Name, $_.Version -join ' ' }
+.example
+    🐒> Get-Content foo.txt
     | Format-wrapJaykul -RgbColor Cyan
 .example
-    Get-Service L*
+    🐒> Import-module -PassThru -Name Pansies, ImportExcel, Pester
+        | Format-WrapJaykul -RgbColor 'red', 'blue', 'green' -Property {
+            $_.Name, $_.Version -join ' ' }
+.example
+    # Calculated
+    🐒> Gci
+    | Format-WrapJaykul -RgbColor 'red', 'blue', 'green' -Property {
+        $_.Name, $_.Length -join ' = ' }
+.example
+    🐒> Get-Service L*
     | Format-wrapJaykul -RgbColor 0x999999
+.EXAMPLE
+    🐒> gci
+    | Format-WrapJaykul -RgbColor (Get-Gradient 'gray80' 'gray10' -Width 3)
+
+    🐒> gci
+    | Format-WrapJaykul -RgbColor (Get-Gradient 'gray80' 'gray10' -Width 3)
+
+
+
+
 
 
 
 .ForwardHelpTargetName Microsoft.PowerShell.Utility\Format-Wide
 .ForwardHelpCategory Cmdlet
 #>
+
     [CmdletBinding(HelpUri = 'https://go.microsoft.com/fwlink/?LinkID=2096930')]
     param(
         [Parameter(Position = 0)]
