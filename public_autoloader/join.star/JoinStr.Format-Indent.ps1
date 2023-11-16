@@ -39,6 +39,10 @@ function StrFormat-Predent.proto {
         0..20 | %{ $_ | Join.Predent $_ | Join.Predent ($_ % 3) }
         0..10| %{ $_ | Join.Predent $_ | Join.Predent ($_ % 2) }
     .EXAMPLE
+        # join as unders, and dunders
+        'a'..'e' | Join.Predent -Depth 1 -IndentString '_'
+        'a'..'e' | Join.Predent -Depth 2 -IndentString '_'
+    .EXAMPLE
     Ps7┐ 0..10| %{ $_ | Join.Predent ($_ % 5) | Join.Predent ($_ % 2) }
 
             0
