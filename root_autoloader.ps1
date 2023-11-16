@@ -1,8 +1,8 @@
 #Requires -Version 7.0
-using namespace system.collections.generic
+using namespace System.Collections.Generic
 # __init__.ps1
 
-Write-Warning "🐱‍👤finish $PSCommandPath"
+# Write-Warning "🐱‍👤finish $PSCommandPath"
 
 $____debug = @{
     Export_Module_Listing_On_Startup = $false
@@ -32,7 +32,7 @@ $strUL = @{
 }
 
 
-'[dev.nin] / refactor this {0}' -f $PSCommandPath | write-warning
+'[dev.nin] / refactor this {0}' -f $PSCommandPath | Write-Warning
 
 
 Function Join-Hashtable {
@@ -310,17 +310,22 @@ function _find_moduleInitDir {
 
 $dirsToLoad = _find_moduleInitDir
 | Sort-Object { $_.FullName -match 'beforeAll' } -Descending  # future will allow sort order from '__init__.ps1'
+
 $dirsToLoad | Write-Host -foreg Green
 # |  % fullname
 
-$DirsToLoad | Join-String @strUL | Write-Verbose
-$DirsToLoad | Join-String @strUL { $_.Name } | Write-Debug
+$DirsToLoad
+| Join-String @strUL | Write-Verbose
+$DirsToLoad
+| Join-String @strUL { $_.Name } | Write-Debug
 # | Write-Information
-'before'
+# 'before'
 
-$NinModuleInfo | ConvertTo-Json -Depth 50 | Set-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
-Get-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
-| bat -l json -f -p | Write-Information
+# $NinModuleInfo
+#     | ConvertTo-Json -Depth 50 | Set-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
+
+# Get-Content 'temp:\last_NinModuleInfo.json' -Encoding utf8
+#     | bat -l json -f -p | Write-Information
 
 
 # $origTest = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
@@ -417,31 +422,33 @@ if ($script:publicToExport['variable']) {
 
 $meta | Format-Table | Out-String | Write-Information
 
-if ($true) {
-    # tip: 'Join-String' does not require the empty and $null gaurds, left in for intent
-    # detect not yet transferred over
-    if ($publicToExport.function.Count -gt 0) {
-        $publicToExport.function | Join-String @strUl
-        | Join-String -op "(eventually deprecated warning): `$publicToExport.function is not empty, migrate to 'ninModuleInfo' Items: `n"
-        | Write-Debug
-    }
-    if ($publicToExport.alias.Count -gt 0) {
-        $publicToExport.alias | Join-String @strUl
-        | Join-String -op "(eventually deprecated warning): `$publicToExport.alias is not empty, migrate to 'ninModuleInfo' Items: `n"
-        | Write-Debug
+# if ($true) {
+#     # tip: 'Join-String' does not require the empty and $null gaurds, left in for intent
+#     # detect not yet transferred over
+#     if ($publicToExport.function.Count -gt 0) {
+#         $publicToExport.function
+#             | Join-String @strUl
+#             | Join-String -op "(eventually deprecated warning): `$publicToExport.function is not empty, migrate to 'ninModuleInfo' Items: `n"
+#             | Write-Debug
+#     }
+#     if ($publicToExport.alias.Count -gt 0) {
+#         $publicToExport.alias
+#             | Join-String @strUl
+#             | Join-String -op "(eventually deprecated warning): `$publicToExport.alias is not empty, migrate to 'ninModuleInfo' Items: `n"
+#             | Write-Debug
 
-    }
-    if ($publicToExport.cmdlet.Count -gt 0) {
-        $publicToExport.cmdlet | Join-String @strUl | Write-Warning # | Write-Debug
-        | Join-String -op "(eventually deprecated warning): `$publicToExport.cmdlet is not empty, migrate to 'ninModuleInfo' Items: `n"
-        | Write-Debug
-    }
-    if ($publicToExport.variable.Count -gt 0) {
-        $publicToExport.variable | Join-String @strUl | Write-Warning # | Write-Debug
-        | Join-String -op "(eventually deprecated warning): `$publicToExport.variable is not empty, migrate to 'ninModuleInfo' Items: `n"
-        | Write-Debug
-    }
-}
+#     }
+#     if ($publicToExport.cmdlet.Count -gt 0) {
+#         $publicToExport.cmdlet | Join-String @strUl | Write-Warning # | Write-Debug
+#         | Join-String -op "(eventually deprecated warning): `$publicToExport.cmdlet is not empty, migrate to 'ninModuleInfo' Items: `n"
+#         | Write-Debug
+#     }
+#     if ($publicToExport.variable.Count -gt 0) {
+#         $publicToExport.variable | Join-String @strUl | Write-Warning # | Write-Debug
+#         | Join-String -op "(eventually deprecated warning): `$publicToExport.variable is not empty, migrate to 'ninModuleInfo' Items: `n"
+#         | Write-Debug
+#     }
+# }
 $devNinRoot = '~\.dev-nin\dump'
 
 
@@ -455,11 +462,6 @@ $__exportPaths = @{
     Export_moduleExports_parseResult_summary = Join-Path $devNinRoot 'console-last_parse_result-summary.json'
 
 }
-
-if ($true) {
-}
-
-
 
 if ($false -and $____debug.Export_Super_ExcessiveTest) {
     "`$____debug.Export_Super_ExcessiveTest: `$true from '$PSCommandPath'"

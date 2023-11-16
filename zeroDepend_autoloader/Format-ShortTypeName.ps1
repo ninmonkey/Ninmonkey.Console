@@ -246,12 +246,68 @@ function Format-ShortSciTypeName {
     }
 }
 
+$script:__ninNamespaceMapping = @{
+    'PoshCode.Pansies' = 'Pansies'
+    'System.Xml.Linq' = 'xml.Linq'
+    'System.Linq' = 'Linq'
+    'Newtonsoft.Json' = 'newtjs'
+    'Runtime.InteropServices' = 'ri'
+    'Reflection' = 'r'
+    'Text.RegularExpressions' = 't.re' # 're' or 't.re'
+    'Text' = 't'
+    'Runtime' = 'run' # 'run' or 'rt'
+    'Runspaces' = 'runs'
+    'Xml.Schema' = 'schema.'
+    'Windows' = 'win'
+    'Threading' = 't' # '' or 't'
+    'Windows.Networking.Sockets' = 'win.sock'
+    'Windows.Media' = 'win.media'
+    'Windows.Networking' = 'win.net'
+    'Windows.Globalization' = 'global' # 'cult' or 'global'
+    'System.Management.Automation' = 'sma'
+    'System.Security.Cryptography' = 'crypto'
+    'Microsoft.PowerShell.Commands' = 'pwsh.cmds'
+    'Microsoft.ApplicationInsights' = 'app.insight'
+    'Microsoft.CodeAnalysis' = 'code.analysis'
+    'ABI.Windows.Networking' =  'abi.net'
+    'ABI.Windows.Globalization' = 'abi.global'
+    'ABI.Windows.Devices.Bluetooth' = 'abi.bluetooth'
+    'System.Diagnostics' = 'diag'
+    'System.Net.NetworkInformation' = 'net.info'
+    'System.Xml.Xsl' = 'xsl'
+    'System.Management.Automation.Configuration'        = 'sma.Configuration'
+    'System.Management.Automation.Host'                 = 'sma.Host'
+    'System.Management.Automation.Internal'             = 'sma.Internal'
+    'System.Management.Automation.Language'             = 'sma.Language'
+    'System.Management.Automation.Provider'             = 'sma.Provider'
+    'System.Management.Automation.PSTasks'              = 'sma.PSTasks'
+    'System.Management.Automation.Remoting'             = 'sma.Remoting'
+    'System.Management.Automation.Remoting.Client'      = 'sma.Remoting.Client'
+    'System.Management.Automation.Remoting.Internal'    = 'sma.Remoting.Internal'
+    'System.Management.Automation.Remoting.WSMan'       = 'sma.Remoting.WSMan'
+    'System.Management.Automation.Runspaces'            = 'sma.Runspaces'
+    'System.Management.Automation.Security'             = 'sma.Security'
+    'System.Management.Automation.Subsystem'            = 'sma.Subsystem'
+    'System.Management.Automation.Subsystem.DSC'        = 'sma.Subsystem.DSC'
+    'System.Management.Automation.Subsystem.Prediction' = 'sma.Subsystem.Prediction'
+    'System.Management.Automation.Tracing'              = 'sma.Tracing'
+} | %{ $_.GetEnumerator() } | sort-Object { $_.Key.Length } -Desc
+
+if($True -and 'exportGlobal') {
+    $global:__ninNamespaceMapping = $script:__ninNamespaceMapping
+}
+
 function Format-ShortTypeName {
     <#
     .EXAMPLE
         PS> [System.Management.Automation.VerboseRecord] | shortTypeName
 
             [VerboseRecord]
+    .notes
+        to find type names, try:
+
+            find-type -Namespace *xml* | Format-ShortTypeName | sls 'xml' -AllMatches
+
     .example
 
         PS>
@@ -264,6 +320,14 @@ function Format-ShortTypeName {
             [IO.DirectoryInfo]
             [VerboseRecord]
             [RgbColorProviderRoot]
+    .EXAMPLE
+        PS> gci .   | xa.TypeOf -FormatMode TypeInfo
+                    | Sort-Object -Unique | Format-ShortTypeName
+
+        # output:
+
+        [IO.DirectoryInfo]
+        [IO.FileInfo]
     .notes
         render-* implies ansi colors
 
@@ -273,19 +337,81 @@ function Format-ShortTypeName {
         Ninmonkey.Console\Render-ShortTypeName
 
     #>
-    [Alias('shortTypeName')]
+    [Alias(
+        'shortTypeName'
+    )]
+    [CmdletBinding()]
     param(
+        [AllowNull()]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # using '$script:__ninNamespaceMapping'
+        [Alias('UsingMapping')][switch]$UsingCustomMapping,
+        # replace namespaces with something short, not nothing
+        [switch]$UsingNamespaceAliases
     )
     process {
-        if ($InputObject -is 'type') {
-            $Target = $InputObject
-        } else {
-            $Target = $InputObject.GetType()
+        if($null -eq $InputObject){ return 'TrueNull' }
+        $IsRawString = $InputObject -is 'string'
+        if($IsRawString) {
+            if($InputObject.Length -eq 0) {
+                return '[String]::Empty'
+            }
         }
 
-        $Target.FullName -replace '^System\.(Management.Automation\.)?', '' -replace '^PoshCode\.Pansies', 'Pansies'
-        | Join-String -op '[' -os ']'
+        $nameString = ''
+        if ($InputObject -is 'type') {
+            $Target = $InputObject
+            $nameString = $Target.FullName
+        } elseif($InputObject -isnot 'string' ) {
+            $Target = $InputObject.GetType()
+            $nameString = $Target.FullName
+        } else {
+            $nameString = $InputObject
+        }
+        $accum = $nameString
+        Join-String -op 'initial input ' -single -inp $accum | Write-Debug
+
+        if($UsingCustomMapping) {
+            foreach($pair in $script:__ninNamespaceMapping.GetEnumerator()) {
+                $Pair.Key, $Pair.Value | Join-String -op '   try name: ' | write-debug
+                [string]$regexKey = [Regex]::escape( $Pair.Key )
+                if($accum -match $regexKey) {
+                    $toBreak  = $true
+                }
+                $accum = $accum -replace $regexKey, $Pair.Value
+                Join-String -op '   set value := ' -inp $accum | Write-Debug
+                if($ToBreak){
+                    break
+                }
+            }
+            Join-String -op 'final value ' -inp $accum | Write-Debug
+            Join-String -op '[' -os ']' -Input $accum
+            return
+        }
+
+        if( -not $UsingNamespaceAliases) {
+            $accum = $accum -replace
+                '^(System\.)?(Management.Automation\.)?', '' -replace
+                '^PoshCode\.Pansies', 'Pansies'
+        } else {
+            $accum = $accum -replace
+                '^(System\.)?(Management.Automation\.)?', 'sma.' -replace
+                '^PoshCode\.Pansies', 'Pansies'
+
+        }
+        Join-String -op 'final value ' -inp $accum | Write-Debug
+        Join-String -op '[' -os ']' -Input $accum
+
+
+        # if ($InputObject -is 'type') {
+        #     $Target = $InputObject
+        # } else {
+        #     $Target = $InputObject.GetType()
+        # }
+
+        # $Target.FullName -replace '^System\.(Management.Automation\.)?', '' -replace '^PoshCode\.Pansies', 'Pansies'
+        # | Join-String -op '[' -os ']'
     }
 }
