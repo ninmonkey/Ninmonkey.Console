@@ -242,7 +242,7 @@ function Inspect-ObjectProperty {
         }
         $validateSetValues = 'Type', 'Value', 'Name', 'Length', 'Reported', 'IsBlank', 'IsNull', 'IsEmptyStr'
         if ( $SortBy -notin $validateSetValues) {
-            Throw 'invalid sortby type'
+            write-error 'invalid sortby type'
         }
         $summary = $InputObject.psobject.properties | ForEach-Object {
             $value_str = ($_)?.Value ?? ''
@@ -275,12 +275,13 @@ function Inspect-ObjectProperty {
             }
             $HasSameTypes = $reportedTypeName -eq $typeName
 
-            $meta = @{
+            $meta = [ordered]@{
                 PSTypeName = 'nin.SummarizedObject.Property'
                 Reported   = $reportedTypeName
                 Name       = $_.Name
                 Type       = $typeName
                 Value      = $_.Value
+                ValueLength = ($_.Value)?.Length ?? "`u{2400}"
                 IsBlank    = $IsBlank
                 IsNull     = $isNull
                 IsEmptyStr = $IsEmptyStr
