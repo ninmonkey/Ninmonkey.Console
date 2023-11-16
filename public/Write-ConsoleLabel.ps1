@@ -184,7 +184,7 @@ function Write-ConsoleLabel {
         #     '' * $LinesBefore
         # }
 
-        gcm Ninmonkey.Console\Write-ConsoleNewline -Count $LinesBefore
+        Ninmonkey.Console\Write-ConsoleNewline -Count $LinesBefore
 
 
         # tofix: It's actually type object unless no property param
@@ -208,7 +208,7 @@ function Write-ConsoleLabel {
         $strText = New-Text @newTextSplat_Text
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
-        gcm Ninmonkey.Console\Write-ConsoleNewline -Count $LinesAfter
+        Ninmonkey.Console\Write-ConsoleNewline -Count $LinesAfter
 
         # if ($LinesAfter -gt 0) {
         #     "`n" * $LinesAfter
