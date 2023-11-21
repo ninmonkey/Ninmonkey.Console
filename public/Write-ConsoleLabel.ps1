@@ -1,6 +1,6 @@
 ﻿# New-Alias 'Label' -Value 'Write-NinLabel' -Description 'visual break using colors' -ErrorAction Ignore
 
-# Set-Alias 'Br' -Value 'Ninmonkey.Console\Write-ConsoleNewline' -Description 'Line breaks' -PassThru | Join-String
+# Set-Alias 'Br' -Value 'Write-ConsoleNewline' -Description 'Line breaks' -PassThru | Join-String
 function Write-ConsoleLabel {
 
     <#
@@ -184,7 +184,7 @@ function Write-ConsoleLabel {
         #     '' * $LinesBefore
         # }
 
-        Ninmonkey.Console\Write-ConsoleNewline -Count $LinesBefore
+        Write-ConsoleNewline -Count $LinesBefore
 
 
         # tofix: It's actually type object unless no property param
@@ -208,7 +208,7 @@ function Write-ConsoleLabel {
         $strText = New-Text @newTextSplat_Text
         $FullString = $StrLabel, $Separator, $StrText | Join-String -Sep ''
         $FullString
-        Ninmonkey.Console\Write-ConsoleNewline -Count $LinesAfter
+        Write-ConsoleNewline -Count $LinesAfter
 
         # if ($LinesAfter -gt 0) {
         #     "`n" * $LinesAfter
