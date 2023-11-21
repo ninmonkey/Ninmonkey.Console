@@ -9,7 +9,7 @@ $tmpExport = @{
     )
 }
 
-. (Get-Item -ea 'continue' 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Ninmonkey.Console\prompt_block\prompt_blocks.ps1')
+# . (Get-Item -ea 'continue' 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Ninmonkey.Console\prompt_block\prompt_blocks.ps1')
 
 $script:___promptInfo = @{
     Current = '__prompt_noModuleLoaded'

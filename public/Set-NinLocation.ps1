@@ -71,9 +71,11 @@ function Set-NinLocation {
         [Parameter()][switch]$AlwaysLsAfter
     )
     begin {
-        $StackName = @{
-            StackName = 'ninLocationStack'
-        }
+        # removed stack names, so that interacting with external
+        # location-functions act as normal
+        # function as normal
+        # $StackName = 'ninLocationStack'
+
 
         # $UniPattern = @{
         #     Home = @(
@@ -151,13 +153,14 @@ function Set-NinLocation {
         }
 
         if ($Path -in @('-', '+')) {
-            Push-Location $Path @StackName
+            Push-Location $Path  #@StackName
             return
         }
 
         if ($Back) {
             try {
-                Pop-Location -StackName 'NinLocation' -ea Stop
+                Pop-Location -ea 'stop'
+                # Pop-Location -ea 'Stop' -StackName 'NinLocation'
             }
             catch {
                 Write-Debug 'stack was empty'
@@ -178,7 +181,9 @@ function Set-NinLocation {
             Write-Warning "Trying Parent, Path '$Path' did not Resolve: $_ . Did shellIntegration break prompt?"
             $DestItem = Get-Item ($path | Split-Path )
         }
-        $DestItem.PSPovider.Name | Join-String -op 'provider: ' | Write-Debug
+        $DestItem.PSPovider.Name
+            | Join-String -op 'provider: ' | Write-Debug
+
         # see Test-IsDirectory
         if ($DestItem.PSProvider.Name -ne 'filesystem') {
             # I don't need to require FS,
@@ -210,7 +215,8 @@ function Set-NinLocation {
 
         Write-Debug "Moving to: $DestItem"
 
-        Push-Location -Path $DestItem @stackname -PassThru
+        # Push-Location -Path $DestItem @stackname -PassThru
+        Push-Location -Path $DestItem -PassThru
         | Label 'push -> ' | Write-Information
 
 
