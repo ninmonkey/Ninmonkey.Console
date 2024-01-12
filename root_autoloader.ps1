@@ -2,6 +2,7 @@
 using namespace System.Collections.Generic
 # __init__.ps1
 
+Import-Module Pansies -PassThru
 # Write-Warning "🐱‍👤finish $PSCommandPath"
 
 $____debug = @{
@@ -100,6 +101,60 @@ Function Join-Hashtable {
         return $TargetHash
     }
 }
+
+
+function Test-AnyTrueItems {
+    <#
+    .synopsis
+        Test if any of the items in the pipeline are true
+    .notes
+    # are any of the truthy values?
+    .EXAMPLE
+        tests:
+
+        $true, $false, $false | Test-AnyTrueItems | Should -be $true
+        $null, $null | Test-AnyTrueItems | Should -be $false
+        '', '' | Test-AnyTrueItems | Should -be $false
+        '', '  ' | Test-AnyTrueItems | Should -be $true
+        '', '  ' | Test-AnyTrueItems -BlanksAreFalse | Should -be $true
+    #>
+    [Alias('Test-AnyTrue', 'nin.AnyTrue')]
+    [OutputType('System.boolean')]
+    [CmdletBinding()]
+    param(
+        [Alias('TestBool')]
+        [AllowEmptyCollection()]
+        [AllowNull()]
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object[]]$InputObject,
+
+        # if string, and blank, then treat as false
+        [switch]$BlanksAreFalse
+    )
+    begin {
+        $AnyIsTrue = $false
+    }
+    process {
+        foreach ($item in $INputObject) {
+            if ($BlanksAreFalse) {
+                $test = [string]::isnullorwhitespace($item)
+                # or $item -replace '\w+', ''
+            }
+            else {
+                $test = [bool]$item
+            }
+            #
+            if ($Test) {
+                $AnyIsTrue = $true
+            }
+        }
+    }
+
+    end {
+        return $AnyIsTrue
+    }
+}
+
 
 # export-moduleMember -Function 'Test-AnyTrueItems' -alias 'nin.AnyTrue', 'Test.AnyTrue'
 
